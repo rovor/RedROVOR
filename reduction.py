@@ -3,13 +3,15 @@
 import datetime
 import os.path as path
 from os import path 
+import shutil
 from glob import glob
 
 import updateHeaders
 import frameTypes
 import imProc
 
-ProcessedFolderBase = '/media/DATAPART1'
+ProcessedFolderBase = '/media/DATAPART1/Processed'
+MasterCalFolder = '/media/DATAPART1/Calibration'
 
 
 def createResultFolder(date):
@@ -41,7 +43,8 @@ make it easier to keep track of the state'''
 		self.findFrames()
 		self.zeroFrame = None
 		self.darkFrame = None
-		self.FlatList =  None
+		self.flatBase = None
+		self.flatList =  None
 		self.frameTypes = None
 		self.objects = None
 		return
@@ -76,8 +79,25 @@ always works in place'''
 		self.darkFrame = path.join(self.processedFolder,'Dark.fits')
 		processedDarks = relocateFiles(self.frameTypes['dark'],self.processedFolder)
 		#apply zeros to darks
-		imProc.processImages(self.frameTypes['dark'],INPUT_PYLIST,output=processedDarks),
+		imProc.processImages(self.frameTypes['dark'],INPUT_PYLIST,output=processedDarks,
 			zerocor=imProc.yes,darkcor=imProc.no,flatcor=imProc.no,ccdtype='dark',zero=self.zeroFrame)
 		#create the dark frame
-		imProc.makeDark(self.frameTypes['dark'],INPUT_PYLIST, output=self.darkFrame,process=imProc.no) 
+		imProc.makeDark(processedDarks,INPUT_PYLIST, output=self.darkFrame,process=imProc.no) 
+		return self
+	def makeFlats(self):
+		if not self.darkFrame:
+			self.makeDark()
+		self.flatBase = path.join(self.processedFolder,'Flat')
+		processedFlats = relocateFiles(self.frameTypes['flat'],self.processedFolder)
+		#apply zeros and darks to flats
+		imProc.processImagese(self.frameTypes['flat'],INPUT_PYLIST,output=processedFlats, zerocor=imProc.yes,darkcor=Improc.yes,
+			flatcor=imProc.no,ccdtype='flat',zero=self.zeroFrame, dark=self.darkFrame)
+		#create the zeros
+		imProc.makeFlats(processedFlats,INPUT_PYLIST, output=self.flatBase,process=imProc.no)
+
+		#copy flats to the master flats folder
+		self.flatList = glob(path.join(self.processedFolder,'Flat*'))
+		for flat in self.flatList:
+			shutil.copy(flat,path.join(MasterCalFolder,path.basename(flat)))
+		
 		return self
