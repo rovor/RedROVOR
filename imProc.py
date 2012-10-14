@@ -6,7 +6,8 @@
 
 from pyraf import iraf
 
-
+yes= iraf.yes
+no =iraf.no
 #load relevant packages
 
 iraf.noao()
@@ -35,7 +36,7 @@ def _genIRAFString(fileList, inputType):
 		raise ValueError('{0} is not a vlid inputType'.format(inputType))
 	return
 
-def makeZero(fileList='zeros.lst',inputType=INPUT_LISTFNAME,output="Zero.fits",combine='average',reject='minmax',ccdtype='zero',):
+def makeZero(fileList='zeros.lst',inputType=INPUT_LISTFNAME,output="Zero.fits",combine='average',reject='minmax',ccdtype='zero'):
 	'''create a master Zero.fits from the frames in fileList'''
 	iraf.zerocombine(_genIRAFString(fileList,inputType),output=output,combine=combine,reject=reject,ccdtype=ccdtype)
 	return
