@@ -5,10 +5,12 @@ import os.path as path
 from os import path 
 import shutil
 from glob import glob
+from collections import defaultdict
 
 import updateHeaders
 import frameTypes
 import imProc
+import coords
 
 ProcessedFolderBase = '/media/DATAPART1/Processed'
 MasterCalFolder = '/media/DATAPART1/Calibration'
@@ -89,6 +91,11 @@ always works in place'''
 			self.makeDark()
 		self.flatBase = path.join(self.processedFolder,'Flat')
 		processedFlats = relocateFiles(self.frameTypes['flat'],self.processedFolder)
+		if not processedFlats:
+			#there aren't any flats to process
+			#use the most recent master flats
+			self.flatlist=glob(path.join(masterCalFolder,'Flat*'))
+			return self
 		#apply zeros and darks to flats
 		imProc.processImagese(self.frameTypes['flat'],INPUT_PYLIST,output=processedFlats, zerocor=imProc.yes,darkcor=Improc.yes,
 			flatcor=imProc.no,ccdtype='flat',zero=self.zeroFrame, dark=self.darkFrame)
@@ -100,4 +107,31 @@ always works in place'''
 		for flat in self.flatList:
 			shutil.copy(flat,path.join(MasterCalFolder,path.basename(flat)))
 		
-		return self
+	def imProc(self):
+		'''process the image frames'''
+		if not self.flatList:
+			self.makeFlats()
+		self.newObjs = defaultdict(list)
+		for (obj,flist) in self.objects.items():
+			#iterate over each object
+			count=0
+			for frame in flist:
+				newName = "{0}/{1}-{2}.fits".format(self.processedFolder,obj.replace(' ','_'),count)
+				imProc.processImages(frame,INPUT_SINGLEFRMAE,output=newName,zero=self.Frame,dark=self.darkFrame,
+					zero=','.join(self.flatList))
+				self.newObjs[obj].append(newName)
+				#now apply world coordinates
+				coords.astrometrySolve(newName)
+				#increment counter
+				count+=1
+					
+	def process(self):
+		'''process everything in the folder and put the new frames in the new folder'''
+		self.findFrames()
+		self.updateHeaders()
+		self.buildLists()
+		self.makeZero()
+		self.makeDark()
+		self.makeFlats()
+		self.imProc()
+		
