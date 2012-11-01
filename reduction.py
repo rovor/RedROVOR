@@ -125,13 +125,19 @@ always works in place'''
 				#increment counter
 				count+=1
 					
-	def process(self):
+	def process(self, doFlats=False):
 		'''process everything in the folder and put the new frames in the new folder'''
 		self.findFrames()
 		self.updateHeaders()
 		self.buildLists()
 		self.makeZero()
 		self.makeDark()
-		self.makeFlats()
+		if doFlats:
+			self.makeFlats()
 		self.imProc()
+
+if __name__ == '__main__':
+	from argparse import ArgumentParser
+	parser = ArgumentParser(description="Process images")
+	parser.add_argument('-f','--use-flats', type='store_true',default=False)
 		
