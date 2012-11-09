@@ -1,0 +1,10 @@
+# swap and backup files
+.*.swp
+.*~
+
+#the pyraf directory
+pyraf/*
+
+#compiled files
+*.pyc
+

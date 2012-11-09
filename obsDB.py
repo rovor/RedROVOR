@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import cookielib, urllib2
-import sha
+import hashlib
 import json
 
 from urllib import urlencode
@@ -19,7 +19,7 @@ jar = cookielib.CookieJar()
 opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(jar))
 
 username='rovor' #username for the database
-passwordHash =sha.new('0uth0us3').hexdigest() #password hash for the database
+passwordHash =hashlib.sha1('0uth0us3').hexdigest() #password hash for the database
 
 loginRequest = urlencode({'command':'login','uname':username,'pword':passwordHash})
 

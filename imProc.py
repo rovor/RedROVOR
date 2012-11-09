@@ -39,11 +39,12 @@ def _genIRAFString(fileList, inputType):
 def makeZero(fileList='zeros.lst',inputType=INPUT_LISTFNAME,output="Zero.fits",combine='average',reject='minmax',ccdtype='zero'):
 	'''create a master Zero.fits from the frames in fileList'''
 	iraf.zerocombine(_genIRAFString(fileList,inputType),output=output,combine=combine,reject=reject,ccdtype=ccdtype)
+	print "zerocombine successful"
 	return
 
 def makeDark(fileList='darks.lst',inputType=INPUT_LISTFNAME,output='Dark.fits',process=iraf.yes,combine='average',ccdtype='dark',reject='minmax'):
 	'''create a master Dark.fits from the  darks in fileList'''
-	iraf.darkcombine(_genIRAFString(fileList,inputType), output=output, combine=combine, process=process,ccdtype=ccdtype,reject=reject)
+	iraf.darkcombine(_genIRAFString(fileList,inputType), output=output, combine=combine, process=process,ccdtype=ccdtype,reject=reject,subsets=iraf.no)
 
 def makeFlat(fileList='flats.lst',inputType=INPUT_LISTFNAME, output='Flat',combine='average',
 	reject='avsigclip', ccdtype='flat', process = iraf.yes, subsets=iraf.yes, scale='mode'):
@@ -53,9 +54,9 @@ def makeFlat(fileList='flats.lst',inputType=INPUT_LISTFNAME, output='Flat',combi
 		combine=combine, process=process, ccdtype=ccdtykpe,reject=reject, scale=scale, subsets=subsets)
 	return
 
-def proccessImages(fileList, inputType=INPUT_SINGLEFRAME, output="", ccdtype="object", zerocor= iraf.yes, darkcor=iraf.yes, flatcor=iraf.yes, zero="Zero.fits",dark="Dark.fits", flat="Flat*.fits"):
+def processImages(fileList, inputType=INPUT_SINGLEFRAME, output="",outputType=INPUT_SINGLEFRAME, ccdtype="object", zerocor= iraf.yes, darkcor=iraf.yes, flatcor=iraf.yes, zero="Zero.fits",dark="Dark.fits", flat="Flat*.fits"):
 	'''wrapper for IRAF's ccdproc command'''
-	iraf.ccdproc(_genIRAFString(fileList, inputType), output=output, ccdtype=ccdtype, zerocor = zerocor, darkcor=darkcor, flatcor=flatcor, zero=zero, dark=dark, flat=flat)
+	iraf.ccdproc(_genIRAFString(fileList, inputType), output=_genIRAFString(output,outputType), ccdtype=ccdtype, zerocor = zerocor, darkcor=darkcor, flatcor=flatcor, zero=zero, dark=dark, flat=flat)
 	return
 
 	

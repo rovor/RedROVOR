@@ -14,16 +14,16 @@ def updateObjName(header):
 	if 'object' in header:
 		return 
 	else:
-		header['object'] = frameTypes.getObjectName(header)
+		header.update('object', frameTypes.getObjectName(header))
 		return
 	
 def updateImType(header):
-	header['imagetyp']=frameTypes.getFrameType(header)
+	header.update('imagetyp',frameTypes.getFrameType(header))
 	return
 
 def updateSubset(header):
 	if 'filter' in header:
-		header['subset']=header['filter']
+		header.update('subset','filter')
 		return
 	else:
 		return

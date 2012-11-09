@@ -82,7 +82,7 @@ def getObjectName(header):
 			name = obsDB.lookup_name(ra,dec)
 		except obsDB.ObsDBError as e:
 			return 'unknown' #if there was a problem retrieving it is unknown
-		return name
+		return str(name) #convert from unicode to string
 
 def makeObjectMap(files):
 	'''create a dictionary with keys of the objects, and
