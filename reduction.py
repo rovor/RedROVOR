@@ -32,7 +32,7 @@ processed images.'''
 
 def relocateFiles(fileList, destFolder):
 	'''takes a list of filenames (fileList) and adds the destFolder to the beginning of them, returning a new list'''
-	return [ path.join(destFolder, fname) for fname in fileList ]
+	return [ path.join(destFolder, path.basename(fname)) for fname in fileList ]
 
 class ImProcessor:
 	'''Class to handle image processing for a folder, we use a class to 
@@ -114,7 +114,7 @@ always works in place'''
 			return self
 		writeListToFileName(processedFlats, processedFlatsFile)
 		#apply zeros and darks to flats
-		imProc.processImages(self.flatsFile,imProc.INPUT_LISTFNAME,output=processedFlatsFile, outputType=INPUT_LISTFNAME, zerocor=imProc.yes,darkcor=Improc.yes,
+		imProc.processImages(self.flatsFile,imProc.INPUT_LISTFNAME,output=processedFlatsFile, outputType=imProc.INPUT_LISTFNAME, zerocor=imProc.yes,darkcor=Improc.yes,
 			flatcor=imProc.no,ccdtype='flat',zero=self.zeroFrame, dark=self.darkFrame)
 		#create the zeros
 		imProc.makeFlats(processedFlatsFile,imProc.INPUT_LISTFNAME, output=self.flatBase,process=imProc.no)
@@ -134,7 +134,7 @@ always works in place'''
 			count=0
 			for frame in flist:
 				newName = "{0}/{1}-{2}.fits".format(self.processedFolder,obj.replace(' ','_'),count)
-				imProc.processImages(frame,INPUT_SINGLEFRAME,output=newName,zero=self.Frame,dark=self.darkFrame,
+				imProc.processImages(frame,imProc.INPUT_SINGLEFRAME,output=newName,zero=self.zeroFrame,dark=self.darkFrame,
 					flat=','.join(self.flatList))
 				self.newObjs[obj].append(newName)
 				#now apply world coordinates

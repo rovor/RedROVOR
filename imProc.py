@@ -44,7 +44,7 @@ def makeZero(fileList='zeros.lst',inputType=INPUT_LISTFNAME,output="Zero.fits",c
 
 def makeDark(fileList='darks.lst',inputType=INPUT_LISTFNAME,output='Dark.fits',process=iraf.yes,combine='average',ccdtype='dark',reject='minmax'):
 	'''create a master Dark.fits from the  darks in fileList'''
-	iraf.darkcombine(_genIRAFString(fileList,inputType), output=output, combine=combine, process=process,ccdtype=ccdtype,reject=reject,subsets=iraf.no)
+	iraf.darkcombine(_genIRAFString(fileList,inputType), output=output, combine=combine, process=process,ccdtype=ccdtype,reject=reject)
 
 def makeFlat(fileList='flats.lst',inputType=INPUT_LISTFNAME, output='Flat',combine='average',
 	reject='avsigclip', ccdtype='flat', process = iraf.yes, subsets=iraf.yes, scale='mode'):
@@ -56,7 +56,9 @@ def makeFlat(fileList='flats.lst',inputType=INPUT_LISTFNAME, output='Flat',combi
 
 def processImages(fileList, inputType=INPUT_SINGLEFRAME, output="",outputType=INPUT_SINGLEFRAME, ccdtype="object", zerocor= iraf.yes, darkcor=iraf.yes, flatcor=iraf.yes, zero="Zero.fits",dark="Dark.fits", flat="Flat*.fits"):
 	'''wrapper for IRAF's ccdproc command'''
-	iraf.ccdproc(_genIRAFString(fileList, inputType), output=_genIRAFString(output,outputType), ccdtype=ccdtype, zerocor = zerocor, darkcor=darkcor, flatcor=flatcor, zero=zero, dark=dark, flat=flat)
+	iraf.ccdproc(_genIRAFString(fileList, inputType), output=_genIRAFString(output,outputType), ccdtype=ccdtype, zerocor = zerocor, 
+	darkcor=darkcor, flatcor=flatcor, zero=zero, dark=dark, flat=flat,
+	fixpix=iraf.no,overscan=iraf.no,trim=iraf.no)
 	return
 
 	

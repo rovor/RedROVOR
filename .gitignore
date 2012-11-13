@@ -8,3 +8,6 @@ pyraf/*
 #compiled files
 *.pyc
 
+logfile   #ignore the logfile
+
+
