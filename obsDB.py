@@ -78,4 +78,19 @@ def obj_search(query):
 
 def lookup_name(ra,dec):
 	return _sendRequest('object_request2.php', {'command':'nameLookup', 'ra':ra, 'dec':dec})
+
+# observation commands
+
+def newObservation(obj_id, utdate, ffilter, exptime, temp, nframes=1, fname='', notes=''):
+    '''Log a new observation'''
+    return _sendRequest('obs_request2.php',{'command':'new','object_id':obj_id, 'utdate':utdate,
+        'exptime':exptime, 'temp':temp, 'nframes':nframes, 'filename':fname, 'notes':notes})
+
+def getObsFull(orderby='utdate',limit=None, **kwfilter):
+    req = {'command':'getObsFull', 'orderby':orderby}
+    if limit is not None:
+        req['limit'] = limit
+    if kwfilter:
+        req['filter']=kwfilter
+    return _sendRequest('obs_request2.php',req)
 	
