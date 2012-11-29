@@ -6,6 +6,9 @@ import os
 import os.path as path
 import shutil
 import tempfile
+
+import logging
+
 from glob import glob
 from collections import defaultdict
 
@@ -22,10 +25,16 @@ ProcessedFolderBase = '/data/Processed'
 MasterCalFolder = '/data/Calibration'
 
 
+
+def genDate(date):
+	return date.strftime('/%Y/%b/%d%b%Y').lower()
+
+
+
 def createResultFolder(date):
 	'''given a datetime.date create a new folder to hold the resulting 
 processed images.'''
-	folderName = ProcessedFolderBase+date.strftime('/%Y/%b/%d%b%Y').lower()
+	folderName = ProcessedFolderBase+genDate(date)
 	if not path.isdir(folderName):
 		os.makedirs(folderName)  #create folder in format ddmonyyyy inside folder for month inside folder for year
 	return folderName
@@ -40,16 +49,24 @@ make it easier to keep track of the state'''
 
 	def __init__(self, rawFolder):
 		'''initialize the processor in the folder containing the raw data'''
+
+
 		self.rawFolder = rawFolder
 		#TODO figure out a robust way to determine the date of observation
 		#for now we will simply look at the date of observation for the first
 		#fits file
 		
-		#create the folder to store results in
-		header = pyfits.getheader(glob(path.join(rawFolder,'*.fits'))[0])
+		self._findFrames()  #find frames
+		header = pyfits.getheader(self.frames[0])
 		self.obsDate = datetime.datetime.strptime(header['date-obs'],'%Y-%m-%dT%H:%M:%S.%f').date()
+		#create the folder to store results in
 		self.processedFolder = createResultFolder(self.obsDate)
-		self.findFrames()
+
+		# set up logger
+		self.logger = logging.getLogger('ImProcessor_{0}'.format(id(self)))
+		self.logger.setLevel(logging.DEBUG)
+		self.logger.addHandler(logging.FileHandler(path.join(self.processedFolder,'improcessor.log'))) # add a handler to logfile
+
 		self.zeroFrame = None
 		self.zerosFile = path.join(self.rawFolder, 'zeroFrames.lst')
 		self.darkFrame = None
@@ -62,8 +79,9 @@ make it easier to keep track of the state'''
 		self.objectsFile = path.join(self.rawFolder, 'objectFrames.lst')
 		self.unknownFile = path.join(self.rawFolder, 'unknownFrames.lst')
 		return
-	def findFrames(self):
+	def _findFrames(self):
 		'''find  all fits files in the folder (anything ending with .fits, .fit, .FIT, or .fts'''
+		self.logger.info('Looking for frames...')
 		validExtensions = ['.fits','.fit','.FIT','.fts']
 		self.frames=list()
 		for ext in validExtensions:
@@ -72,6 +90,7 @@ make it easier to keep track of the state'''
 	def updateHeaders(self,inplace=True):
 		'''update the headers for all the frames in the folder
 always works in place'''
+		self.logger.info('Updating Headers...')
 		for frame in self.frames:
 			updateHeaders.updateFrame(frame)
 		return self
@@ -82,14 +101,18 @@ always works in place'''
 			flatFile=self.flatsFile, objectFile=self.objectsFile,unknownFile=self.unknownFile) 
 		return self
 	def makeZero(self):
+		self.logger.info('Making Zero')
 		#insure that we have the frame types already
 		if not self.frameTypes:
+			self.logger.warning('Type lists were not previously made, making them now')
 			self.buildLists()
 		self.zeroFrame = path.join(self.processedFolder, 'Zero.fits')
 		imProc.makeZero(self.zerosFile, imProc.INPUT_LISTFNAME, output=self.zeroFrame)
 		return self
 	def makeDark(self):
+		self.logger.info('Making Dark')
 		if not self.zeroFrame:
+			self.logger.warning('Zero has not been made yet, making it now')
 			self.makeZero()
 		self.darkFrame = path.join(self.processedFolder,'Dark.fits')
 		processedDarks = relocateFiles(self.frameTypes['dark'],self.processedFolder)
@@ -102,7 +125,10 @@ always works in place'''
 		imProc.makeDark(processedDarksFile,imProc.INPUT_LISTFNAME, output=self.darkFrame,process=imProc.no) 
 		return self
 	def makeFlats(self):
+		self.logger.info('Making Flats')
+		self.logger.warning('Operations on flats have not been finished yet')
 		if not self.darkFrame:
+			self.logger.warning('Dark not made yet, making it now')
 			self.makeDark()
 		self.flatBase = path.join(self.processedFolder,'Flat')
 		processedFlats = relocateFiles(self.frameTypes['flat'],self.processedFolder)
@@ -110,6 +136,7 @@ always works in place'''
 		if not processedFlats:
 			#there aren't any flats to process
 			#use the most recent master flats
+			self.logger.warning('No flats were found in folder, looking in master folder')
 			self.flatlist=glob(path.join(masterCalFolder,'Flat*'))
 			return self
 		writeListToFileName(processedFlats, processedFlatsFile)
@@ -126,6 +153,7 @@ always works in place'''
 		
 	def imProc(self, useFlats=False):
 		'''process the image frames'''
+		self.logger.info('Processing Images...')
 		if not self.flatList and useFlats:
 			self.makeFlats()
 		self.newObjs = defaultdict(list)
@@ -146,7 +174,7 @@ always works in place'''
 					
 	def process(self, doFlats=False):
 		'''process everything in the folder and put the new frames in the new folder'''
-		self.findFrames()
+		self.logger.info('Processing Directory...')
 		self.updateHeaders()
 		self.buildLists()
 		self.makeZero()
