@@ -5,6 +5,7 @@ import pyfits
 import re
 import sys
 import os
+import os.path
 from collections import defaultdict
 
 import obsDB
@@ -14,6 +15,20 @@ zeroRE = re.compile(r'([zZ]ero)|([Bb]ias)')
 darkRE = re.compile(r'[dD]ark')
 flatRE = re.compile(r'[Ff]lat')
 objectRE = re.compile(r'([iI]mage)|([Ll]ight)|([oO]bject)')
+
+fitsSuffixes = ['fits','fts','FIT','FITS','fit']
+
+
+def isFits(fname):
+    '''Determine if the filename is right for a fits file or not'''
+    return os.path.isfile(fname) and os.path.splitext(fname)[1] in fitsSuffixes
+
+def fitsCheckMagic(fname):
+    '''check the magic number to make sure it actually is a fits file'''
+    with open(fname, 'rb') as fl:
+        return fl.read(len('SIMPLE')) == 'SIMPLE'
+
+
 
 def getFrameType(header):
 	'''Given the header for a frame determine if it is a 
