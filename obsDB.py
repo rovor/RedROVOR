@@ -58,6 +58,9 @@ def addObject(name,types=None, otherNames=None):
 		reqObj['otherNames'] = otherNames
 	return _sendRequest('object_request2.php', reqObj)
 
+def obj_get_or_add(name):
+	return _sendRequest('object_request2.php',{'command':'get_or_add','name':name})
+
 def get_objs(orderby=None, limit=None):
 	reqObj = {'command':'getObjs'}
 	if orderby is not None:
