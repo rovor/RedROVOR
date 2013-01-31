@@ -9,6 +9,7 @@ import os.path
 from collections import defaultdict
 
 import obsDB
+from fitsHeader import isFits, getFrameType, getObjectName
 
 
 zeroRE = re.compile(r'([zZ]ero)|([Bb]ias)')
@@ -16,36 +17,8 @@ darkRE = re.compile(r'[dD]ark')
 flatRE = re.compile(r'[Ff]lat')
 objectRE = re.compile(r'([iI]mage)|([Ll]ight)|([oO]bject)')
 
-fitsSuffixes = ['fits','fts','FIT','FITS','fit']
 
 
-def isFits(fname):
-    '''Determine if the filename is right for a fits file or not'''
-    return os.path.isfile(fname) and os.path.splitext(fname)[1] in fitsSuffixes
-
-def fitsCheckMagic(fname):
-    '''check the magic number to make sure it actually is a fits file'''
-    with open(fname, 'rb') as fl:
-        return fl.read(len('SIMPLE')) == 'SIMPLE'
-
-
-
-def getFrameType(header):
-	'''Given the header for a frame determine if it is a 
-	   zero, dark, flat, or image frame using the imagetyp header 
-	   and possibly the exposure time'''
-	imtype = header['imagetyp']
-	exptime = header['exptime']
-	if zeroRE.search(imtype) or exptime == 0:
-		return 'zero'
-	elif darkRE.search(imtype):
-		return 'dark'
-	elif flatRE.search(imtype):
-		return 'flat'
-	elif objectRE.search(imtype):
-		return 'object'
-	else:
-		return None
 
 def getFrameLists(fileList):
 	'''given an iterator of filenames, go through each one, 
@@ -83,21 +56,6 @@ def saveFrameLists(frameLists, zeroFile='zeros.lst',darkFile='darks.lst',
 	with open(unknownFile,'w') as uf:
 		for frame in frameLists['unknown']:
 			uf.write('{0}\n'.format(frame))
-
-def getObjectName(header):
-	'''get the name of the object in the frame'''
-	if 'object' in header:
-		return header['object']
-	elif 'title' in header:
-		return header['title']
-	else:
-		ra= header['objctra'].replace(' ',':')
-		dec = header['objctdec'].replace(' ',':')
-		try:
-			name = obsDB.lookup_name(ra,dec)
-		except obsDB.ObsDBError as e:
-			return 'unknown' #if there was a problem retrieving it is unknown
-		return str(name) #convert from unicode to string
 
 def makeObjectMap(files):
 	'''create a dictionary with keys of the objects, and
