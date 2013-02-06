@@ -15,36 +15,38 @@ def fitsCheckMagic(fname):
         return fl.read(len('SIMPLE')) == 'SIMPLE'
 
 def getFrameType(header):
-	'''Given the header for a frame determine if it is a 
-	   zero, dark, flat, or image frame using the imagetyp header 
-	   and possibly the exposure time'''
-	imtype = header['imagetyp']
-	exptime = header['exptime']
-	if zeroRE.search(imtype) or exptime == 0:
-		return 'zero'
-	elif darkRE.search(imtype):
-		return 'dark'
-	elif flatRE.search(imtype):
-		return 'flat'
-	elif objectRE.search(imtype):
-		return 'object'
-	else:
-		return None
+    '''Given the header for a frame determine if it is a 
+       zero, dark, flat, or image frame using the imagetyp header 
+       and possibly the exposure time'''
+    imtype = header['imagetyp']
+    exptime = header['exptime']
+    if zeroRE.search(imtype) or exptime == 0:
+            return 'zero'
+    elif darkRE.search(imtype):
+            return 'dark'
+    elif flatRE.search(imtype):
+            return 'flat'
+    elif objectRE.search(imtype):
+            return 'object'
+    else:
+            return None
 
 def getObjectName(header):
-	'''get the name of the object in the frame'''
-	if 'object' in header:
-		return header['object']
-	elif 'title' in header:
-		return header['title']
-	else:
-		ra= header['objctra'].replace(' ',':')
-		dec = header['objctdec'].replace(' ',':')
-		try:
-			name = obsDB.lookup_name(ra,dec)
-		except obsDB.ObsDBError as e:
-			return 'unknown' #if there was a problem retrieving it is unknown
-		return str(name) #convert from unicode to string
+    '''get the name of the object in the frame'''
+    if 'object' in header:
+            return header['object']
+    elif 'title' in header:
+            return header['title']
+    else:
+        ra= header['objctra'].replace(' ',':')
+        dec = header['objctdec'].replace(' ',':')
+        try:
+            name = obsDB.lookup_name(ra,dec)
+            return str(name) #convert from unicode to string
+        except obsDB.ObsDBError as e:
+            #return 'unknown' #if there was a problem retrieving it is unknown
+            #if we don't know the name create a name from RA and dec
+            return makeRADecName(header)
 
 def getFilter(header):
     if 'filter' in header:
