@@ -74,6 +74,7 @@ def buildSummary(folder="."):
     for f in os.listdir(folder):
         fullName = os.path.join(folder, f)
         if fitsHeader.isFits(fullName):
+            print "Checking file {0}".format(fullName)
             header = pyfits.getheader(fullName)
             summary.parseHeader(header)
     return summary

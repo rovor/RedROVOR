@@ -1,12 +1,19 @@
 import os
 import os.path
+import re
 
 import obsDB
 
-fitsSuffixes = ['fits','fts','FIT','FITS','fit']
+zeroRE = re.compile(r'([zZ]ero)|([Bb]ias)')
+darkRE = re.compile(r'[dD]ark')
+flatRE = re.compile(r'[Ff]lat')
+objectRE = re.compile(r'([iI]mage)|([Ll]ight)|([oO]bject)')
+
+fitsSuffixes = ['.fits','.fts','.FIT','.FITS','.fit']
 
 def isFits(fname):
     '''Determine if the filename is right for a fits file or not'''
+    print "fname: {0}\n\text: {1}".format(fname, os.path.splitext(fname)[1])
     return os.path.isfile(fname) and os.path.splitext(fname)[1] in fitsSuffixes
 
 def fitsCheckMagic(fname):

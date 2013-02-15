@@ -2,7 +2,6 @@
 
 import pyfits
 
-import re
 import sys
 import os
 import os.path
@@ -10,14 +9,6 @@ from collections import defaultdict
 
 import obsDB
 from fitsHeader import isFits, getFrameType, getObjectName
-
-
-zeroRE = re.compile(r'([zZ]ero)|([Bb]ias)')
-darkRE = re.compile(r'[dD]ark')
-flatRE = re.compile(r'[Ff]lat')
-objectRE = re.compile(r'([iI]mage)|([Ll]ight)|([oO]bject)')
-
-
 
 
 def getFrameLists(fileList):
