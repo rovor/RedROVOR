@@ -74,7 +74,6 @@ def buildSummary(folder="."):
     for f in os.listdir(folder):
         fullName = os.path.join(folder, f)
         if fitsHeader.isFits(fullName):
-            print "Checking file {0}".format(fullName)
             header = pyfits.getheader(fullName)
             summary.parseHeader(header)
     return summary
@@ -92,6 +91,9 @@ if __name__ == '__main__':
         folder = sys.argv[1]
     else:
         folder = "."
+    
+    #properly set the output base to match the folder we are running on
+    outputBase = os.path.join(folder,outputBase)
 
     summary = buildSummary(folder)
     with open(outputBase,'w') as txtFile:
