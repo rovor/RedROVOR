@@ -78,28 +78,56 @@ def buildSummary(folder="."):
             summary.parseHeader(header)
     return summary
 
+def main(folder=".", outputBase="obsSummary",recursive=False):
+    '''main function'''
+    #properly set the output base to match the folder we are running on
+    fullBase = os.path.join(folder,outputBase)
 
+    summary = buildSummary(folder)
+    with open(fullBase,'w') as txtFile:
+        txtFile.write(str(summary))
+    with open(fullBase + ".json", 'w') as jsonFile:
+        jsonFile.write(summary.getJson())
+    if recursive:
+        for file in os.listdir(folder):
+            fname = os.path.join(folder,file)
+            if os.path.isdir(fname):
+                main(fname, outputBase, True)
+    
 
 if __name__ == '__main__':
     #main function (sort of)
-    if len(sys.argv) > 2:
-        outputBase = sys.argv[2]
+
+    import getopt
+
+    
+    try:
+        options,args = getopt.gnu_getopt(sys.argv[1:],"r")
+    except getopt.GetoptError, err:
+        print str(err)
+        print "Usage: observationSummary.py [-r] [folder [outputBase]]"
+        sys.exit(2)
+    
+    recursive = False
+    
+    for o, a in options:
+        if o == "-r":
+            recursive = True
+        else:
+            assert False, "unhandled option"
+
+    if len(args) > 0:
+        folder = args[0]
+    else:
+        folder = "."
+
+    if len(args) > 1:
+        outputBase = args[1]
     else:
         outputBase = "obsSummary"
 
-    if len(sys.argv) > 1:
-        folder = sys.argv[1]
-    else:
-        folder = "."
+    main(folder, outputBase,recursive)
     
-    #properly set the output base to match the folder we are running on
-    outputBase = os.path.join(folder,outputBase)
-
-    summary = buildSummary(folder)
-    with open(outputBase,'w') as txtFile:
-        txtFile.write(str(summary))
-    with open(outputBase + ".json", 'w') as jsonFile:
-        jsonFile.write(summary.getJson())
 
 
     
