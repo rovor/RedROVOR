@@ -1,5 +1,6 @@
 # swap and backup files
 .*.swp
+.*.swo
 .*~
 
 #the pyraf directory
@@ -9,5 +10,6 @@ pyraf/*
 *.pyc
 
 logfile   #ignore the logfile
+*.log     #ignore other logfiles
 
 
