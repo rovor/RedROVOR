@@ -51,7 +51,7 @@ def makeFlat(fileList='flats.lst',inputType=INPUT_LISTFNAME, output='Flat',combi
 	'''create master Flats from fileList, if subsets is iraf.yes, then
 	create a different flat for each subset indicated in the subset header'''
 	iraf.flatcombine(_genIRAFString(fileList, inputType), output=output,
-		combine=combine, process=process, ccdtype=ccdtykpe,reject=reject, scale=scale, subsets=subsets)
+		combine=combine, process=process, ccdtype=ccdtype,reject=reject, scale=scale, subsets=subsets)
 	return
 
 def processImages(fileList, inputType=INPUT_SINGLEFRAME, output="",outputType=INPUT_SINGLEFRAME, ccdtype="object", zerocor= iraf.yes, darkcor=iraf.yes, flatcor=iraf.yes, zero="Zero.fits",dark="Dark.fits", flat="Flat*.fits"):

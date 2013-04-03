@@ -144,7 +144,7 @@ always works in place'''
         imProc.processImages(self.flatsFile,imProc.INPUT_LISTFNAME,output=processedFlatsFile, outputType=imProc.INPUT_LISTFNAME, zerocor=imProc.yes,darkcor=imProc.yes,
             flatcor=imProc.no,ccdtype='flat',zero=self.zeroFrame, dark=self.darkFrame)
         #create the zeros
-        imProc.makeFlats(processedFlatsFile,imProc.INPUT_LISTFNAME, output=self.flatBase,process=imProc.no)
+        imProc.makeFlat(processedFlatsFile,imProc.INPUT_LISTFNAME, output=self.flatBase,process=imProc.no)
 
         #copy flats to the master flats folder
         self.flatList = glob(path.join(self.processedFolder,'Flat*'))
