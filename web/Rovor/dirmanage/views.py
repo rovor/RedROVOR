@@ -2,9 +2,11 @@
 
 from django.http import HttpResponse, Http404
 from django.template import Context, loader
+from django.contrib.auth.decorators import login_required
 
 from dirmanage.models import Filesystem
 
+@login_required
 def index(request):
     fslist = Filesystem.objects.order_by('name')
     template = loader.get_template('dirmanage/index.html')
@@ -12,6 +14,7 @@ def index(request):
     return HttpResponse(template.render(c))
 
 
+@login_required
 def directory(request,filesystem_name,path):
     import os
     try:

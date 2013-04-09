@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- TODO: add stylesheet -->
+        <title>{% block title %} ROVOR reduction {% endblock %}</title>
+        {% block header %}
+        <!-- note that the title (and eventually master css sheet) are already in the header -->
+        {% endblock %}
+    </head>
+
+    <body>
+        <!-- TODO: add navigation -->
+        <div id="content">
+            {% block content %}{% endblock %}
+        </div>
+    </body>
+</html>

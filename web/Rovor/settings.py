@@ -122,6 +122,8 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
 
     'dirmanage',
+    'root',
+    'accounts',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -152,3 +154,9 @@ LOGGING = {
         },
     }
 }
+
+#login settings
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/'
+
+

@@ -4,8 +4,12 @@ from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
 admin.autodiscover()
 
+from root import views
+
 urlpatterns = patterns('',
-    (r'^files/', include('dirmanage.urls')),
+    url(r'$^', views.index, name='top_index'),
+    url(r'^files/', include('dirmanage.urls')),
+    url(r'^accounts/',include('accounts.urls')),
     # Examples:
     # url(r'^$', 'Rovor.views.home', name='home'),
     # url(r'^Rovor/', include('Rovor.foo.urls')),
