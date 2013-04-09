@@ -1,0 +1,10 @@
+{% if fslist %}
+<h1>defined filesystem</h1>
+<ul>
+{% for fs in fslist %}
+<li><a href="{{ fs.get_absolute_url }}">{{ fs.name }}</a></li>
+{% endfor %}
+</ul>
+{% else %}
+<p>sorry no filesystems have been defined</p>
+{%endif%}

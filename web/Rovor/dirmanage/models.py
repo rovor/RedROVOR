@@ -12,9 +12,8 @@ CAL_PATH = path.join(DATA_DIR, 'Calibration')
 
 
 class Filesystem(models.Model):
-    fields = ( models.CharField('name','Name',maxlength=128),
-        models.CharField('path','Path',maxlength=200),
-    )
+    name = models.CharField(max_length=128)
+    path = models.CharField(max_length=200)
 
     def __repr__(self):
         return self.name
@@ -35,8 +34,9 @@ class Filesystem(models.Model):
         p = os.path.realpath(os.path.join(self.path,path))
         if not p.startswith(self.path): raise ValueError(path)
         l = os.listdir(p)
-        if path: l.insert(0, '..')
-            return [(f, os.path.isdir(os.path.join(p,f)), mimetypes.guess_type(f)[0] or 'application/octetstream') for f in l]
+        if path: 
+            l.insert(0, '..')
+        return [(f, os.path.isdir(os.path.join(p,f)), mimetypes.guess_type(f)[0] or 'application/octetstream') for f in l]
 
     def file(self, path):
         import os
@@ -47,12 +47,4 @@ class Filesystem(models.Model):
             return (p, t or 'application/octetstream')
         else: raise ValueError(path)
     
-    admin = models.Admin(
-        fields = ( (None, {'fields': ('name','path')}) ),
-        list_display = ('name','path'),
-        search_fields = ('name', 'path'),
-        ordering = ['name']
-    )
-
-
 
