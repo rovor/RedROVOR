@@ -1,3 +1,5 @@
+{% extends "base.html" %}
+{% block content %}
 {% if fslist %}
 <h1>defined filesystem</h1>
 <ul>
@@ -8,3 +10,4 @@
 {% else %}
 <p>sorry no filesystems have been defined</p>
 {%endif%}
+{% endblock %}
