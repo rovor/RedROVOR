@@ -5,12 +5,6 @@ import os.path as path
 
 # Create your models here.
 
-DATA_DIR = '/data'
-PROCESSED_PATH = path.join(DATA_DIR,'Processed')
-IMAGE_PATH = path.join(DATA_DIR, 'images')
-CAL_PATH = path.join(DATA_DIR, 'Calibration')
-
-
 class Filesystem(models.Model):
     name = models.CharField(max_length=128)
     path = models.CharField(max_length=200)
@@ -20,7 +14,8 @@ class Filesystem(models.Model):
     
     def get_absolute_url(self):
         return '/files/{0}/'.format(self.name)
-
+    def get_choose_path(self):
+        return '/files/chooseFrame/{0}/'.format(self.name)
     def isdir(self,path):
         import os
         

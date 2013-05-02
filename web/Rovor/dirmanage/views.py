@@ -16,7 +16,6 @@ def index(request):
 
 @login_required
 def directory(request,filesystem_name,path):
-    import os
     try:
         fs = Filesystem.objects.get(name=filesystem_name)
         if fs.isdir(path):
@@ -39,5 +38,34 @@ def directory(request,filesystem_name,path):
         raise Http404
     except IOError:
         raise Http404
-        
 
+@login_required
+def chooseFrame(request,filesystem_name, path):
+    try:
+        fs = Filesystem.objects.get(name=filesystem_name)
+        if fs.isdir(path):
+            files = fs.files(path)
+            template = loader.get_template('dirmanage/FileChooser.html')
+            context = Context( {
+                'dlist': [ f for (f,d,t) in files if d],
+                'flist': [ f for (f,d,t) in files if not d and t == 'image/fits'],
+                'path': path,
+                'fs': fs,
+            })
+            return HttpResponse(template.render(context))
+        else:
+            raise Http404
+    
+    except ValueError: 
+        raise Http404
+    except Filesystem.DoesNotExist:
+        raise Http404
+    except IOError:
+        return HttpResponse("something went wrong")
+        raise Http404
+
+@login_required
+def testChoose(request):
+    template = loader.get_template('dirmanage/chooseTest.html')
+    context = Context({})
+    return HttpResponse(template.render(context))

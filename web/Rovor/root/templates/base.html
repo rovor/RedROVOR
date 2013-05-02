@@ -3,9 +3,11 @@
 <html lang="en">
     <head>
         {# include the standard stylesheet #}
+        <link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
         <link rel="stylesheet" type="text/css" href="{% static "base_style.css" %}" />
         {# include jquery script #}
-        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js"></script>
         <title>{% block title %} ROVOR reduction {% endblock %}</title>
         {% block header %}
         {# note that the title (and eventually master css sheet) are already in the header #}

@@ -1,0 +1,28 @@
+{% extends 'base.html'%}
+{% load FSforms %}
+
+{% block header %}
+<script type="text/javascript">
+$(function(){
+    $("#startDialog").button().click(function() {
+        $("#dialog-form").dialog("open");
+    });
+});
+
+function showResults(results){
+    alert("I was called with"+results);
+    $("#result").text(results.join("<br>"))
+}
+
+
+</script>
+{% endblock %}
+
+{% block content %}
+<button id="startDialog">Select a frame</button>
+
+{% frameChooserDialog "dialog-form" "showResults" %}
+
+<div id="result"><div>
+
+{% endblock %}

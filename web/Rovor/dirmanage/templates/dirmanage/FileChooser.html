@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load mimetypes %}
+
+{% block header %}
+
+<style type="text/css">
+    #frameSelection .ui-selecting {background: #FECA40; }
+    #frameSelection .ui-selected {background: #F39814; color: white; }
+    #frameSelection { 
+        list-style-image: url('{% icon 'image/fits' '22x22' %}'); 
+        list-style-position: inside;
+    }
+    li { 
+        padding: 0.2em; 
+        font-size:1.4em;
+        height: 18px; 
+    }
+
+    #folderList {
+        list-style-type: square;
+        list-style-image: url('{% icon "folder" "22x22" %}');
+    }
+</style>
+
+<script>
+    $(function() {
+        $("#frameSelection").selectable();
+    });
+</script>
+
+{% endblock %}
+
+{% block content %}
+    <h2>Directories:</h2>
+<ul id="folderList">
+    {% for d in dlist %}
+    <li><a href="{{ fs.get_choose_path}}{{ path}}{{d}}/">{{d}}</a></li>
+    {%endfor%}
+</ul>
+
+<h2>Frames</h2>
+<ul id="frameSelection">
+   {% for f in flist %}
+<li class="ui-widget-content" data-path="{{fs.name}}/{{path}}{{f}}">{{f}}</li>
+    {%endfor%}
+</ul>
+
+<div>
+
+
+{% endblock %}
