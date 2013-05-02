@@ -6,6 +6,8 @@ from django.contrib.auth.decorators import login_required
 
 from dirmanage.models import Filesystem
 
+import json
+
 @login_required
 def index(request):
     fslist = Filesystem.objects.order_by('name')
@@ -61,7 +63,6 @@ def chooseFrame(request,filesystem_name, path):
     except Filesystem.DoesNotExist:
         raise Http404
     except IOError:
-        return HttpResponse("something went wrong")
         raise Http404
 
 @login_required
@@ -69,3 +70,21 @@ def testChoose(request):
     template = loader.get_template('dirmanage/chooseTest.html')
     context = Context({})
     return HttpResponse(template.render(context))
+
+@login_required
+def  getJson(request, filesystem_name, path):
+    '''get a json object containing a list with the contents of the 
+    path along with information about whether or not it is a directory and the mime type'''
+    try:
+        fs = Filesystem.objects.get(name=filesystem_name)
+        if fs.isdir(path):
+            files = [{'file':f,'isDir':d,'type':t} for (f,d,t) in fs.files(path) ]
+            return HttpResponse(json.dumps(files),mimetype='application/json')
+        else:
+            raise Http404 # for now no support for individual files
+    except ValueError:
+        raise Http404
+    except Filesystem.DoesNotExist:
+        raise Http404
+    except IOError:
+        raise Http404

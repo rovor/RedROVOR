@@ -15,9 +15,23 @@
     </head>
 
     <body>
-        <!-- TODO: add navigation -->
-        <div id="content">
+        <table id="layoutTable">
+        <!-- TODO: add header -->
+        <tr>
+        <td id="sidebar">
+        {% block navbar %} {# make block so that we can override sidebar #}
+        <ul class="link-list">
+            <li><a href="/reduce">Reduce Data</a></li>
+            <li><a href="/files">Browse Filesystem</a></li>
+            <li><a href="/admin">Administration</a></li>
+            <li><a href="/accounts/logout">Logout</a></li>
+        </ul>
+        {% endblock %}
+        </td>
+        <td><div id="content">
             {% block content %}{% endblock %}
-        </div>
+        </div></td>
+        </tr>
+        </table>
     </body>
 </html>

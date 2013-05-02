@@ -9,6 +9,7 @@ from root import views
 urlpatterns = patterns('',
     url(r'$^', views.index, name='top_index'),
     url(r'^files/', include('dirmanage.urls')),
+    url(r'^reduce/',include('reduction.urls')),
     url(r'^accounts/',include('accounts.urls')),
     # Examples:
     # url(r'^$', 'Rovor.views.home', name='home'),

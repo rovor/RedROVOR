@@ -1,3 +1,33 @@
 body {
     background-color: rgb(200,200,200);
 }
+
+#sidebar {
+    width: 200px;
+    background-color: rgb(200,200,256);
+    height: 100%;
+}
+
+#layoutTable {
+    height: 100%;
+    width: 100%;
+    vertical-align: top;
+}
+
+#layoutTable td {
+    vertical-align: top;
+}
+
+h1,h2,h3 {
+    text-align: center;
+}
+
+ul.link-list {
+    list-style-type: circle;
+}
+
+.bigtext {
+    /* make text bold and bigger */
+    font-weight: bolder;
+    font-size: large;
+}

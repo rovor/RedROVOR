@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
 {% if fslist %}
-<h1>defined filesystem</h1>
-<ul>
+<h1>Defined Filesystem</h1>
+<ul class='link-list'>
 {% for fs in fslist %}
 <li><a href="{{ fs.get_absolute_url }}">{{ fs.name }}</a></li>
 {% endfor %}
