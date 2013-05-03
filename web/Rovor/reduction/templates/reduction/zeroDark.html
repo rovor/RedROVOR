@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load FSforms %}
+
+{% block header %}
+<script type="text/javascript">
+    $(function(){
+        $("#folderInput").click(function(){
+            $('#dirDialog').dialog("open");
+        });
+    });
+
+    function selectFolder(result){
+        $("#folderInput").val( result)
+    }
+
+    function renameAll(){
+        alert("not implemented yet");
+    }
+</script>
+<style type="text/css">
+    #folderInput {
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>Zero and Dark Reduction</h1>
+<form id="zdForm">
+    <table>
+    <tr><td><label>Folder to Process:</label><td><input id="folderInput" type="text" readonly/></td></tr>
+    <tr><td><input type="button" value="Rename files" onclick="renameAll()"/><td></tr>
+</form>
+
+{% dirChooserDialog 'dirDialog' 'selectFolder' %}
+{% endblock %}

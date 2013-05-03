@@ -10,5 +10,18 @@ from django.shortcuts import render
 def index(request):
     '''Index page for reduction'''
     return render(request,'reduction/index.html')
+
+@login_required
+def zeroDark(request):
+    '''Page for doing zeros and darks'''
+    return render(request,'reduction/zeroDark.html')
+
+def flatApply(request):
+    '''Page for applying flats'''
+    return HttpResponse("<h1>Under Construction</h1>")
+
+def astrometry(request):
+    '''Page for doing astrometry'''
+    return HttpResponse("<h1>Under Construction</h1>")
     
     
