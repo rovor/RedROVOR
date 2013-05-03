@@ -14,7 +14,7 @@
             modal: true,
             title: "Choose a FITS file",
             buttons : {
-                "Select": function() {
+                "Open": function() {
                     var contents = $("#{{id}} iframe").contents();
                     var result = []; //initialize as empty array
                     contents.find(".ui-selected").each(function() {

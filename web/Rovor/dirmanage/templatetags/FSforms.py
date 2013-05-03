@@ -12,5 +12,12 @@ def frameChooserDialog(id,callback,startPath="Raw/"):
     This is intended for use in other forms'''
     return {'id':id, 'callback':callback,'startPath':startPath}
 
+@register.inclusion_tag('dirmanage/dirChooserDialog.html')
+def dirChooserDialog(id,callback,startPath="Raw/"):
+    '''template tag for a modal dialog which allows
+    the user to select a directory (folder). Only one (sorry)
+    This is intended for use in other forms'''
+    return {'id':id, 'callback':callback, 'startPath':startPath}
+
 
 

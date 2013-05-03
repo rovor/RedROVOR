@@ -79,7 +79,8 @@ def  getJson(request, filesystem_name, path):
         fs = Filesystem.objects.get(name=filesystem_name)
         if fs.isdir(path):
             files = [{'file':f,'isDir':d,'type':t} for (f,d,t) in fs.files(path) ]
-            return HttpResponse(json.dumps(files),mimetype='application/json')
+            result = {'path':filesystem_name + '/' + path,'contents':files}
+            return HttpResponse(json.dumps(result),mimetype='application/json')
         else:
             raise Http404 # for now no support for individual files
     except ValueError:

@@ -7,11 +7,17 @@ $(function(){
     $("#startDialog").button().click(function() {
         $("#dialog-form").dialog("open");
     });
+    $("#startDirDialog").button().click(function(){
+        $("#dirDialog").dialog("open");
+    });
 });
 
 function showResults(results){
-    alert("I was called with"+results);
     $("#result").text(results.join("<br>"))
+}
+
+function showDir(result){
+    $("#result").text(result);
 }
 
 
@@ -20,8 +26,10 @@ function showResults(results){
 
 {% block content %}
 <button id="startDialog">Select a frame</button>
+<button id="startDirDialog">Select a directory</button>
 
 {% frameChooserDialog "dialog-form" "showResults" %}
+{% dirChooserDialog "dirDialog" "showDir" %}
 
 <div id="result"><div>
 

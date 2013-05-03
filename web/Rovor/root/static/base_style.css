@@ -31,3 +31,20 @@ ul.link-list {
     font-weight: bolder;
     font-size: large;
 }
+
+.ui-selecting {
+    background: #FECA40;
+}
+
+.ui-selected {
+    background: #F39814; 
+    color: white;
+}
+
+ul.folderList {
+    list-style-position: inside;
+}
+
+.clickable {
+    cursor: pointer;
+}

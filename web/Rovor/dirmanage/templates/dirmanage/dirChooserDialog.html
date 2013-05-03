@@ -1,0 +1,60 @@
+{% comment %}
+ variables that to be declared
+    id -- the id for the dialog (should be a valid javascript identifier)
+            and note that the id will be used as a namespace, javscript identifiers will be prefixed with id$ and css classes will be prefixed with id-
+    startPath -- the path that the dialog starts at
+    callback -- a calback function which takes an array of paths to fits files return when the dialog is successfully terminated
+{% endcomment %}
+<script type="text/javascript" id="{{id}}-script">
+
+    var {{id}}$path = "";
+
+    function {{id}}$populate(newPath){
+        var mylist = $("#{{id}}-list");
+        var path = {{id}}$path + newPath;
+        mylist.empty();
+        $.getJSON("/files/json/"+path,{},function(data){
+            {{id}}$path = data.path;
+            $("#{{id}}-pathTitle").text(data.path);
+            for(var i = 0, len = data.contents.length; i !== len; ++i){
+                if( data.contents[i].isDir ){
+                    var elem = $("<li class='clickable'>"+data.contents[i].file+"</li>");
+                    elem.click(function(e){
+                        {{id}}$populate($(this).text()+"/");
+                    });
+                    mylist.append(elem);
+                }
+            }
+        });
+        
+    }
+    $(function(){
+        $("#{{id}}").dialog({
+            autoOpen: false,
+            height: 500,
+            width: 500,
+            modal: true,
+            title: "Choose a Folder",
+            buttons: {
+                "Open": function(){
+                    {{callback}}({{id}}$path);
+                    $(this).dialog("close");
+                },
+                Cancel: function() {
+                    $(this).dialog("close");
+                },
+            }
+        });
+
+        {{id}}$populate("{{startPath}}");
+
+    });
+
+</script>
+<div class="dialog" id="{{id}}">
+    <h2 id="{{id}}-pathTitle">/{{startPath}}</h2>
+    <ul class="folderList" id="{{id}}-list">
+        <li> test 1</li>
+        <li> test 2 </li>
+    </ul>
+</div>

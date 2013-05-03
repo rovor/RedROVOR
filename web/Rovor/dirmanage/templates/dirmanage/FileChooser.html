@@ -4,8 +4,6 @@
 {% block header %}
 
 <style type="text/css">
-    #frameSelection .ui-selecting {background: #FECA40; }
-    #frameSelection .ui-selected {background: #F39814; color: white; }
     #frameSelection { 
         list-style-image: url('{% icon 'image/fits' '22x22' %}'); 
         list-style-position: inside;
@@ -16,10 +14,6 @@
         height: 18px; 
     }
 
-    #folderList {
-        list-style-type: square;
-        list-style-image: url('{% icon "folder" "22x22" %}');
-    }
 </style>
 
 <script>
@@ -28,6 +22,9 @@
     });
 </script>
 
+{% endblock %}
+
+{%block navbar %}
 {% endblock %}
 
 {% block content %}
