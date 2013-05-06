@@ -7,6 +7,7 @@
         $("#folderInput").click(function(){
             $('#dirDialog').dialog("open");
         });
+
     });
 
     function selectFolder(result){
@@ -14,7 +15,16 @@
     }
 
     function renameAll(){
-        alert("not implemented yet");
+        $.post('reduce/renameAll',$('#zdForm').serialize(),
+            function(data){
+                if( data.ok ){
+                    alert("Renaming successful");
+                } else {
+                    alert("Error: "+data.error);
+                }
+            }).fail(function(xhr,stat,error){
+                alert('Error: '+stat +" , "+error);
+                });
     }
 </script>
 <style type="text/css">
@@ -27,9 +37,10 @@
 {% block content %}
 <h1>Zero and Dark Reduction</h1>
 <form id="zdForm">
+    {% csrf_token %}
     <table>
-    <tr><td><label>Folder to Process:</label><td><input id="folderInput" type="text" readonly/></td></tr>
-    <tr><td><input type="button" value="Rename files" onclick="renameAll()"/><td></tr>
+    <tr><td><label>Folder to Process:</label><td><input name="path" id="folderInput" type="text" value="" autocomplet="off" readonly/></td></tr>
+    <tr><td><input type="button" value="Rename files" onclick="renameAll()" /><td></tr>
 </form>
 
 {% dirChooserDialog 'dirDialog' 'selectFolder' %}
