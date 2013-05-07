@@ -44,8 +44,8 @@ def getObjectName(header):
     elif 'title' in header:
             return header['title']
     else:
-        ra= header['objctra'].replace(' ',':')
-        dec = header['objctdec'].replace(' ',':')
+        ra= header.get('objctra','0:0:0').replace(' ',':')
+        dec = header.get('objctdec','0:0:0').replace(' ',':')
         try:
             name = obsDB.lookup_name(ra,dec)
             return str(name) #convert from unicode to string
