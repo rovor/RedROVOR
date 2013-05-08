@@ -90,9 +90,49 @@ class ImageList:
     def __iter__(self):
         '''alias for hdus, so default iterator is over hdus'''
         return self.hdus()
+    def __reversed__(self):
+        '''reversed iterator'''
+        return imap(lambda im: im[0],reversed(self._list))
     def __len__(self):
         '''length of the list'''
         return len(self._list)
+    def __getitem__(self, idx):
+        '''get the PrimaryHDU at the given index'''
+        return self._list[idx][0]
+    #note that we don't have __setitem__, that is intentional
+    def __delitem__(self,idx):
+        del self._list[idx] #delete the given item
+    def append(self, fname):
+        '''add another file to the list, pass in a filename'''
+        self._list.append(pyfits.open(fname))
+    
+    #arithmetic operations on other images or contants
+
+    def isubImage(self,other):
+        '''subtract another image from all images in the ImageList inplace, other should be either
+        a PrimaryHDU, or a numpy array of the same dimensions as self'''
+        if isinstance(other, numpy.ndarray):
+            sub = other
+        elif isinstance(other, pyfits.PrimaryHDU):
+            sub = other.data
+        else:
+            raise TypeError('other should be PrimaryHDU or numpy array')
+        for im in self._list:
+            im[0].data -= sub
+    def isubVal(self, other):
+        '''subtract a constant value from all images in the ImageList inplace, other should be int, or float'''
+        for im in self._list:
+            im[0].data -= other
+    def __isub__(self,other):
+        '''subtract an image or a constant from all frames in ImagList'''
+        if isinstance(other,numpy.ndarray) or isinstance(other,pyfits.PrimaryHDU):
+            self.isubImage(other)
+        elif isinstance(other,int) or isinstance(other,float):
+            self.isubVal(other)
+        else:
+            raise TypeError('invalid type for subtracting from image')
+            
+
 
 def makeZero(*fnames,**kwargs):
     '''
