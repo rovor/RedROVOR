@@ -8,8 +8,10 @@ redrovor/pyraf/*
 
 #compiled files
 *.pyc
+*/*.pyc
 
 logfile   #ignore the logfile
 *.log     #ignore other logfiles
+*/*.log
 
 

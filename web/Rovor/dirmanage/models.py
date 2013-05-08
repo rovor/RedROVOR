@@ -34,7 +34,14 @@ class Filesystem(models.Model):
         l = os.listdir(p)
         if path: 
             l.insert(0, '..')
-        return [(f, os.path.isdir(os.path.join(p,f)), mimetypes.guess_type(f)[0] or 'application/octetstream') for f in l]
+        result = []
+        for f in l:
+            if os.path.isdir(os.path.join(p,f)):
+                mimetype = 'folder'
+            else:
+                mimetype = mimetypes.guess_type(f)[0] or 'application/octetstream'
+            result.append((f,mimetype == 'folder',mimetype))
+        return result
 
     def file(self, path):
         import os

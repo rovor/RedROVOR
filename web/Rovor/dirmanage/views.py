@@ -6,7 +6,11 @@ from django.contrib.auth.decorators import login_required
 
 from dirmanage.models import Filesystem
 
+from icons_mimetypes.icons import get_icon #to get path to icon image
+
 import json
+
+ICON_SIZE="22x22"
 
 @login_required
 def index(request):
@@ -66,10 +70,28 @@ def chooseFrame(request,filesystem_name, path):
         raise Http404
 
 @login_required
+def twoFrameBrowser(request):
+    '''A browser with two "frames", one for the folder, one for contents of the folder'''
+    startPath = request.REQUEST.get('path','')
+    template = loader.get_template('dirmanage/twoFrameBrowser.html')
+    context = Context( { 'startPath': startPath})
+    return HttpResponse(template.render(context))
+
+
+
+@login_required
 def testChoose(request):
     template = loader.get_template('dirmanage/chooseTest.html')
     context = Context({})
     return HttpResponse(template.render(context))
+
+@login_required
+def jsonRoot(request):
+    '''geta a json object containing a list of the root filesystems'''
+    fs = Filesystem.objects.all().values_list('name',flat=True)
+    files = [ {'file': f, 'isDir': True, 'type':'folder','icon': get_icon("folder",ICON_SIZE)} for f in fs]
+    result = {'path':'', 'contents': files }
+    return HttpResponse(json.dumps(result),mimetype='application/json')
 
 @login_required
 def  getJson(request, filesystem_name, path):
@@ -78,7 +100,7 @@ def  getJson(request, filesystem_name, path):
     try:
         fs = Filesystem.objects.get(name=filesystem_name)
         if fs.isdir(path):
-            files = [{'file':f,'isDir':d,'type':t} for (f,d,t) in fs.files(path) ]
+            files = [{'file':f,'isDir':d,'type':t, 'icon':get_icon(t,ICON_SIZE)} for (f,d,t) in fs.files(path) ]
             result = {'path':filesystem_name + '/' + path,'contents':files}
             return HttpResponse(json.dumps(result),mimetype='application/json')
         else:

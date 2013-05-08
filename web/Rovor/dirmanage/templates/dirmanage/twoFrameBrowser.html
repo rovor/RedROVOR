@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{%block header %}
+<script type="text/javascript">
+var topPath = "{{ startPath }}";
+function addClickableLI(list,contents,onClick){
+    var elem = $("<li class='clickable'>"+contents+"</li>");
+    list.append(elem);
+    if( onClick){
+        elem.click(onClick);
+    }
+    return elem;
+}
+
+function clickLeft(){
+    $(this).siblings().removeClass("selected");
+    $(this).addClass("selected");
+    populateRight(topPath+$(this).text());
+}
+
+function clickRight() {
+    $(this).siblings().removeClass("selected");
+    $(this).addClass("selected");
+}
+function populateLeft(path){
+    var flist = $("#flist");
+    var li;
+    flist.empty();
+    if(path){
+        topPath += path + "/";
+    }
+    
+    li = addClickableLI(flist,".",clickLeft);
+    li.click(); //trigger a click event
+
+    $.getJSON('json/'+topPath,{},function(data){
+       for(var i=0,len=data.contents.length; i !== len; ++i){
+            $("#pathTitle").text(data.path);
+            if( data.contents[i].isDir ){
+                li = addClickableLI(flist,data.contents[i].file,clickLeft);
+                li.dblclick(function(){
+                    populateLeft($(this).text())
+                });
+            }
+       }
+    });
+
+}
+
+function populateRight(path){
+    console.lgo("starting population");
+    var clist = $("#clist");
+    $.getJSON('json/'+path,{},function(data){
+        clist.empty();
+        for(var i=0, len=data.contents.length; i!== len; ++i){
+            var elem = addClickableLI(clist,data.contents[i].file,clickRight);
+            elem.prepend($("<img src='"+data.contents[i].icon+"'/>"))
+        }
+    });
+}
+    $(function(){
+        populateLeft('');
+    });
+</script>
+<style type="text/css">
+table#browseTable {
+    width: 100%;
+    border-style: solid;
+    border-width: 3px;
+    
+}
+table#browseTable div {
+    height: 4in;
+}
+
+
+li.selected {
+    background-color: #E3F1E4;
+    foreground-color: white;
+}
+td#folderCell {
+    width: 20%;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<h1> Browse Filesystem </h1>
+<h2 id="pathTitle"></h2>
+<table id="browseTable"><tr>
+<td id="folderCell">
+<div style="width:100%;overflow:scroll;">
+<ul class="folderList" id="flist">
+</ul></div></td>
+<td id="contentsCell">
+<div style="width:100%;overflow:scroll;">
+<ul class="fileList" id="clist">
+</ul></div></td>
+</tr></table>
+{% endblock %}
