@@ -2,7 +2,10 @@ import pyfits
 import numpy
 
 from datetime import datetime
-from itertools import imap
+from itertools import imap, chain
+
+import os
+from utils import ensure_dir
 
 class ImageList:
     '''A list of images on which to perform operations such as combining, subtracting, dividing etc'''
@@ -46,6 +49,18 @@ class ImageList:
         total = numpy.add.reduce(all[minmax:-minmax])  #reduce the add operation along the z-axis to get the sum of the images
 
         return total
+    
+    def updateHeaders(self,newHeads={}, **kwargs):
+        '''update headers in all images with the key-value pairs supplied'''
+        #this would be a lot easier to do with pyfits 3.1, but 2.3 is the version supplied
+        #with Red Hat, so we are going to use that, and it should still work on future versions
+        for header in self.headers():
+            #since the old version of update with pyfits 2.3 only handles one at a time we need another loop
+            for (key, value) in chain(newHeads.items(), kwargs.items()):
+                header.update(key,value)
+                
+            
+            
 
     def avCombine(self,minmax=2):
         '''
@@ -110,27 +125,46 @@ class ImageList:
 
     def isubImage(self,other):
         '''subtract another image from all images in the ImageList inplace, other should be either
-        a PrimaryHDU, or a numpy array of the same dimensions as self'''
-        if isinstance(other, numpy.ndarray):
-            sub = other
-        elif isinstance(other, pyfits.PrimaryHDU):
-            sub = other.data
-        else:
-            raise TypeError('other should be PrimaryHDU or numpy array')
+        a PrimaryHDU, or ImageHDU'''
         for im in self._list:
-            im[0].data -= sub
+            im[0].data -= other.data
     def isubVal(self, other):
-        '''subtract a constant value from all images in the ImageList inplace, other should be int, or float'''
+        '''subtract a constant value, or array from all images in the ImageList inplace, other should be int, or float, ndarray, etc.'''
         for im in self._list:
             im[0].data -= other
     def __isub__(self,other):
         '''subtract an image or a constant from all frames in ImagList'''
-        if isinstance(other,numpy.ndarray) or isinstance(other,pyfits.PrimaryHDU):
+        if isinstance(other,pyfits.PrimaryHDU) or isinstance(other, pyfits.ImageHDU):
             self.isubImage(other)
-        elif isinstance(other,int) or isinstance(other,float):
-            self.isubVal(other)
         else:
-            raise TypeError('invalid type for subtracting from image')
+            self.isubVal(other)
+        return self
+
+    def idivVal(self, other):
+        '''divide each image by a constant value inplace, other should be something that a numpy array can be divided by'''
+        for im in self._list:
+            im[0].data /= other
+    def idivImage(self, other):
+        '''divide by another HDU'''
+        for im in self._list:
+            im[0].data /= other.data
+    def __idiv__(self,other):
+        '''divide all images by something, either a number, numpy array, or HDU'''
+        if isinstance(other, pyfits.PrimaryHDU) or isinstance(other, pyfits.ImageHDU):
+            self.idivImage(other)
+        else:
+            self.idivVal(other)
+        return self
+
+    def saveInPlace(self):
+        '''save all of the images in the imagelist back to their original locations'''
+        for frame in self._list:
+            frame.writeto(frame.filename())
+    def saveToPath(self,path):
+        ensure_dir(path) #make sure path is directory, or make it if it doesn't exist
+        for frame in self._list:
+            frame.writeto(os.path.join(path,os.path.basename(frame.filename()))) #same image
+        
             
 
 
@@ -145,9 +179,33 @@ def makeZero(*fnames,**kwargs):
     minmax = kwargs.get('minmax',2)  #get minmax with default of 2
     with ImageList(*fnames) as imList:
         Zero = imList.avCombine(minmax=minmax)
-    Zero.header['imagetyp'] = 'zero' #make sure imagetyp is zero
+    Zero.header.update('imagetyp','zero') #make sure imagetyp is zero
     if 'output' in kwargs:
         Zero.writeto(kwargs['output'],clobber=True)
+    else:
+        return Zero #otherwise return the result for the client to deal with
 
-    
+def applyZero(zero_path, *fnames,**kwargs):
+    '''apply a zero to one or more frames, zero_path and fnames should both be filenames'''
+    zeroFrame = pyfits.open(zero_path)
+    imlist = ImageList(*fnames)
+    #TODO figure out what we should do if the Zero correction has already been done
+    # should we ignore those frames, do the correction anyway, or throw an error?
+    imlist -= zeroFrame[0]
+    datestr = datetime.now().strftime("%B %d %H:%M")  #get string of current date
+    #mark what we have done in the headers
+    #TODO write to logger, we need to figure out the best way to configure
+    #a logger for redrovor
+    imlist.updateHeaders({'ZEROCOR':'{0} Zero Image is {1}'.format(datestr,zero_path), 
+        'CCDPROC':'{0} CCD processing done'.format(datestr),
+        })
 
+    #if a path was given, then write the processed files with the same name into that path, otherwise
+    # save in place
+    if 'save_path' in kwargs:
+        imlist.saveToPath(kwargs['save_path'])
+    elif 'save_inplace' in kwargs and kwargs['save_inplace']:
+        #save the files in place
+        imlist.saveInPlace()
+    else:
+        return imlist #let the client do something with it
