@@ -1,0 +1,20 @@
+{% comment %}
+    note, this is just the html, and a single line of javascript needed
+    to actually create BrowserWindow, the actual code is in BrowserWindow.js
+    and BrowserWindow.css or inherit from twoFrameBrowser, which automatically includes these
+{%endcomment %}
+<script type="text/javascript">
+    $(function(){
+        {{js_name}} = new BrowserWindow("{{id}}","{{startPath}}");
+    });
+</script>
+<table id="{{id}}" class="browseTable"><tr>
+<td class="folderCell">
+<div class="browse-scroll">
+<ul class="folderList" >
+</ul></div></td>
+<td class="contentsCell">
+<div class="browse-scroll">
+<ul class="fileList" >
+</ul></div></td>
+</tr></table>
