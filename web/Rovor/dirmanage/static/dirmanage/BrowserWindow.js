@@ -24,6 +24,7 @@ function BrowserWindow(id,initialPath){
 
     this.flist = $("#"+id+ " .folderList");
     this.clist = $("#"+id+" .fileList");
+    this.leftSelected = '.';
     this.populateLeft('');
 }
 
@@ -49,6 +50,7 @@ BrowserWindow.prototype.populateLeft = function(path){
                 li = addClickableLI(browser.flist,data.contents[i].file);
                 li.click(function(){
                     browser.populateRight($(this).text());
+                    browser.leftSelected = $(this).text();
                 });
                 li.dblclick(function(){
                     browser.populateLeft($(this).text())
@@ -69,3 +71,18 @@ BrowserWindow.prototype.populateRight = function (path){
         }
     });
 }
+
+/**
+ *  get the path to the folder selected on the left
+ */
+BrowserWindow.prototype.getSelectedFolder = function(){
+    return this.topPath + this.leftSelected;
+}
+
+/**
+ *  get the path to the file selected on the right
+ */
+BrowserWindow.prototype.getSelectedFile = function(){
+    return this.getSelectedFolder() + "/" + this.clist.find(".selected").text();
+}
+
