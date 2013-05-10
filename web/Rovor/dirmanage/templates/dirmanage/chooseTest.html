@@ -1,0 +1,36 @@
+{% extends 'base.html'%}
+{% load FSforms %}
+
+{% block header %}
+<script type="text/javascript">
+$(function(){
+    $("#startDialog").button().click(function() {
+        $("#dialog-form").dialog("open");
+    });
+    $("#startDirDialog").button().click(function(){
+        $("#dirDialog").dialog("open");
+    });
+});
+
+function showResults(results){
+    $("#result").text(results.join("<br>"))
+}
+
+function showDir(result){
+    $("#result").text(result);
+}
+
+
+</script>
+{% endblock %}
+
+{% block content %}
+<button id="startDialog">Select a frame</button>
+<button id="startDirDialog">Select a directory</button>
+
+{% frameChooserDialog "dialog-form" "showResults" %}
+{% dirChooserDialog "dirDialog" "showDir" %}
+
+<div id="result"><div>
+
+{% endblock %}

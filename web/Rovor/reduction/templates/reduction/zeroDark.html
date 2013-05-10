@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load FSforms %}
+
+{% block header %}
+<script type="text/javascript">
+    $(function(){
+        $("#folderInput").click(function(){
+            $('#dirDialog').dialog("open");
+        });
+
+    });
+
+    function selectFolder(result){
+        $("#folderInput").val( result)
+    }
+
+    function renameAll(){
+        $.post('/reduce/renameAll',$('#zdForm').serialize(),
+            function(data){
+                if( data.ok ){
+                    alert("Renaming successful");
+                } else {
+                    alert("Error: "+data.error);
+                }
+            }).fail(function(xhr,stat,error){
+                alert('Error: '+stat +" , "+error);
+                });
+    }
+
+    function makeZero(){
+        $.post('/reduce/makeZero',$("#zdForm").serialize(),
+        function(data){
+            if( data.ok ) {
+                alert("Succesfully made zero")
+            } else {
+                alert("Error: "+data.error);
+            }
+        }).fail(function(xhr,stat,error){
+            alert('Error: '+stat+", "+error);
+        });
+    }
+</script>
+<style type="text/css">
+    #folderInput {
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>Zero and Dark Reduction</h1>
+<form id="zdForm">
+    {% csrf_token %}
+    <table>
+    <tr><td><label>Folder to Process:</label><td><input name="path" id="folderInput" type="text" value="" autocomplet="off" readonly/></td></tr>
+    <tr><td><input type="button" value="Rename files" onclick="renameAll()" /><td></tr>
+    <tr><td><input type="button" value="Make master Zero" onclick="makeZero()"</td></tr>
+</form>
+
+{% dirChooserDialog 'dirDialog' 'selectFolder' %}
+{% endblock %}

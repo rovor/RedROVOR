@@ -1,13 +1,22 @@
 {% extends "base.html" %}
+{% load mimetypes %} {# we used the django-icon-mimetypes library for this #}
+{% block header %}
+    <style type="text/css">
+    #folderList { 
+        list-style-type: none;
+    }
+    </style>
+{% endblock %}
 {% block content %}
 {% if dlist or flist %}
 <h1>Files in /{{ fs.name }}/{{ path }}</h1>
-<ul>
+<ul id="folderList">
     {% for d in dlist %}
-    <li> <a href="{{ fs.get_absolute_url }}{{ path }}{{ d}}/" > {{ d }}</a></li>
+    <li><img src="{% icon "folder" "22x22" %}"> <a href="{{ fs.get_absolute_url }}{{ path }}{{ d}}/" > {{ d }}</a></li>
+
     {% endfor %}
     {% for f in flist %}
-    <li> <a href="{{ fs.get_absolute_url }}{{ path }}{{ f.name }}" > {{ f.name }} </a> {{ f.type }} </li>
+    <li><img src="{% icon f.type "22x22" %}"> <a href="{{ fs.get_absolute_url }}{{ path }}{{ f.name }}" > {{ f.name }} </a> {{ f.type }} </li>
     {% endfor %}
 
 </ul>

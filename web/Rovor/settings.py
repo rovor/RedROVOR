@@ -66,7 +66,7 @@ STATIC_URL = '/static/'
 # URL prefix for admin static files -- CSS, JavaScript and images.
 # Make sure to use a trailing slash.
 # Examples: "http://foo.com/static/admin/", "/static/admin/".
-ADMIN_MEDIA_PREFIX = '/static/admin/'
+#ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -120,10 +120,12 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    'icons_mimetypes',
 
     'dirmanage',
     'root',
     'accounts',
+    'reduction',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -134,6 +136,19 @@ INSTALLED_APPS = (
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[%(levelname)s %(asctime)s %(pathname)s $(lineno)d] %(message)s',
+            'datefmt':'%d/%b/%Y %H:%M:%S',
+        },
+        'standard': {
+            'format': '[%(levelname)s %(asctime)s %(module)s] %(message)s',
+            'datefmt':'%d/%b/%Y %H:%M:%S',
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
     'filters' : {
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse'
@@ -144,7 +159,12 @@ LOGGING = {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
-        }
+        },
+        'console':{
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter':'standard',
+        },
     },
     'loggers': {
         'django.request': {
@@ -152,6 +172,10 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
+        'Rovor': {
+            'handlers':['console'],
+            'level': 'DEBUG',
+        }
     }
 }
 

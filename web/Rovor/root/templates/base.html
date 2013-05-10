@@ -1,11 +1,21 @@
 {% load static %}
+{% load mimetypes %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
         {# include the standard stylesheet #}
+        <link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
         <link rel="stylesheet" type="text/css" href="{% static "base_style.css" %}" />
+        {# dynamic styles #}
+        <style type="text/css">
+            ul.folderList {
+                list-style-image: url("{% icon 'folder' '22x22' %}");
+            }
+        </style>
+        
         {# include jquery script #}
-        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js"></script>
         <title>{% block title %} ROVOR reduction {% endblock %}</title>
         {% block header %}
         {# note that the title (and eventually master css sheet) are already in the header #}
@@ -13,9 +23,25 @@
     </head>
 
     <body>
-        <!-- TODO: add navigation -->
-        <div id="content">
-            {% block content %}{% endblock %}
+        <table id="layoutTable">
+        <!-- TODO: add header -->
+        <tr>
+        <td width="10%">
+        {% block navbar %} {# make block so that we can override sidebar #}
+        <div id="sidebar">
+        <ul class="link-list">
+            <li><a href="/reduce">Reduce Data</a></li>
+            <li><a href="/files">Browse Filesystem</a></li>
+            <li><a href="/admin">Administration</a></li>
+            <li><a href="/accounts/logout">Logout</a></li>
+        </ul>
         </div>
+        {% endblock %}
+        </td>
+        <td><div id="content">
+            {% block content %}{% endblock %}
+        </div></td>
+        </tr>
+        </table>
     </body>
 </html>

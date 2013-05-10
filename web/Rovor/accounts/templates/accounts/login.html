@@ -1,6 +1,13 @@
-{% extends "base.html" %}
+{% load url from future %}
+{% load static %}
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="{%static "base_style.css"%}" />
 
-{% block content %}
+</head>
+
+<body>
+
 
 {% if form.errors %}
 <p> Your username or password was incorrect. Please Try Again</p>
@@ -22,5 +29,6 @@
     <input type="submit" value="login" />
     <input type="hidden" name="next" value="{{ next }}" />
 </form>
+</body>
+</html>
 
-{% endblock %}

@@ -16,7 +16,8 @@ import pyfits
 
 import updateHeaders
 import frameTypes
-import imProc
+import process
+#import imProc
 import coords
 
 from rovUtils import writeListToFileName
@@ -95,19 +96,22 @@ always works in place'''
             updateHeaders.updateFrame(frame)
         return self
     def buildLists(self):
+        self.logger.info("Building Lists")
         self.frameTypes = frameTypes.getFrameLists( self.frames ) #get frame types
         self.objects = frameTypes.makeObjectMap( self.frameTypes['object'] )
+        self.logger.info("Saving frame lists to files")
         frameTypes.saveFrameLists(self.frameTypes,zeroFile=self.zerosFile, darkFile=self.darksFile,
             flatFile=self.flatsFile, objectFile=self.objectsFile,unknownFile=self.unknownFile) 
         return self
-    def makeZero(self):
-        self.logger.info('Making Zero')
+    def makeZero(self,output=None):
         #insure that we have the frame types already
         if not self.frameTypes:
             self.logger.warning('Type lists were not previously made, making them now')
             self.buildLists()
+        self.logger.info('Making Zero')
         self.zeroFrame = path.join(self.processedFolder, 'Zero.fits')
-        imProc.makeZero(self.zerosFile, imProc.INPUT_LISTFNAME, output=self.zeroFrame)
+        self.logger.info("Set zeroFrame to "+ self.zeroFrame)
+        process.makeZero(*self.frameTypes['zero'], output=self.zeroFrame)
         return self
     def makeDark(self):
         self.logger.info('Making Dark')
@@ -119,10 +123,10 @@ always works in place'''
         processedDarksFile = path.join(self.processedFolder, 'darksProcd.lst')
         writeListToFileName(processedDarks,processedDarksFile )
         #apply zeros to darks
-        imProc.processImages(self.darksFile,imProc.INPUT_LISTFNAME,output=processedDarksFile,outputType=imProc.INPUT_LISTFNAME,
-            zerocor=imProc.yes,darkcor=imProc.no,flatcor=imProc.no,ccdtype='dark',zero=self.zeroFrame)
+        #imProc.processImages(self.darksFile,imProc.INPUT_LISTFNAME,output=processedDarksFile,outputType=imProc.INPUT_LISTFNAME,
+            #zerocor=imProc.yes,darkcor=imProc.no,flatcor=imProc.no,ccdtype='dark',zero=self.zeroFrame)
         #create the dark frame
-        imProc.makeDark(processedDarksFile,imProc.INPUT_LISTFNAME, output=self.darkFrame,process=imProc.no) 
+        #imProc.makeDark(processedDarksFile,imProc.INPUT_LISTFNAME, output=self.darkFrame,process=imProc.no) 
         return self
     def makeFlats(self):
         self.logger.info('Making Flats')
@@ -141,10 +145,10 @@ always works in place'''
             return self
         writeListToFileName(processedFlats, processedFlatsFile)
         #apply zeros and darks to flats
-        imProc.processImages(self.flatsFile,imProc.INPUT_LISTFNAME,output=processedFlatsFile, outputType=imProc.INPUT_LISTFNAME, zerocor=imProc.yes,darkcor=imProc.yes,
-            flatcor=imProc.no,ccdtype='flat',zero=self.zeroFrame, dark=self.darkFrame)
+        #imProc.processImages(self.flatsFile,imProc.INPUT_LISTFNAME,output=processedFlatsFile, outputType=imProc.INPUT_LISTFNAME, zerocor=imProc.yes,darkcor=imProc.yes,
+            #flatcor=imProc.no,ccdtype='flat',zero=self.zeroFrame, dark=self.darkFrame)
         #create the zeros
-        imProc.makeFlat(processedFlatsFile,imProc.INPUT_LISTFNAME, output=self.flatBase,process=imProc.no)
+        #imProc.makeFlat(processedFlatsFile,imProc.INPUT_LISTFNAME, output=self.flatBase,process=imProc.no)
 
         #copy flats to the master flats folder
         self.flatList = glob(path.join(self.processedFolder,'Flat*'))
@@ -162,8 +166,8 @@ always works in place'''
             count=0
             for frame in flist:
                 newName = "{0}/{1}-{2}.fits".format(self.processedFolder,obj.replace(' ','_'),count)
-                imProc.processImages(frame,imProc.INPUT_SINGLEFRAME,output=newName,zero=self.zeroFrame,dark=self.darkFrame,
-                    flat=','.join(self.flatList))
+                #imProc.processImages(frame,imProc.INPUT_SINGLEFRAME,output=newName,zero=self.zeroFrame,dark=self.darkFrame,
+                    #flat=','.join(self.flatList))
                 self.newObjs[obj].append(newName)
                 #now apply world coordinates
                 coords.astrometrySolve(newName)

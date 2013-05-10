@@ -1,0 +1,21 @@
+
+table.browseTable {
+    width: 100%;
+    border-style: solid;
+    border-width: 3px;
+    
+}
+table.browseTable div.browse-scroll {
+    height: 4in;
+    width: 100%;
+    overflow: scroll;
+}
+
+
+table.browseTable li.selected {
+    background-color: #E3F1E4;
+    color: black;
+}
+table.browseTable td.folderCell {
+    width: 20%;
+}
