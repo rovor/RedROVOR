@@ -87,5 +87,8 @@ def makeRADecName(header):
     just using unknown which would give us a lot more collisions'''
     ra = getRA(header)
     dec = getDec(header)
+    if not ra or not dec:
+        #either ra or dec was None so just return 'unknown'
+        return 'unknown'
     return 'R{0}_{1}D{2}_{3}'.format(ra[0],ra[1],dec[0],dec[1])
 
