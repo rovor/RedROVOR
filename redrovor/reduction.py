@@ -31,7 +31,6 @@ def genDate(date):
     return date.strftime('/%Y/%b/%d%b%Y').lower()
 
 
-
 def createResultFolder(date):
     '''given a datetime.date create a new folder to hold the resulting 
 processed images.'''
@@ -103,7 +102,7 @@ always works in place'''
         frameTypes.saveFrameLists(self.frameTypes,zeroFile=self.zerosFile, darkFile=self.darksFile,
             flatFile=self.flatsFile, objectFile=self.objectsFile,unknownFile=self.unknownFile) 
         return self
-    def makeZero(self,output=None):
+    def makeZero(self):
         #insure that we have the frame types already
         if not self.frameTypes:
             self.logger.warning('Type lists were not previously made, making them now')
@@ -113,21 +112,29 @@ always works in place'''
         self.logger.info("Set zeroFrame to "+ self.zeroFrame)
         process.makeZero(*self.frameTypes['zero'], output=self.zeroFrame)
         return self
+    def ensure_zero(self):
+        '''check to see if we already have a zeroFrame location, 
+        if not look for a zero in the processed folder, if we still can't find one
+        then run makeZero'''
+        self.zeroFrame = self.zeroFrame or path.join(self.processedFolder, 'Zero.fits')
+        if not path.isfile(self.zeroFrame):
+            #the zero hasn't been made yet
+            self.makeZero()
     def makeDark(self):
         self.logger.info('Making Dark')
-        if not self.zeroFrame:
-            self.logger.warning('Zero has not been made yet, making it now')
-            self.makeZero()
+        self.ensure_zero()  #make sure we have a zero to use
         self.darkFrame = path.join(self.processedFolder,'Dark.fits')
-        processedDarks = relocateFiles(self.frameTypes['dark'],self.processedFolder)
-        processedDarksFile = path.join(self.processedFolder, 'darksProcd.lst')
-        writeListToFileName(processedDarks,processedDarksFile )
         #apply zeros to darks
-        #imProc.processImages(self.darksFile,imProc.INPUT_LISTFNAME,output=processedDarksFile,outputType=imProc.INPUT_LISTFNAME,
-            #zerocor=imProc.yes,darkcor=imProc.no,flatcor=imProc.no,ccdtype='dark',zero=self.zeroFrame)
-        #create the dark frame
-        #imProc.makeDark(processedDarksFile,imProc.INPUT_LISTFNAME, output=self.darkFrame,process=imProc.no) 
+        process.makeDark(*self.frameTypes['dark'],zero=self.zeroFrame,output=self.darkFrame)
         return self
+    def ensure_dark(self):
+        '''check to see if we already have a zeroFrame location, 
+        if not look for a zero in the processed folder, if we still can't find one
+        then run makeZero'''
+        self.darkFrame = self.darkFrame or path.join(self.processedFolder, 'Dark.fits')
+        if not path.isfile(self.darkFrame):
+            #the dark hasn't been made yet
+            self.makeDark()
     def makeFlats(self):
         self.logger.info('Making Flats')
         self.logger.warning('Operations on flats have not been finished yet')
