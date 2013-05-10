@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 
-from action_views import renameAll, makeZero
+from action_views import renameAll, makeZero, makeDark
 
 import logging
 logger = logging.getLogger('Rovor')   

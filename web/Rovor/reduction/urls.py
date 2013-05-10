@@ -9,4 +9,5 @@ urlpatterns = patterns('',
     url(r'^astrometry$',views.astrometry),
     url(r'^renameAll', views.renameAll),
     url(r'^makeZero',views.makeZero),
+    url(r'^makeDark',views.makeDark),
     )
