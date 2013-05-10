@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 def ensure_dir(path):
     #first see if it is exists
@@ -12,4 +13,8 @@ def ensure_dir(path):
     else:
         #attempt to create the path
         os.makedirs(path)
+
+def getTimeString(frmt='%Y-%m-%dT%H:%M:%S'):
+    '''get a formatted timeString'''
+    return datetime.now().strftime(frmt)
         

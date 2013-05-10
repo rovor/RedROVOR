@@ -1,11 +1,14 @@
 import pyfits
 import numpy
 
-from datetime import datetime
+# TODO make sure everything is closed properly if there is an exception
+# fine for short scripts, but could be a big problem on a continously running
+# server
+
 from itertools import imap, chain
 
 import os
-from utils import ensure_dir
+from utils import ensure_dir, getTimeString
 
 class ImageList:
     '''A list of images on which to perform operations such as combining, subtracting, dividing etc'''
@@ -73,7 +76,8 @@ class ImageList:
         result = pyfits.PrimaryHDU( self.averageAll(minmax), self._list[0][0].header)
         #NOTE: NAXIS, NAXIS1, NAXIS2, BITPIX, etc. should be updated to match the data portion
         result.header.update('NCOMBINE', len(self._list)) #store the number of images combined
-        result.header.update('IRAF-TLM', datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')) #store the time of last modification
+        result.header.update('IRAF-TLM', getTimeString()) #store the time of last modification
+        result.header.update('DATE',getTimeString(),'Date FITS file was generated')
         #TODO add code to modify header, at least mark the average time of observations, possibly the total exposure time
         # etc. 
         return result
@@ -159,7 +163,7 @@ class ImageList:
     def saveInPlace(self):
         '''save all of the images in the imagelist back to their original locations'''
         for frame in self._list:
-            frame.writeto(frame.filename())
+            frame.writeto(frame.filename(),clobber=True)
     def saveToPath(self,path):
         ensure_dir(path) #make sure path is directory, or make it if it doesn't exist
         for frame in self._list:
@@ -186,13 +190,16 @@ def makeZero(*fnames,**kwargs):
         return Zero #otherwise return the result for the client to deal with
 
 def applyZero(zero_path, *fnames,**kwargs):
-    '''apply a zero to one or more frames, zero_path and fnames should both be filenames'''
-    zeroFrame = pyfits.open(zero_path)
+    '''apply a zero to one or more frames, zero_path and fnames should both be filenames
+    
+    if save_path is supplied and not None then all the frames are saved into the folder save_path with the same 
+    basename they had before. If save_inplace is supplied and not false, then the images are saved in place with the zero correction'''
     imlist = ImageList(*fnames)
-    #TODO figure out what we should do if the Zero correction has already been done
-    # should we ignore those frames, do the correction anyway, or throw an error?
-    imlist -= zeroFrame[0]
-    datestr = datetime.now().strftime("%B %d %H:%M")  #get string of current date
+    with pyfits.open(zero_path) as zeroFrame:
+        #TODO figure out what we should do if the Zero correction has already been done
+        # should we ignore those frames, do the correction anyway, or throw an error?
+        imlist -= zeroFrame[0]
+    datestr = getTimeString("%B %d %H:%M")  #get string of current date
     #mark what we have done in the headers
     #TODO write to logger, we need to figure out the best way to configure
     #a logger for redrovor
@@ -202,10 +209,71 @@ def applyZero(zero_path, *fnames,**kwargs):
 
     #if a path was given, then write the processed files with the same name into that path, otherwise
     # save in place
-    if 'save_path' in kwargs:
+    if 'save_path' in kwargs and kwargs['save_path']:
         imlist.saveToPath(kwargs['save_path'])
+        imlist.closeAll()  #clean up
     elif 'save_inplace' in kwargs and kwargs['save_inplace']:
         #save the files in place
         imlist.saveInPlace()
+        imlist.closeAll() #clean up
     else:
         return imlist #let the client do something with it
+
+def makeDark(*fnames, **kwargs):
+    '''
+    Take the input frames,(which we assume to be dark frames) as strings containging filnames
+    and combine them into a master Dark. The exact behaviour depends on the following optional keyword arguments
+
+    output -- if provided this is the path to write the resulting dark to, if absent makeDark will returning the resulting PrimaryHDU
+    minmax -- if provided will set how many data points to remove from the top and bottom of the distribution, defaults to 2
+    zero -- if provided, the filename of the zero frame to apply first, otherwise assumes that zero correction has already been done
+    '''
+    minmax = kwargs.get('minmax',2)
+    with ImageList(*fnames) as imlist:
+        if 'zero' in kwargs:
+            #subtract zeroFrame if supplied
+            with pyfits.open(kwargs['zero']) as zeroFrame:
+                imlist -= zeroFrame[0]
+        #now divide all images by their exposure time for scaling
+        for frame in imlist:
+            frame.data /= float(frame.header['EXPTIME'])
+        Dark = imlist.avCombine(minmax=minmax)
+    #now update the heaers
+    Dark.header.update('imagetyp','dark')
+    if 'zero' in kwargs:
+        #add header for zero
+        Dark.header.update('ZEROCOR','{0} Zero Images is {1}'.format(getTimeString('%x %X'), kwargs['zero']))
+    if 'output' in kwargs:
+        Dark.writeto(kwargs['output'],clobber=True)
+    else:
+        return Dark
+
+def applyDark(dark_path,*fnames, **kwargs):
+    '''
+    apply a dark to one or more frames, dark_path and fnames should both be 
+    filenames if save_path is supplied and not None then all the frames are 
+    saved into the folder save_path with the same basename they had before. 
+    If save_inplace is supplied and not false, then the images are saved in 
+    place with the zero correction
+    '''
+    imlist = ImageList(*fnames)
+    with pyfits.open(dark_path) as dark:
+        datestr = getTimeString('%x %X')
+        for frame in imlist:
+            #scale dark to the exposure time
+            #and subtract from frame for all frames
+            frame.data -= dark[0].data * float(frame.header['EXPTIME'])
+            #might as well update header here
+            frame.header.update('DARKCOR','{0} with Dark frame {1}'.format(datestr,dark_path))
+            frame.header.update('CCDPROC', '{0} CCD Processing done'.format(datestr))
+    if 'save_path' in kwargs and kwargs['save_path']:
+        imlist.saveToPath(kwargs['save_path'])
+        imlist.closeAll()  #clean up
+    elif 'save_inplace' in kwargs and kwargs['save_inplace']:
+        #save the files in place
+        imlist.saveInPlace()
+        imlist.closeAll() #clean up
+    else:
+        return imlist #let the client do something with it
+
+
