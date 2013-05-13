@@ -29,8 +29,12 @@ def recordDir(dir):
 	for root, dirs, files in os.walk(dir):
 		for f in files:
 			if frameTypes.isFits(f):
-				header = pyfits.getheader(f)
-				if frameTypes.getFrameType(header) != 'object':
-					continue
-				recordObservation(header,f)
+                try:
+                    header = pyfits.getheader(f)
+                    if frameTypes.getFrameType(header) != 'object':
+                        continue
+                    recordObservation(header,f)
+                except Exception as e:
+                    #TODO: log error
+                    continue #keep going and record everything else
 				
