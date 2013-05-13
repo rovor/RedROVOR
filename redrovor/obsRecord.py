@@ -7,6 +7,10 @@ import re
 
 import os
 
+import logging
+
+logger = logging.getLogger("redrovor.recordobs")
+
 dateRegex = re.compile(r'(\d{4}-\d{2}-\d{2})T.*')
 
 def recordObservation(fitsHeader,fname=''):
@@ -20,7 +24,7 @@ def recordObservation(fitsHeader,fname=''):
 	temp = fitsHeader['CCD-TEMP']
 	utdate = dateRegex.match(fitsHeader['DATE-OBS']).group(1)
 	
-	obsDB.newObservation(objid,utdate,ffilter,exptime,temp,fname=fname)
+	obsDB.newObservation(objid,utdate,ffilter,exptime,temp,fname=os.path.realpath(fname))
 	return
 
 def recordDir(dir):
@@ -35,6 +39,6 @@ def recordDir(dir):
                         continue
                     recordObservation(header,f)
                 except Exception as e:
-                    #TODO: log error
+                    logger.error(e)
                     continue #keep going and record everything else
 				
