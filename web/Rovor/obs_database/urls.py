@@ -4,4 +4,5 @@ from obs_database import views
 
 urlpatterns = patterns('',
     url(r'^$', views.upload_form),
+    url(r'^process',views.processFolder),
     )
