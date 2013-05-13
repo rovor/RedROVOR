@@ -5,6 +5,8 @@ import logging
 
 logger = logging.getLogger('ROVOR')
 
+from dirmanage.models import Filesystem
+
 
 def process_path(request, block,mimetype='application/json'):
     '''helper function to abstract common code when accessing 
