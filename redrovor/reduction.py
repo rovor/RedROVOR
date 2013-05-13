@@ -20,7 +20,7 @@ import process
 #import imProc
 import coords
 
-from rovUtils import writeListToFileName
+from utils import writeListToFileName
 
 ProcessedFolderBase = '/data/Processed'
 MasterCalFolder = '/data/Calibration'
