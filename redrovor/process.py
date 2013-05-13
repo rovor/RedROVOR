@@ -81,6 +81,15 @@ class ImageList:
         #TODO add code to modify header, at least mark the average time of observations, possibly the total exposure time
         # etc. 
         return result
+
+    def normalize(self,block_size=100):
+        '''
+        normalize all images in the list to have a mean of 1 within the center block of sixe block_size x block_size, 
+        block_size defaults to 100
+        '''
+        for im in self._list:
+            normData(im[0].data,block_size)
+        return self
             
     def closeAll(self):
         '''close all open files'''
@@ -277,3 +286,15 @@ def applyDark(dark_path,*fnames, **kwargs):
         return imlist #let the client do something with it
 
 
+
+
+
+def normData(imageData, block_size=100):
+    '''normalize the data in the imageData to the mean in the block_size x block_size square
+    note: this modifies imageData inplace'''
+    originy = int((imageData.shape[0]  - block_size)/2)
+    originx = int((imageData.shape[1]  - block_size)/2)
+    avg = numpy.average(imageData[originy:originy+block_size,originx:originx+block_size])
+    imageData /= avg #divide by the average of the center to normalize
+    return imageData
+    
