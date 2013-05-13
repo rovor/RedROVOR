@@ -3,7 +3,7 @@ from django.http import Http404, HttpResponse
 
 import logging
 
-logger = logging.getLogger('ROVOR')
+logger = logging.getLogger('Rovor')
 
 from dirmanage.models import Filesystem
 

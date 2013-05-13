@@ -8,6 +8,11 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 
 
 from redrovor import obsRecord
+from dirmanage.toolset import process_path
+
+import logging
+
+logger = logging.getLogger('Rovor')
 
 
 @login_required
@@ -19,5 +24,8 @@ def upload_form(request):
 
 @login_required
 def processFolder(request):
-    return HttpResponse('{"ok":true}',mimetype="application/json")
+    def procFunc(path):
+        return '{"ok":true}'
+    return process_path(request, procFunc)
+    
 
