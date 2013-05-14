@@ -22,6 +22,7 @@ import coords
 
 from utils import writeListToFileName
 
+#TODO allow more flexibility in where the output files are stored
 ProcessedFolderBase = '/data/Processed'
 MasterCalFolder = '/data/Calibration'
 
@@ -136,29 +137,19 @@ always works in place'''
     def makeFlats(self):
         self.logger.info('Making Flats')
         self.logger.warning('Operations on flats have not been finished yet')
-        if not self.darkFrame:
-            self.logger.warning('Dark not made yet, making it now')
-            self.makeDark()
-        self.flatBase = path.join(self.processedFolder,'Flat')
-        processedFlats = relocateFiles(self.frameTypes['flat'],self.processedFolder)
-        processedFlatsFile = path.join(self.processedFolder, 'flatsProcd.lst')
-        if not processedFlats:
-            #there aren't any flats to process
-            #use the most recent master flats
-            self.logger.warning('No flats were found in folder, looking in master folder')
-            self.flatlist=glob(path.join(masterCalFolder,'Flat*'))
-            return self
-        writeListToFileName(processedFlats, processedFlatsFile)
-        #apply zeros and darks to flats
-        #imProc.processImages(self.flatsFile,imProc.INPUT_LISTFNAME,output=processedFlatsFile, outputType=imProc.INPUT_LISTFNAME, zerocor=imProc.yes,darkcor=imProc.yes,
-            #flatcor=imProc.no,ccdtype='flat',zero=self.zeroFrame, dark=self.darkFrame)
-        #create the zeros
-        #imProc.makeFlat(processedFlatsFile,imProc.INPUT_LISTFNAME, output=self.flatBase,process=imProc.no)
+        self.ensure_frameTypes()
+        self.ensure_zero()
+        self.ensure_dark()
+        flatBase = path.join(self.processedFolder,'Flat')
+        flats = frameTypes.splitByFilter(self.frameTypes['flat'])
+        self.flatFrames = {}
+        for filter in flats:
+            outName = "{0}_{1}.fits".format(flatBase,filter)  #name is the base flat name plus the filter type
+            process.makeFlat(*flats[filter],zero=self.zeroFrame,dark=self.darkFrame,output=outName)
+            self.flatFrames[filter] = outName
+        #TODO should we copy the flats to calibration folder?
+        return self
 
-        #copy flats to the master flats folder
-        self.flatList = glob(path.join(self.processedFolder,'Flat*'))
-        for flat in self.flatList:
-            shutil.copy(flat,path.join(MasterCalFolder,path.basename(flat)))
         
     def imProc(self, useFlats=False):
         '''process the image frames'''
