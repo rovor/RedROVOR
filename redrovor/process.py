@@ -203,6 +203,19 @@ class ImageList:
                 #and subtract from frame for all frames
                 frame.data -= darkFrame[0].data * float(frame.header['EXPTIME'])
                 frame.header.update('DARKCOR','{0} with Dark frame {1}'.format(datestr,dark))
+        return self
+
+    def divFlat(self,flat):
+        '''divide flat from all the images in place and return self
+
+        flat should be the path to a flat frame
+        NOTE: also update FLATCOR header'''
+        datestr = getTimeString("%B %d %H:%M")
+        with pyfits.open(flat) as flatFrame:
+            for frame in self:
+                frame.data /= flatFrame[0].data
+                frame.header.update('FLATCOR','{0} with Flat frame {1}'.format(datestr,flat))
+        return self
 
 
         
@@ -329,6 +342,28 @@ def makeFlat(*fnames, **kwargs):
         Flat.writeto(kwargs['output'],clobber=True)
     else:
         return Flat
+
+def applyFlat(flat_path,*fnames, **kwargs):
+    '''
+    apply a flat to one or more frames, flat_path and fnames should both be 
+    filenames if save_path is supplied and not None then all the frames are 
+    saved into the folder save_path with the same basename they had before. 
+    If save_inplace is supplied and not false, then the images are saved in 
+    place with the zero correction
+    '''
+    imlist = ImageList(*fnames)
+    imlist.divFlat(flat_path)
+    datestr = getTimeString("%x %X")
+    imlist.updateHeaders(ccdproc='{0} CCD Processing done'.format(datestr))
+    if 'save_path' in kwargs and kwargs['save_path']:
+        imlist.saveToPath(kwargs['save_path'])
+        imlist.closeAll() #clean up
+    elif 'save_inplace' in kwargs and kwargs['save_inplace']:
+        imlist.saveInPlace()
+        imlist.closeAll()
+    else:
+        return imlist
+
 
 
 def normData(imageData, block_size=100):
