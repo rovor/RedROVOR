@@ -102,11 +102,14 @@ always works in place'''
         frameTypes.saveFrameLists(self.frameTypes,zeroFile=self.zerosFile, darkFile=self.darksFile,
             flatFile=self.flatsFile, objectFile=self.objectsFile,unknownFile=self.unknownFile) 
         return self
-    def makeZero(self):
-        #insure that we have the frame types already
+    def ensure_frameTypes(self):
+        '''ensure that frameTypes is set'''
         if not self.frameTypes:
             self.logger.warning('Type lists were not previously made, making them now')
             self.buildLists()
+    def makeZero(self):
+        #insure that we have the frame types already
+        self.ensure_frameTypes()
         self.logger.info('Making Zero')
         self.zeroFrame = path.join(self.processedFolder, 'Zero.fits')
         self.logger.info("Set zeroFrame to "+ self.zeroFrame)
@@ -122,6 +125,7 @@ always works in place'''
             self.makeZero()
     def makeDark(self):
         self.logger.info('Making Dark')
+        self.ensure_frameTypes()
         self.ensure_zero()  #make sure we have a zero to use
         self.darkFrame = path.join(self.processedFolder,'Dark.fits')
         #apply zeros to darks
