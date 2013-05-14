@@ -51,9 +51,7 @@ make it easier to keep track of the state'''
         '''initialize the processor in the folder containing the raw data'''
 
         # set up logger
-        self.logger = logging.getLogger('ImProcessor_{0}'.format(id(self)))
-        self.logger.setLevel(logging.DEBUG)
-        self.logger.addHandler(logging.FileHandler('improcessor.log')) # add a handler to logfile
+        self.logger = logging.getLogger('Rovor.ImProcessor_{0}'.format(id(self)))
 
         self.rawFolder = rawFolder
         #TODO figure out a robust way to determine the date of observation
