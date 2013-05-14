@@ -82,6 +82,19 @@ def printObjectMaps(objectMap, fileBase='obj_',ext='.lst'):
 				olist.write(frame)
 				olist.write('\n')
 	return
+
+
+def splitByFilter(imlist):
+    '''split a list of filenames by the filter that they are, throw out any non-fits files'''
+    result = defaultdict(list)
+    for im in iter(imlist):
+        if isFits(im):
+            #put each image into a list identified by the filter
+            #if the filter keyword isn't supplied default to empty string
+            result[pyfits.getheader(im).get('filter','')].append(im)
+    return result
+            
+            
 		
 
 
