@@ -52,3 +52,15 @@ def makeDark(request):
         return '{"ok":true}'
     return process_path(request,dmaker)
 
+@login_required
+def makeFlats(request):
+    '''make master flats from a folder'''
+    def fmaker(path):
+        improc = ImProcessor(path)
+        logger.info("Making flats at path " + path)
+        try:
+            improc.makeFlats()
+        except Exception as err:
+            return '{{"ok":false,"error": "{0}"}}'.format(err)
+        return '{"ok":true}'
+    return process_path(request,fmaker)

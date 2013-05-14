@@ -10,4 +10,5 @@ urlpatterns = patterns('',
     url(r'^renameAll', views.renameAll),
     url(r'^makeZero',views.makeZero),
     url(r'^makeDark',views.makeDark),
+    url(r'^makeFlats',views.makeFlats),
     )
