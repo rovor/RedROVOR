@@ -81,6 +81,15 @@ class ImageList:
         #TODO add code to modify header, at least mark the average time of observations, possibly the total exposure time
         # etc. 
         return result
+
+    def normalize(self,block_size=100):
+        '''
+        normalize all images in the list to have a mean of 1 within the center block of sixe block_size x block_size, 
+        block_size defaults to 100
+        '''
+        for im in self._list:
+            normData(im[0].data,block_size)
+        return self
             
     def closeAll(self):
         '''close all open files'''
@@ -168,6 +177,47 @@ class ImageList:
         ensure_dir(path) #make sure path is directory, or make it if it doesn't exist
         for frame in self._list:
             frame.writeto(os.path.join(path,os.path.basename(frame.filename()))) #same image
+
+    #convenience methods for calibration:
+
+    def subZero(self,zero):
+        '''subtract a zero from all of the images in place and return self
+        zero should be the path to a zero frame
+        NOTE: also zerocor header headers'''
+        datestr = getTimeString("%B %d %H:%M")  #get string of current date
+        with pyfits.open(zero) as zeroFrame:
+            for frame in self:  
+                frame.data -= zeroFrame[0].data
+                frame.header.update('ZEROCOR','{0} Zero Image is {1}'.format(datestr,zero))
+        return self
+
+    def subDark(self, dark):
+        '''subtract dark from all the images in place and return self
+
+        dark shoulb be the path to a dark frame
+        NOTE: also updates headers'''
+        datestr = getTimeString("%B %d %H:%M")  #get string of current date
+        with pyfits.open(dark) as darkFrame:
+            for frame in self:
+                #scale dark to the exposure time
+                #and subtract from frame for all frames
+                frame.data -= darkFrame[0].data * float(frame.header['EXPTIME'])
+                frame.header.update('DARKCOR','{0} with Dark frame {1}'.format(datestr,dark))
+        return self
+
+    def divFlat(self,flat):
+        '''divide flat from all the images in place and return self
+
+        flat should be the path to a flat frame
+        NOTE: also update FLATCOR header'''
+        datestr = getTimeString("%B %d %H:%M")
+        with pyfits.open(flat) as flatFrame:
+            for frame in self:
+                frame.data /= flatFrame[0].data
+                frame.header.update('FLATCOR','{0} with Flat frame {1}'.format(datestr,flat))
+        return self
+
+
         
             
 
@@ -195,17 +245,12 @@ def applyZero(zero_path, *fnames,**kwargs):
     if save_path is supplied and not None then all the frames are saved into the folder save_path with the same 
     basename they had before. If save_inplace is supplied and not false, then the images are saved in place with the zero correction'''
     imlist = ImageList(*fnames)
-    with pyfits.open(zero_path) as zeroFrame:
-        #TODO figure out what we should do if the Zero correction has already been done
-        # should we ignore those frames, do the correction anyway, or throw an error?
-        imlist -= zeroFrame[0]
-    datestr = getTimeString("%B %d %H:%M")  #get string of current date
+    imlist.subZero(zero_path)
     #mark what we have done in the headers
     #TODO write to logger, we need to figure out the best way to configure
     #a logger for redrovor
-    imlist.updateHeaders({'ZEROCOR':'{0} Zero Image is {1}'.format(datestr,zero_path), 
-        'CCDPROC':'{0} CCD processing done'.format(datestr),
-        })
+    # add ccdproc header:
+    imlist.updateHeaders({ 'CCDPROC':'{0} CCD processing done'.format(datestr), })
 
     #if a path was given, then write the processed files with the same name into that path, otherwise
     # save in place
@@ -232,8 +277,7 @@ def makeDark(*fnames, **kwargs):
     with ImageList(*fnames) as imlist:
         if 'zero' in kwargs:
             #subtract zeroFrame if supplied
-            with pyfits.open(kwargs['zero']) as zeroFrame:
-                imlist -= zeroFrame[0]
+            imlist.subZero(kwargs['zero'])
         #now divide all images by their exposure time for scaling
         for frame in imlist:
             frame.data /= float(frame.header['EXPTIME'])
@@ -257,15 +301,9 @@ def applyDark(dark_path,*fnames, **kwargs):
     place with the zero correction
     '''
     imlist = ImageList(*fnames)
-    with pyfits.open(dark_path) as dark:
-        datestr = getTimeString('%x %X')
-        for frame in imlist:
-            #scale dark to the exposure time
-            #and subtract from frame for all frames
-            frame.data -= dark[0].data * float(frame.header['EXPTIME'])
-            #might as well update header here
-            frame.header.update('DARKCOR','{0} with Dark frame {1}'.format(datestr,dark_path))
-            frame.header.update('CCDPROC', '{0} CCD Processing done'.format(datestr))
+    imlist.subDark(dark_path)
+    datestr = getTimeString('%x %X')
+    imlist.updateHeaders(ccdproc='{0} CCD Processing done'.format(datestr))
     if 'save_path' in kwargs and kwargs['save_path']:
         imlist.saveToPath(kwargs['save_path'])
         imlist.closeAll()  #clean up
@@ -277,3 +315,63 @@ def applyDark(dark_path,*fnames, **kwargs):
         return imlist #let the client do something with it
 
 
+def makeFlat(*fnames, **kwargs):
+    '''
+    Take the input frames,(which we assume to be flat frames of the same filter) as strings containging filnames
+    and combine them into a master Flat. The exact behaviour depends on the following optional keyword arguments
+
+    output -- if provided this is the path to write the resulting flat to, if absent makeFlat will returning the resulting PrimaryHDU
+    minmax -- if provided will set how many data points to remove from the top and bottom of the distribution, defaults to 2
+    zero -- if provided, the filename of the zero frame to apply first, otherwise assumes that zero correction has already been done
+    dark -- if provide, the filename of the dark frame to apply first, otherwise assumes that dark correction has already been done
+    '''
+    minmax = kwargs.get('minmax',2)
+    with ImageList(*fnames) as imlist:
+        if 'zero' in kwargs:
+            imlist.subZero(kwargs['zero'])
+        if 'dark' in kwargs:
+            imlist.subDark(kwargs['dark'])
+        imlist.normalize()  #normalize the flats
+        Flat = imlist.avCombine(minmax=minmax)
+    Flat.header.update('imagetyp','flat')
+    if 'zero' in kwargs:
+        Flat.header.update('ZEROCOR','{0} Zero Image is {1}'.format(getTimeString('%x %X'),kwargs['zero']))
+    if 'dark' in kwargs:
+        Flat.header.update('DARKCOR','{0} Dark Image is {1}'.format(getTimeString('%x %X'),kwargs['dark']))
+    if 'output' in kwargs:
+        Flat.writeto(kwargs['output'],clobber=True)
+    else:
+        return Flat
+
+def applyFlat(flat_path,*fnames, **kwargs):
+    '''
+    apply a flat to one or more frames, flat_path and fnames should both be 
+    filenames if save_path is supplied and not None then all the frames are 
+    saved into the folder save_path with the same basename they had before. 
+    If save_inplace is supplied and not false, then the images are saved in 
+    place with the zero correction
+    '''
+    imlist = ImageList(*fnames)
+    imlist.divFlat(flat_path)
+    datestr = getTimeString("%x %X")
+    imlist.updateHeaders(ccdproc='{0} CCD Processing done'.format(datestr))
+    if 'save_path' in kwargs and kwargs['save_path']:
+        imlist.saveToPath(kwargs['save_path'])
+        imlist.closeAll() #clean up
+    elif 'save_inplace' in kwargs and kwargs['save_inplace']:
+        imlist.saveInPlace()
+        imlist.closeAll()
+    else:
+        return imlist
+
+
+
+def normData(imageData, block_size=100):
+    '''normalize the data in the imageData to the mean in the block_size x block_size square
+    note: this modifies imageData inplace'''
+    originy = int((imageData.shape[0]  - block_size)/2)
+    originx = int((imageData.shape[1]  - block_size)/2)
+    avg = numpy.average(imageData[originy:originy+block_size,originx:originx+block_size])
+    imageData /= avg #divide by the average of the center to normalize
+    return imageData
+    
