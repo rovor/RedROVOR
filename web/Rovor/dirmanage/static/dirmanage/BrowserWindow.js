@@ -29,21 +29,26 @@ function BrowserWindow(id,initialPath){
 }
 
 BrowserWindow.prototype.populateLeft = function(path){
-    var li;
+    var li, newPath;
     var browser = this; //rename so closures can use it
     this.flist.empty();
     if(path){
+        newPath = this.topPath + path + "/";
         this.topPath += path + "/";
+    } else {
+        newPath = this.topPath;
     }
     
     li = addClickableLI(this.flist,".");
     li.click(function(){ 
         browser.populateRight(".");
+        browser.leftSelected = "";
     });
     li.click(); //trigger a click event
     
 
-    $.getJSON('json/'+this.topPath,{},function(data){
+    $.getJSON('/files/json/'+newPath,{},function(data){
+       browser.topPath = data.path; //set to normalized path
        for(var i=0,len=data.contents.length; i !== len; ++i){
             //$(".pathTitle").text(data.path);
             if( data.contents[i].isDir ){
@@ -57,17 +62,21 @@ BrowserWindow.prototype.populateLeft = function(path){
                 });
             }
        }
+       browser.flist.click(); //temporary fix to let the client know that the selected folder has been updated
     });
 
 }
 
 BrowserWindow.prototype.populateRight = function (path){
     var browser = this;
-    $.getJSON('json/'+this.topPath+path,{},function(data){
+    $.getJSON('/files/json/'+this.topPath+path,{},function(data){
         browser.clist.empty();
         for(var i=0, len=data.contents.length; i!== len; ++i){
-            var elem = addClickableLI(browser.clist,data.contents[i].file);
-            elem.prepend($("<img src='"+data.contents[i].icon+"'/>"))
+            //only show files that aren't directories
+            if( ! data.contents[i].isDir){
+                var elem = addClickableLI(browser.clist,data.contents[i].file);
+                elem.prepend($("<img src='"+data.contents[i].icon+"'/>"))
+            }
         }
     });
 }
@@ -84,5 +93,34 @@ BrowserWindow.prototype.getSelectedFolder = function(){
  */
 BrowserWindow.prototype.getSelectedFile = function(){
     return this.getSelectedFolder() + "/" + this.clist.find(".selected").text();
+}
+
+/**
+ * add a handler for when the path is updated, i.e. when the user selects a new
+ * folder on the left, the handler is passed the new path
+ */
+BrowserWindow.prototype.pathUpdated = function(handler){
+    var br = this;
+    this.flist.click(function(){
+        handler(br.getSelectedFolder());
+    });
+    
+}
+
+/*
+ * same as pathUpdated, but for top path
+ */
+BrowserWindow.prototype.topPathUpdated = function(handler){
+    var br = this;
+    this.flist.dblclick(function(){
+        handler(br.topPath);
+    });
+}
+
+BrowserWindow.prototype.selectionUpdated = function(handler){
+    var br = this;
+    this.clist.click(function(){
+        handler(br.getSelectedFile());
+    });
 }
 

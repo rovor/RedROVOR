@@ -10,6 +10,7 @@ urlpatterns = patterns('',
     url(r'$^', views.index, name='top_index'),
     url(r'^files/', include('dirmanage.urls')),
     url(r'^reduce/',include('reduction.urls')),
+    url(r'^odb/',include('obs_database.urls')), #observation database
     url(r'^accounts/',include('accounts.urls')),
     # Examples:
     # url(r'^$', 'Rovor.views.home', name='home'),

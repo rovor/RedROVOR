@@ -1,0 +1,51 @@
+{% extends 'dirmanage/twoFrameBrowser.html' %}
+{% load FSforms %}
+{% load staticfiles %}
+
+{% block headerext %}
+<script type="text/javascript" src="{% static 'util.js' %}"></script>
+
+<script type="text/javascript">
+    function uploadAll(){
+        $.ajax('/odb/process',{
+            crossDomain: false,
+            data: {'path':mybrowser.getSelectedFolder()},
+            headers: {'X-CSRFToken':getCookie('csrftoken')}, //cross domain safety
+            type: 'POST', 
+            success: function(data){
+                if( data.ok ){
+                    alert("Success!");
+                } else {
+                    alert("Error: "+data.error);
+                }
+            },
+            error: function(xhr, stat, err){
+                alert(stat+": "+err);
+            },
+
+        });
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+<h1>Upload Observations to Database</h1>
+
+
+
+<section>
+    <h2 style="text-align:left;margin-left:20px">Select Folder:</h2>
+    <h3 id="pathPlace"></h3>
+    {% twoFrameBrowse 'mybrowser' 'Raw/' %}
+    <script type="text/javascript">
+        $(function(){
+            $("#pathPlace").text(mybrowser.topPath);
+            mybrowser.pathUpdated(function(path){
+                $("#pathPlace").text(path)
+            });
+        });
+    </script>
+    <p><button style="float:right; font-size:large" onclick="uploadAll()">Upload All Observations</button></p>
+</section>
+
+{% endblock %}
