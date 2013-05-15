@@ -9,6 +9,8 @@ from dirmanage.models import Filesystem
 
 import json
 
+import traceback
+
 
 def process_path(request, block):
     '''helper function to abstract common code when accessing 
@@ -34,7 +36,8 @@ def process_path(request, block):
             res = block(path)
         except Exception as err:
             #if there was some kind of uncaught exception return it to the client
-            return HttpResponse('{{"ok":false,"error":"{0}"}}'.format(err),mimetype='application/json')
+            resp = {"ok":False, "error":str(err), "traceback":traceback.format_exc()}
+            return HttpResponse(json.dumps(resp),mimetype='application/json')
         #default to simply responding an ok response if return was false
         if res is None:
             res = '{"ok":true}'
