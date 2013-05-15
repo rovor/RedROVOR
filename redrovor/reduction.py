@@ -20,7 +20,7 @@ import process
 #import imProc
 import coords
 
-from utils import writeListToFileName
+from utils import writeListToFileName, getTimeString
 
 #TODO allow more flexibility in where the output files are stored
 ProcessedFolderBase = '/data/Processed'
@@ -157,12 +157,12 @@ always works in place'''
         self.ensure_dark()
         for (obj,flist) in self.objects.items():
             #iterate over each object
-            for (filt, frames) in frameTypes.splitByFilter(flist):
+            for (filt, frames) in frameTypes.splitByFilter(flist).items():
                 baseName = "{0}/{1}{2}-".format(self.processedFolder, obj.replace(' ','_'),filt)
-                with process.ImageList(*frame) as imlist:
+                with process.ImageList(*frames) as imlist:
                     imlist.subZero(self.zeroFrame)
                     imlist.subDark(self.darkFrame)
-                    imlist.updateHeaders('CCDPROC','{0} CCD Processing done'.format(utils.getTimeString("%x %X")))
+                    imlist.updateHeaders(ccdproc='{0} CCD Processing done'.format(getTimeString("%x %X")))
                     imlist.saveIndexed(baseName) #save the processed images
         
 
@@ -190,7 +190,7 @@ always works in place'''
     def process(self, doFlats=False):
         '''process everything in the folder and put the new frames in the new folder'''
         self.logger.info('Processing Directory...')
-        self.updateHeaders()
+        #self.updateHeaders()
         self.buildLists()
         self.makeZero()
         self.makeDark()
