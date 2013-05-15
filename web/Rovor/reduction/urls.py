@@ -11,4 +11,6 @@ urlpatterns = patterns('',
     url(r'^makeZero',views.makeZero),
     url(r'^makeDark',views.makeDark),
     url(r'^makeFlats',views.makeFlats),
+    url(r'^subZeroDark',views.subZeroDark),
+    url(r'^firstPass',views.firstPass),
     )

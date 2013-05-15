@@ -187,15 +187,31 @@ always works in place'''
 #                count+=1
 #            writeListToFileName(self.newObjs[obj], path.join(self.processedFolder, "object_{0}.lst".format(obj)))
 
-    def process(self, doFlats=False):
-        '''process everything in the folder and put the new frames in the new folder'''
-        self.logger.info('Processing Directory...')
+    def firstPass(self):
+        '''
+        perform the first pass of reduction on the folder. This does the following
+            - Create Master zero and place in Processed folder
+            - Create Master dark and place in Processed folder
+            - Create Master flats if any and place in Processed folder
+            - Apply zero and darks to all object frames and store the processed images in Processed folder 
+        Note that the processed images have not been flat reduced yet, this is done in the second pass
+        '''
+        self.logger.info('Processing Directory {0}...'.format(self.rawFolder))
         #self.updateHeaders()
         self.buildLists()
         self.makeZero()
         self.makeDark()
         self.makeFlats()
         self.zero_and_dark_subtract()
+
+
+def doFirstPass(path):
+    '''convenience wrapper function for the ImProcessor.firstPass, which takes the path 
+    opens a ImProcessor and calls firstPass'''
+    improc = ImProcessor(path)
+    improc.firstPass()
+
+
 
 if __name__ == '__main__':
     #optparse is deprecated after python 2.7, but
@@ -206,11 +222,10 @@ if __name__ == '__main__':
     from optparse import OptionParser
     parser = OptionParser()
 
-    parser.add_option('-F', '--use-flats', action='store_true', dest='useFlats', default=False, help='apply flats when doing the calibration (not done by default because flats can be tricky)')
+    #parser.add_option('-F', '--use-flats', action='store_true', dest='useFlats', default=False, help='apply flats when doing the calibration (not done by default because flats can be tricky)')
     
     (options,args)=parser.parse_args()
     if  len(args) != 1:
         parser.error("incorrect number of arguments")
     rawDirectory = args[0]
-    processor = ImProcessor(rawDirectory)
-    processor.process(doFlats=options.useFlats)
+    doFirstPass(rawDirectory) #for now we will just do the first pass
