@@ -48,7 +48,7 @@ class ImProcessor:
     '''Class to handle image processing for a folder, we use a class to 
 make it easier to keep track of the state'''
 
-    def __init__(self, rawFolder):
+    def __init__(self, rawFolder, processedFolder = None):
         '''initialize the processor in the folder containing the raw data'''
 
         # set up logger
@@ -63,20 +63,15 @@ make it easier to keep track of the state'''
         header = pyfits.getheader(self.frames[0])
         self.obsDate = datetime.datetime.strptime(header['date-obs'],'%Y-%m-%dT%H:%M:%S.%f').date()
         #create the folder to store results in
-        self.processedFolder = createResultFolder(self.obsDate)
+        self.processedFolder = processedFolder or createResultFolder(self.obsDate)
 
 
         self.zeroFrame = None
-        self.zerosFile = path.join(self.rawFolder, 'zeroFrames.lst')
         self.darkFrame = None
-        self.darksFile = path.join(self.rawFolder, 'darkFrames.lst')
         self.flatBase = None
-        self.flatList =  []
-        self.flatsFile = path.join(self.rawFolder, 'flatFrames.lst')
+        self.flatFrames = {}
         self.frameTypes = None
         self.objects = None
-        self.objectsFile = path.join(self.rawFolder, 'objectFrames.lst')
-        self.unknownFile = path.join(self.rawFolder, 'unknownFrames.lst')
         return
     def _findFrames(self):
         '''find  all fits files in the folder (anything ending with .fits, .fit, .FIT, or .fts'''
@@ -97,9 +92,9 @@ always works in place'''
         self.logger.info("Building Lists")
         self.frameTypes = frameTypes.getFrameLists( self.frames ) #get frame types
         self.objects = frameTypes.makeObjectMap( self.frameTypes['object'] )
-        self.logger.info("Saving frame lists to files")
-        frameTypes.saveFrameLists(self.frameTypes,zeroFile=self.zerosFile, darkFile=self.darksFile,
-            flatFile=self.flatsFile, objectFile=self.objectsFile,unknownFile=self.unknownFile) 
+        #self.logger.info("Saving frame lists to files")
+        #frameTypes.saveFrameLists(self.frameTypes,zeroFile=self.zerosFile, darkFile=self.darksFile,
+        #    flatFile=self.flatsFile, objectFile=self.objectsFile,unknownFile=self.unknownFile) 
         return self
     def ensure_frameTypes(self):
         '''ensure that frameTypes is set'''
@@ -140,13 +135,11 @@ always works in place'''
             self.makeDark()
     def makeFlats(self):
         self.logger.info('Making Flats')
-        self.logger.warning('Operations on flats have not been finished yet')
         self.ensure_frameTypes()
         self.ensure_zero()
         self.ensure_dark()
         flatBase = path.join(self.processedFolder,'Flat')
         flats = frameTypes.splitByFilter(self.frameTypes['flat'])
-        self.flatFrames = {}
         for filter in flats:
             outName = "{0}_{1}.fits".format(flatBase,filter)  #name is the base flat name plus the filter type
             process.makeFlat(*flats[filter],zero=self.zeroFrame,dark=self.darkFrame,output=outName)
@@ -154,26 +147,45 @@ always works in place'''
         #TODO should we copy the flats to calibration folder?
         return self
 
-        
-    def imProc(self, useFlats=False):
-        '''process the image frames'''
-        self.logger.info('Processing Images...')
-        if not self.flatList and useFlats:
-            self.makeFlats()
-        self.newObjs = defaultdict(list)
+    def zero_and_dark_subtract(self):
+        '''subtract zeros and darks from image files
+        and save in the processed folder'''
+        self.logger.info("Subtracting zeros and darks")
+        #ensure we have everything we need
+        self.ensure_frameTypes()
+        self.ensure_zero()
+        self.ensure_dark()
         for (obj,flist) in self.objects.items():
             #iterate over each object
-            count=0
-            for frame in flist:
-                newName = "{0}/{1}-{2}.fits".format(self.processedFolder,obj.replace(' ','_'),count)
-                #imProc.processImages(frame,imProc.INPUT_SINGLEFRAME,output=newName,zero=self.zeroFrame,dark=self.darkFrame,
-                    #flat=','.join(self.flatList))
-                self.newObjs[obj].append(newName)
-                #now apply world coordinates
-                coords.astrometrySolve(newName)
-                #increment counter
-                count+=1
-            writeListToFileName(self.newObjs[obj], path.join(self.processedFolder, "object_{0}.lst".format(obj)))
+            for (filt, frames) in frameTypes.splitByFilter(flist):
+                baseName = "{0}/{1}{2}-".format(self.processedFolder, obj.replace(' ','_'),filt)
+                with process.ImageList(*frame) as imlist:
+                    imlist.subZero(self.zeroFrame)
+                    imlist.subDark(self.darkFrame)
+                    imlist.updateHeaders('CCDPROC','{0} CCD Processing done'.format(utils.getTimeString("%x %X")))
+                    imlist.saveIndexed(baseName) #save the processed images
+        
+
+        
+#    def imProc(self, useFlats=False):
+#        '''process the image frames'''
+#        self.logger.info('Processing Images...')
+#        if not self.flatList and useFlats:
+#            self.makeFlats()
+#        self.newObjs = defaultdict(list)
+#        for (obj,flist) in self.objects.items():
+#            #iterate over each object
+#            count=0
+#            for frame in flist:
+#                newName = "{0}/{1}-{2}.fits".format(self.processedFolder,obj.replace(' ','_'),count)
+#                #imProc.processImages(frame,imProc.INPUT_SINGLEFRAME,output=newName,zero=self.zeroFrame,dark=self.darkFrame,
+#                    #flat=','.join(self.flatList))
+#                self.newObjs[obj].append(newName)
+#                #now apply world coordinates
+#                coords.astrometrySolve(newName)
+#                #increment counter
+#                count+=1
+#            writeListToFileName(self.newObjs[obj], path.join(self.processedFolder, "object_{0}.lst".format(obj)))
 
     def process(self, doFlats=False):
         '''process everything in the folder and put the new frames in the new folder'''
@@ -183,10 +195,7 @@ always works in place'''
         self.makeZero()
         self.makeDark()
         self.makeFlats()
-        if doFlats:
-            self.imProc(useFlats=doFlats)
-        else:
-            self.logger.info('Not doing final image calibration\nbecause we don\'t know what flats to use')
+        self.zero_and_dark_subtract()
 
 if __name__ == '__main__':
     #optparse is deprecated after python 2.7, but

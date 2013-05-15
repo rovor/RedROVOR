@@ -62,9 +62,6 @@ class ImageList:
             for (key, value) in chain(newHeads.items(), kwargs.items()):
                 header.update(key,value)
                 
-            
-            
-
     def avCombine(self,minmax=2):
         '''
         Combine all frames in the ImageList into a single frame by using an arithmetic mean with optional minmax rejection
@@ -178,6 +175,15 @@ class ImageList:
         for frame in self._list:
             frame.writeto(os.path.join(path,os.path.basename(frame.filename()))) #same image
 
+
+    def saveIndexed(self, baseName):
+        '''save the images as the basename appended by an index starting with zero
+        this is useful for renaming the files when saving them, each file is saved as baseName+i where i is the index with enough leading zeros that all images use the same number of digits'''
+        digitsNeeded = len( str( len(self._list) ) ) #get the lenght of the string of the length of the list
+        count = 0
+        for frame in self._list:
+            frame.writeto(baseName + str(count).zfill(digitsNeeded))
+            count += 1
     #convenience methods for calibration:
 
     def subZero(self,zero):
