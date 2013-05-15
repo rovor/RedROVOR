@@ -24,8 +24,6 @@ def upload_form(request):
 
 @login_required
 def processFolder(request):
-    def procFunc(path):
-        return '{"ok":true}'
-    return process_path(request, procFunc)
+    return process_path(request, obsRecord.recordDir)
     
 

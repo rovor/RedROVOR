@@ -5,11 +5,13 @@ import pyfits
 import frameTypes
 import re
 
+from fitsHeader import isFits
+
 import os
 
 import logging
 
-logger = logging.getLogger("redrovor.recordobs")
+logger = logging.getLogger("Rovor.recordobs")
 
 dateRegex = re.compile(r'(\d{4}-\d{2}-\d{2})T.*')
 
@@ -30,14 +32,18 @@ def recordObservation(fitsHeader,fname=''):
 def recordDir(dir):
     '''record information for all fits files of images in 
     the given directory and subdirectories'''
+    logger.info("Recording observations in "+dir)
     for root, dirs, files in os.walk(dir):
+        logger.info("root = "+root)
         for f in files:
-            if frameTypes.isFits(f):
+            fullPath = os.path.join(root,f)
+            if isFits(fullPath):
+                logger.info("Attempting to record observation for "+f)
                 try:
-                    header = pyfits.getheader(f)
+                    header = pyfits.getheader(fullPath)
                     if frameTypes.getFrameType(header) != 'object':
                         continue
-                    recordObservation(header,f)
+                    recordObservation(header,fullPath)
                 except Exception as e:
                     logger.error(e)
                     continue #keep going and record everything else

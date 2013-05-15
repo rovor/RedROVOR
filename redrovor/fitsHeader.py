@@ -9,7 +9,7 @@ darkRE = re.compile(r'[dD]ark')
 flatRE = re.compile(r'[Ff]lat')
 objectRE = re.compile(r'([iI]mage)|([Ll]ight)|([oO]bject)')
 
-fitsSuffixes = ['.fits','.fts','.FIT','.FITS','.fit']
+fitsSuffixes = set(['.fits','.fts','.FIT','.FITS','.fit'])
 
 def isFits(fname):
     '''Determine if the filename is right for a fits file or not'''
