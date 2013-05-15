@@ -41,10 +41,13 @@
     {% csrf_token %}
     <table>
     <tr><td><label>Folder to Process:</label><td><input name="path" id="folderInput" type="text" value="" autocomplet="off" readonly/></td></tr>
-    <tr><td><input type="button" value="Rename files" onclick="sendRequest('renameAll')" /><td></tr>
+    <tr><td><input type="button" value="Rename files" onclick="sendRequest('renameAll')" /></td>
+    <td><input type="button" value="Do First Pass" onclick="sendRequest('firstPass')" /></td>
+    </tr>
     <tr><td><input type="button" value="Make master Zero" onclick="sendRequest('makeZero')"</td></tr>
     <tr><td><input type="button" value="Make master Dark" onclick="sendRequest('makeDark')" /> </td></tr>
     <tr><td><input type="button" value="Make master Flats" onclick="sendRequest('makeFlats')" /> </td></tr>
+    <tr><td><input type="button" value="Subtract Zeros and Darks" onclick="sendRequest('subZeroDark')" /> </td></tr>
 </form>
 
 {% dirChooserDialog 'dirDialog' 'selectFolder' %}

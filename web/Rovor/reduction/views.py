@@ -4,7 +4,10 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 
-from action_views import renameAll, makeZero, makeDark, makeFlats
+#import some views from another module, this allows some seperation
+#between views used for html and views used for AJAX
+from action_views import renameAll, makeZero, makeDark, \
+    makeFlats, subZeroDark, firstPass
 
 import logging
 logger = logging.getLogger('Rovor')   
