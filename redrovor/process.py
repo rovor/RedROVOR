@@ -182,7 +182,7 @@ class ImageList:
         digitsNeeded = len( str( len(self._list) ) ) #get the lenght of the string of the length of the list
         count = 0
         for frame in self._list:
-            frame.writeto(baseName + str(count).zfill(digitsNeeded))
+            frame.writeto(baseName + str(count).zfill(digitsNeeded)+".fit")
             count += 1
     #convenience methods for calibration:
 
