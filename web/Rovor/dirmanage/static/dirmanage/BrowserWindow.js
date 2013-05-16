@@ -124,3 +124,8 @@ BrowserWindow.prototype.selectionUpdated = function(handler){
     });
 }
 
+BrowserWindow.prototype.setPath = function(newPath){
+    this.topPath = newPath;
+    this.populateLeft('');
+}
+
