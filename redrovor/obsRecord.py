@@ -10,6 +10,7 @@ from fitsHeader import isFits
 import os
 
 import logging
+import traceback
 
 logger = logging.getLogger("Rovor.recordobs")
 
@@ -20,7 +21,8 @@ def recordObservation(fitsHeader,fname=''):
     and optionally the filename passed as fname'''
     objName = frameTypes.getObjectName(fitsHeader)
     obj = obsDB.obj_get_or_add(objName)
-    objid = obj['id']
+    logger.info(obj)
+    objid = obj['obj_id']
     ffilter = fitsHeader['FILTER']
     exptime = fitsHeader['EXPTIME']
     temp = fitsHeader['CCD-TEMP']
@@ -33,17 +35,18 @@ def recordDir(dir):
     '''record information for all fits files of images in 
     the given directory and subdirectories'''
     logger.info("Recording observations in "+dir)
+    obsDB.login()
     for root, dirs, files in os.walk(dir):
         logger.info("root = "+root)
         for f in files:
             fullPath = os.path.join(root,f)
             if isFits(fullPath):
-                logger.info("Attempting to record observation for "+f)
+                #logger.info("Attempting to record observation for "+f)
                 try:
                     header = pyfits.getheader(fullPath)
                     if frameTypes.getFrameType(header) != 'object':
                         continue
                     recordObservation(header,fullPath)
                 except Exception as e:
-                    logger.error(e)
-                    continue #keep going and record everything else
+                    logger.error(traceback.format_exc())
+                    break #keep going and record everything else

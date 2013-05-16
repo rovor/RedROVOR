@@ -40,9 +40,9 @@ def getFrameType(header):
 def getObjectName(header):
     '''get the name of the object in the frame'''
     if 'object' in header:
-            return header['object']
+            return header['object'].replace('_',' ')
     elif 'title' in header:
-            return header['title']
+            return header['title'].replace('_',' ')
     else:
         ra= header.get('objctra','0:0:0').replace(' ',':')
         dec = header.get('objctdec','0:0:0').replace(' ',':')

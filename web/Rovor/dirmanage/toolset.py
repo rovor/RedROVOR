@@ -36,7 +36,7 @@ def process_path(request, block):
             res = block(path)
         except Exception as err:
             #if there was some kind of uncaught exception return it to the client
-            resp = {"ok":False, "error":str(err), "traceback":traceback.format_exc()}
+            resp = {"ok":False, "error":str(err), "errtype":type(err).__name__,"traceback":traceback.format_exc()}
             return HttpResponse(json.dumps(resp),mimetype='application/json')
         #default to simply responding an ok response if return was false
         if res is None:
