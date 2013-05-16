@@ -1,12 +1,17 @@
 {% extends 'base.html' %}
 {% load FSforms %}
+{% load staticfiles %}
 
 {% block header %}
+
+<script type="text/javascript" src="{% static "jquery.blockUI.js" %}"></script>
 <script type="text/javascript">
     $(function(){
         $("#folderInput").click(function(){
             $('#dirDialog').dialog("open");
         });
+
+        $(document).ajaxStop($.unblockUI);
 
     });
 
@@ -15,6 +20,7 @@
     }
 
     function sendRequest(target){
+        $.blockUI({message:"<h1>Processing...</h1>"});
         $.post('/reduce/'+target,$('#zdForm').serialize(),
             function(data){
                 if( data.ok ){
