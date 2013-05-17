@@ -9,6 +9,9 @@ from django.shortcuts import render
 from action_views import renameAll, makeZero, makeDark, \
     makeFlats, subZeroDark, firstPass
 
+
+from dirmanage.models import Filesystem
+
 import logging
 logger = logging.getLogger('Rovor')   
 
@@ -25,9 +28,18 @@ def zeroDark(request):
     return render(request,'reduction/zeroDark.html')
 
 @login_required
-def flatDirSelect(request):
-    '''Page for applying flats'''
-    return render(request, 'reduction/flatDirSelect.html')
+def flatSelectForm(request):
+    '''Form for selecting flats'''
+    if 'path' in request.POST:
+        try:
+            path = Filesystem.getTruePath(request.POST['path'])
+        except (ValueError, Filesystem.DoesNotExist, IOError):
+            return render(request,'reduction/flatDirSelect.html',{'error':'Invalid path, try again'})
+            
+        return HttpResponse("Placeholder")
+    else:
+        #we haven't gotten a path yet, so display page to select path
+        return render(request,'reduction/flatDirSelect.html')
 
 @login_required
 def astrometry(request):

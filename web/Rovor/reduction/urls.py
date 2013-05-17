@@ -5,7 +5,7 @@ from reduction import views
 urlpatterns = patterns('',
     url(r'^$',views.index),
     url(r'^zero-dark$',views.zeroDark),
-    url(r'^flatDirSelect$',views.flatDirSelect),
+    url(r'^flatSelectForm$',views.flatSelectForm),
     url(r'^astrometry$',views.astrometry),
     url(r'^renameAll', views.renameAll),
     url(r'^makeZero',views.makeZero),

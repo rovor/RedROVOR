@@ -13,7 +13,10 @@ function updateBrowserPath(){
 {% block content %}
 
 <h1>Select a folder to Process</h1>
-<form id="pathForm" method="POST">
+{% if error %}
+<p class="error">{{error}}</p>
+{% endif %}
+<form id="pathForm" method="POST" action="/reduce/flatSelectForm">
 {% csrf_token %}
 <input type="text" name="path" id="pathInput" />
 <input type="submit" value="Select Folder" />
