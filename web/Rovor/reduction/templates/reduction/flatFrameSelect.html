@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load FSforms %}
+
+{% block title %}
+Select Flat Frames
+{% endblock %}
+
+{% block header %}
+<script type="text/javascript">
+    $(function(){
+        $("#flatForm input.browseButton").click(function(){
+            $("#flatDialog").dialog("open");
+        });
+    });
+
+    function selectFlat(path){
+        alert(path);
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+    <h1>Select Flat Frames to use</h1>
+<form id="flatForm">
+{% for filt in improc.neededFilters %}
+    <p>{{filt}} Flat
+    <input type="text" />
+    <input type="button" class="browseButton" value="browse" />
+    </p>
+{% endfor %}
+<p><input type="submit" value="Process" /></p>
+</form>
+
+{% frameChooserDialog 'flatDialog' 'selectFlat' 'Processed/' %}
+{% endblock %}

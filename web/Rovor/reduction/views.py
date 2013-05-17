@@ -3,6 +3,8 @@ from django.template import Context, loader
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
+from redrovor import reduction
+
 
 #import some views from another module, this allows some seperation
 #between views used for html and views used for AJAX
@@ -36,7 +38,8 @@ def flatSelectForm(request):
         except (ValueError, Filesystem.DoesNotExist, IOError):
             return render(request,'reduction/flatDirSelect.html',{'error':'Invalid path, try again'})
             
-        return HttpResponse("Placeholder")
+        context = {'improc':reduction.ImProcessor(path)}
+        return render(request, 'reduction/flatFrameSelect.html',context)
     else:
         #we haven't gotten a path yet, so display page to select path
         return render(request,'reduction/flatDirSelect.html')
