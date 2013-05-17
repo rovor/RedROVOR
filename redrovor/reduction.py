@@ -164,28 +164,16 @@ always works in place'''
                     imlist.subDark(self.darkFrame)
                     imlist.updateHeaders(ccdproc='{0} CCD Processing done'.format(getTimeString("%x %X")))
                     imlist.saveIndexed(baseName) #save the processed images
+    def neededFilters(self):
+        '''get the filters that the object frames are in so that we know which filters we need to use for
+        flat processing, returns a set'''
+        self.ensure_frameTypes()
+        result = set()
+        for frame in self.frameTypes['object']:
+            result.add(pyfits.getheader(frame).get('filter',''))
+        return result
+            
         
-
-        
-#    def imProc(self, useFlats=False):
-#        '''process the image frames'''
-#        self.logger.info('Processing Images...')
-#        if not self.flatList and useFlats:
-#            self.makeFlats()
-#        self.newObjs = defaultdict(list)
-#        for (obj,flist) in self.objects.items():
-#            #iterate over each object
-#            count=0
-#            for frame in flist:
-#                newName = "{0}/{1}-{2}.fits".format(self.processedFolder,obj.replace(' ','_'),count)
-#                #imProc.processImages(frame,imProc.INPUT_SINGLEFRAME,output=newName,zero=self.zeroFrame,dark=self.darkFrame,
-#                    #flat=','.join(self.flatList))
-#                self.newObjs[obj].append(newName)
-#                #now apply world coordinates
-#                coords.astrometrySolve(newName)
-#                #increment counter
-#                count+=1
-#            writeListToFileName(self.newObjs[obj], path.join(self.processedFolder, "object_{0}.lst".format(obj)))
 
     def firstPass(self):
         '''
