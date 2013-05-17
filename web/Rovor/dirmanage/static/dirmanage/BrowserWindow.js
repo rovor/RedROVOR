@@ -75,7 +75,7 @@ BrowserWindow.prototype.populateRight = function (path){
             //only show files that aren't directories
             if( ! data.contents[i].isDir){
                 var elem = addClickableLI(browser.clist,data.contents[i].file);
-                elem.prepend($("<img src='"+data.contents[i].icon+"'/>"))
+                elem.prepend($("<img src='"+data.contents[i].icon+"'/>"));
             }
         }
     });

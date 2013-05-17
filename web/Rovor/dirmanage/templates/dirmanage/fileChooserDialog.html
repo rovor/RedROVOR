@@ -7,52 +7,21 @@
 {% endcomment %}
 <script type="text/javascript" id="{{id}}-script">
 
-    var {{id}}$path = "";
+var {{js_id}};
 
-    function {{id}}$populate(newPath){
-        var mylist = $("#{{id}}-list");
-        var path = {{id}}$path + newPath;
-        mylist.empty();
-        $.getJSON("/files/json/"+path,{},function(data){
-            {{id}}$path = data.path;
-            $("#{{id}}-pathTitle").text(data.path);
-            for(var i = 0, len = data.contents.length; i !== len; ++i){
-                var elem = $("<li class='clickable'>"+data.contents[i].file+"</li>");
-                elem.dblclick(function(e){
-                    {{id}}$populate($(this).text()+"/");
-                });
-                mylist.append(elem);
-            }
+if( ! FileChooserDialog ){
+    //load the javascript file we need
+    $.getScript("{% static 'dirmanage/fileChooserDialog.js' %}",
+        function(){
+            :
+            
         });
-        
-    }
-    $(function(){
-        $("#{{id}}").dialog({
-            autoOpen: false,
-            height: 500,
-            width: 500,
-            modal: true,
-            title: "Choose a Folder",
-            buttons: {
-                "Open": function(){
-                    {{callback}}({{id}}$path);
-                    $(this).dialog("close");
-                },
-                Cancel: function() {
-                    $(this).dialog("close");
-                },
-            }
-        });
+}
 
-        {{id}}$populate("{{startPath}}");
-
-    });
 
 </script>
 <div class="dialog" id="{{id}}">
-    <h2 id="{{id}}-pathTitle">/{{startPath}}</h2>
-    <ul class="folderList" id="{{id}}-list">
-        <li> test 1</li>
-        <li> test 2 </li>
+    <h2 class="pathTitle">/{{startPath}}</h2>
+    <ul class="fileList" id="{{id}}-list">
     </ul>
 </div>
