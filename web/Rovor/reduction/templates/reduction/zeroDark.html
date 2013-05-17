@@ -13,6 +13,8 @@
         $("#folderInput").change(function(){
             pathBrowser.setPath($(this).val());
         });
+
+        $("#zdForm").submit(function(){ return false; });
     });
 
 
@@ -47,7 +49,7 @@ $(function(){
     });
 });
 </script>
-<form id="zdForm" onkeypress="return event.keyCode != 13"> <!-- disable enter submitting form (or doing anything else for that matter, temp fix only-->
+<form id="zdForm"> <!-- disable enter submitting form (or doing anything else for that matter, temp fix only-->
     {% csrf_token %}
     <table>
     <tr><td><label>Folder to Process:</label><td><input name="path" id="folderInput" type="text" value="" autocomplet="off" /></td></tr>
