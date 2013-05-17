@@ -72,3 +72,9 @@ ul.fileList {
 .clickable {
     cursor: pointer;
 }
+
+.error {
+    color: red !important;
+    font-size: large;
+    font-style: italic;
+}
