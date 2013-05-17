@@ -25,9 +25,9 @@ def zeroDark(request):
     return render(request,'reduction/zeroDark.html')
 
 @login_required
-def flatApply(request):
+def flatDirSelect(request):
     '''Page for applying flats'''
-    return HttpResponse("<h1>Under Construction</h1>")
+    return render(request, 'reduction/flatDirSelect.html')
 
 @login_required
 def astrometry(request):

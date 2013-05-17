@@ -1,0 +1,38 @@
+{% extends 'dirmanage/twoFrameBrowser.html' %}
+{% load FSforms %}
+
+{% block headerext %}
+<script type="text/javascript">
+function updateBrowserPath(){
+    pathBrowser.setPath($(this).val());
+}
+</script>
+{% endblock %}
+
+
+{% block content %}
+
+<h1>Select a folder to Process</h1>
+<form id="pathForm" method="POST">
+{% csrf_token %}
+<input type="text" name="path" id="pathInput" />
+<input type="submit" value="Select Folder" />
+</form>
+{% twoFrameBrowse 'path-browser' 'Processed/' 'pathBrowser' %}
+<script type="text/javascript">
+    $(function(){
+        pathBrowser.pathUpdated(function(path){
+            $("#pathInput").val(path);
+        });
+
+        $("#pathInput").change(updateBrowserPath).keypress(function(e){
+            //trap the user pressing enter
+            if( e.which == 13){
+                e.preventDefault();
+                updateBrowserPath.apply(this);
+            }
+        });
+    });
+</script>
+
+{% endblock %}

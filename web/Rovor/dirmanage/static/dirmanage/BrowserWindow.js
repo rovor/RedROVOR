@@ -117,6 +117,9 @@ BrowserWindow.prototype.topPathUpdated = function(handler){
     });
 }
 
+/*
+ *  the selectetion on the right has been updated
+ */
 BrowserWindow.prototype.selectionUpdated = function(handler){
     var br = this;
     this.clist.click(function(){
@@ -124,6 +127,9 @@ BrowserWindow.prototype.selectionUpdated = function(handler){
     });
 }
 
+/**
+ *  set the top level path
+ */
 BrowserWindow.prototype.setPath = function(newPath){
     this.topPath = newPath;
     this.populateLeft('');
