@@ -8,7 +8,7 @@ import os
 
 from redrovor import renamer
 from redrovor.process import makeZero
-from redrovor.reduction import ImProcessor, doFirstPass
+from redrovor.zerodarkprocess import ZeroDarkProcessor, doFirstPass
 from dirmanage.models import Filesystem
 
 import logging
@@ -30,7 +30,7 @@ def renameAll(request):
 def makeZero(request):
     '''make a master zero from a folder'''
     def zmaker(path):
-        improc = ImProcessor(path)
+        improc = ZeroDarkProcessor(path)
         logger.info("Making zero at path " + path)
         improc.makeZero()
         return None
@@ -40,7 +40,7 @@ def makeZero(request):
 def makeDark(request):
     '''make a master dark from a folder'''
     def dmaker(path):
-        improc = ImProcessor(path)
+        improc = ZeroDarkProcessor(path)
         logger.info("Making dark at path " + path)
         improc.makeDark()
         return None
@@ -50,7 +50,7 @@ def makeDark(request):
 def makeFlats(request):
     '''make master flats from a folder'''
     def fmaker(path):
-        improc = ImProcessor(path)
+        improc = ZeroDarkProcessor(path)
         logger.info("Making flats at path " + path)
         improc.makeFlats()
         return None
@@ -60,7 +60,7 @@ def makeFlats(request):
 def subZeroDark(request):
     '''subtract zeros and darks from the object files in a folder'''
     def subber(path):
-        improc = ImProcessor(path)
+        improc = ZeroDarkProcessor(path)
         logger.info("Processing object files in "+path)
         improc.zero_and_dark_subtract()
         return None

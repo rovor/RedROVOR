@@ -3,7 +3,7 @@ from django.template import Context, loader
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
-from redrovor import reduction
+from redrovor import zerodarkprocess as reduction
 
 
 #import some views from another module, this allows some seperation
@@ -38,7 +38,7 @@ def flatSelectForm(request):
         except (ValueError, Filesystem.DoesNotExist, IOError):
             return render(request,'reduction/flatDirSelect.html',{'error':'Invalid path, try again'})
             
-        context = {'improc':reduction.ImProcessor(path)}
+        context = {'improc':reduction.ZeroDarkProcessor(path)}
         return render(request, 'reduction/flatFrameSelect.html',context)
     else:
         #we haven't gotten a path yet, so display page to select path
