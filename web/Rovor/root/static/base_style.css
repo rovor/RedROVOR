@@ -61,6 +61,12 @@ ul.link-list {
     color: white;
 }
 
+li.selected {
+    background-color: green;
+    color: black;
+}
+
+
 ul.folderList {
     list-style-position: inside;
 }

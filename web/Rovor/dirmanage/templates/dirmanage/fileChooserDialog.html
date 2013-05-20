@@ -1,3 +1,4 @@
+{% load staticfiles %}
 {% comment %}
  variables that to be declared
     id -- the id for the dialog (should be a valid javascript identifier)
@@ -5,23 +6,27 @@
     startPath -- the path that the dialog starts at
     callback -- a calback function which takes an array of paths to fits files return when the dialog is successfully terminated
 {% endcomment %}
-<script type="text/javascript" id="{{id}}-script">
-
-var {{js_id}};
-
-if( ! FileChooserDialog ){
-    //load the javascript file we need
-    $.getScript("{% static 'dirmanage/fileChooserDialog.js' %}",
-        function(){
-            :
-            
-        });
-}
-
-
-</script>
 <div class="dialog" id="{{id}}">
     <h2 class="pathTitle">/{{startPath}}</h2>
     <ul class="fileList" id="{{id}}-list">
     </ul>
 </div>
+<script type="text/javascript" id="{{id}}-script">
+
+var {{js_id}};
+
+$(function(){
+if( typeof  FileChooserDialog  === 'undefined'){
+    //load the javascript file we need
+    $.getScript("{% static 'dirmanage/fileChooserDialog.js' %}",
+        function(){
+            {{js_id}} = new FileChooserDialog("{{id}}","{{startPath}}");
+        });
+} else {
+    {{js_id}} = new FileChooserDialog("{{id}}","{{startPath}}");
+}
+
+});
+
+
+</script>

@@ -7,7 +7,7 @@ function FileChooserDialog(ident,initialPath){
     this.mylist = this.elem.find('.fileList');
 
     var proxy = this;
-    elem.dialog({
+    this.elem.dialog({
         autoOpen: false,
         height: 500,
         width: 500,
@@ -15,7 +15,6 @@ function FileChooserDialog(ident,initialPath){
         title: "Choose a Folder",
         buttons: {
             "Open": function(){
-                $(this).dialog("close");
                 proxy.doSelect($(this));
 
             },
@@ -24,6 +23,7 @@ function FileChooserDialog(ident,initialPath){
             },
         }
     });
+    this.populate();
 
 }
 
@@ -41,6 +41,7 @@ close: function(){
 },
 
 populate: function() {
+    this.mylist.empty();
     var proxy = this;
     $.getJSON("/files/json/"+this.path,{},function(data){
         this.path = data.path;
@@ -62,8 +63,8 @@ populate: function() {
 },
 
 doSelect: function(item){
-    var newPath = this.path + item + "/";
-    if( data.attr("data-isdir") ){
+    var newPath = this.path + item.text() + "/";
+    if( item.attr("data-isdir") ){
         this.path = newPath;
         this.populate();
     } else {

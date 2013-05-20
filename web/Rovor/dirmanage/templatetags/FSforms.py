@@ -20,11 +20,11 @@ def dirChooserDialog(id,callback,startPath="Raw/"):
     return {'id':id, 'callback':callback, 'startPath':startPath}
 
 @register.inclusion_tag('dirmanage/fileChooserDialog.html')
-def fileChooserDialog(id,callback,startPath="Raw/"):
+def fileChooserDialog(id,callback,startPath="Raw/",js_id=None):
     '''template tag for a modal dialog which allows
     the user to select a single file. Only one (sorry)
     This is intended for use in other forms'''
-    return {'id':id, 'callback':callback, 'startPath':startPath}
+    return {'id':id, 'callback':callback, 'startPath':startPath,'js_id':js_id or id}
 
 @register.inclusion_tag('dirmanage/browseTag.html')
 def twoFrameBrowse(id,startPath='',js_name=None):
