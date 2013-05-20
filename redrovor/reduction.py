@@ -7,6 +7,8 @@ import os.path as path
 import shutil
 import tempfile
 
+import json
+
 import logging
 
 from glob import glob
@@ -92,15 +94,21 @@ always works in place'''
         self.logger.info("Building Lists")
         self.frameTypes = frameTypes.getFrameLists( self.frames ) #get frame types
         self.objects = frameTypes.makeObjectMap( self.frameTypes['object'] )
-        #self.logger.info("Saving frame lists to files")
-        #frameTypes.saveFrameLists(self.frameTypes,zeroFile=self.zerosFile, darkFile=self.darksFile,
-        #    flatFile=self.flatsFile, objectFile=self.objectsFile,unknownFile=self.unknownFile) 
+        #save a cache of the frame info to speed up future uses of the ImProcessor
+        with open(path.join(self.rawFolder,'frameInfo.json'),'w') as f:
+            json.dump([self.frameTypes,self.objects],f)
         return self
     def ensure_frameTypes(self):
         '''ensure that frameTypes is set'''
         if not self.frameTypes:
-            self.logger.warning('Type lists were not previously made, making them now')
-            self.buildLists()
+            frameInfoPath = path.join(self.rawFolder,'frameInfo.json')
+            #if we have a previously made file load that
+            if path.isfile(frameInfoPath):
+                with open(frameInfoPath,'r') as f:
+                    self.frameTypes, self.objects = json.load(f)
+            else: #otherwise build the lists
+                self.logger.warning('Type lists were not previously made, making them now')
+                self.buildLists()
     def makeZero(self):
         #insure that we have the frame types already
         self.ensure_frameTypes()
