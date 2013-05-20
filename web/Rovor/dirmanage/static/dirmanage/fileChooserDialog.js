@@ -12,11 +12,10 @@ function FileChooserDialog(ident,initialPath){
         height: 500,
         width: 500,
         modal: true,
-        title: "Choose a Folder",
+        title: "Choose a File",
         buttons: {
             "Open": function(){
-                proxy.doSelect($(this));
-
+                proxy.doSelect($(this).find(".selected"));
             },
             Cancel: function() {
                 $(this).dialog("close");
@@ -29,8 +28,8 @@ function FileChooserDialog(ident,initialPath){
 
 
 FileChooserDialog.prototype = {
-open: function(callback,caller){
-    this.path = initialPath;
+open: function(callback){
+    this.path = this.initialPath;
     this.populate();
     this.callback = callback;
     this.elem.dialog("open");
@@ -48,7 +47,7 @@ populate: function() {
         proxy.pathTitle.text(data.path);
         for(var i =0, len = data.contents.length; i !== len; ++i){
                 var elem = $("<li class='clickable'>"+data.contents[i].file+"</li>");
-                elem.attr("data-isdir",data.contents[i].isDir);
+                elem.data("isdir",data.contents[i].isDir);
                 elem.prepend($("<img src='"+data.contents[i].icon+"'/>"));
                 elem.click(function(){
                     $(this).addClass("selected");
@@ -63,14 +62,19 @@ populate: function() {
 },
 
 doSelect: function(item){
+    if( !(item && item.length !== 0) ){
+        alert("nothing to do");
+        //nothing is selected
+        return;
+    }
     var newPath = this.path + item.text() + "/";
-    if( item.attr("data-isdir") ){
+    if( item.data("isdir") ){
         this.path = newPath;
         this.populate();
     } else {
         this.elem.dialog("close");
         if( this.callback ){
-            this.callback.call(this.caller,newPath);
+            this.callback.call(null,newPath);
         }
     }
 },

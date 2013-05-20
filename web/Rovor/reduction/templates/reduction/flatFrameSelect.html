@@ -9,12 +9,12 @@ Select Flat Frames
 <script type="text/javascript">
     $(function(){
         $("#flatForm input.browseButton").click(function(){
-            $("#flatDialog").dialog("open");
+            flatDialog.open(selectFlat.bind($(this)));
         });
     });
 
     function selectFlat(path){
-        alert(path);
+        $(this.attr("data-textselector")).val(path);
     }
 </script>
 {% endblock %}
@@ -24,8 +24,8 @@ Select Flat Frames
 <form id="flatForm">
 {% for filt in improc.neededFilters %}
     <p>{{filt}} Flat
-    <input type="text" />
-    <input type="button" class="browseButton" value="browse" />
+    <input type="text" name="flat_{{filt}}" id="flat_{{filt}}"/>
+    <input type="button" class="browseButton" value="browse" data-textselector="#flat_{{filt}}"/>
     </p>
 {% endfor %}
 <p><input type="submit" value="Process" /></p>
