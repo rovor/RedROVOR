@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from glob import glob
 import sys
 
 def ensure_dir(path):
@@ -32,3 +33,11 @@ def writeListToFileName(ll, fname, delimeter='\n'):
 	with open(fname, 'w') as ff:
 		writeListToFile(ll,ff,delimeter)
 	return 
+
+def findFrames(folder):
+    '''find  all fits files in the folder (anything ending with .fits, .fit, .FIT, or .fts'''
+    validExtensions = ['.fits','.fit','.FIT','.fts']
+    frames=list()
+    for ext in validExtensions:
+        frames.extend( glob(folder+'/*'+ext) )
+    return frames
