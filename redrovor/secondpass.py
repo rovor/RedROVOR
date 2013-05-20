@@ -11,6 +11,8 @@ from os import path
 from utils import findFrames
 from frameTypes import getFrameLists, splitByFilter
 
+from process import applyFlat
+
 
 class SecondPassProcessor:
     '''Class for taking care of all the processing needed for 
@@ -50,4 +52,19 @@ class SecondPassProcessor:
         flat processing, returns a set'''
         self.ensure_objectList()
         return list(self.objects.keys())
+    def applyFlats(self,flatDict):
+        '''@brief Apply Flats in \p flatdict to object images in the folder
+
+        For each flat in the dictionary flatDict apply the flats to all object
+        images in that filter
+
+        @param[in] flatDict a dictionary mapping the names of filters to paths
+        of the flat to use for that filter
+        @returns self
+        '''
+        for filt,flat in flatDict.items():
+            if filt and filt in self.objects:
+                applyFlat(flat,*self.objects[filt],save_inplace=True)
+        return self
+                
 
