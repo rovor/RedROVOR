@@ -16,6 +16,9 @@ Select Flat Frames
 
         $("#flatForm").submit(function(e){
             e.preventDefault();
+        });
+
+        $("#flatApplyButton").click(function(){
             var request = {'path': $(this).find("#path_input").val()};
             var flats = {}
             $(this).find('input[type="text"]').each(function(index){
@@ -56,7 +59,9 @@ Select Flat Frames
     <input type="button" class="browseButton" value="browse" data-textselector="#flat_{{filt}}"/>
     </p>
 {% endfor %}
-<p><input type="submit" value="Process" /></p>
+<p><input type="button" id="flatApplyButton" value="Apply Flats" /></p>
+<p><input type="button" id="astrometryButton" value="Apply WCS" /></p>
+<p><input type="button" id="secondPassButton" value="Perform Second Pass" /></p>
 </form>
 
 {% fileChooserDialog 'flatDialog' 'selectFlat' 'Processed/' %}
