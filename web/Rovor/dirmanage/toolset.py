@@ -1,5 +1,5 @@
 
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseBadRequest
 
 import logging
 
@@ -25,7 +25,7 @@ def process_path(request, block):
     will simply be {"ok":true} '''
     if request.method != 'POST':
         logger.info('Non-POST attempt to acces POST-only resource')
-        raise Http404
+        return HttpResponseBadRequest("<h1>This page only accepts POST request, received {0} request</h1>".format(request.method))
     if 'path' in request.POST:
         try:
             path = Filesystem.getTruePath(request.POST['path'])
