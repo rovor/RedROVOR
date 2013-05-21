@@ -9,6 +9,7 @@ import os
 from redrovor import renamer
 from redrovor.process import makeZero
 from redrovor.zerodarkprocess import ZeroDarkProcessor, doFirstPass
+from redrovor.secondpass import SecondPassProcessor, 
 from dirmanage.models import Filesystem
 
 import logging
@@ -73,4 +74,15 @@ def firstPass(request):
     and darks to the object frames, and save them in the processed folder
     '''
     return process_path(request, doFirstPass)
+
+
+def applyZeros(request):
+    '''apply the given flats to the supplied path'''
+    def applier(path):
+        flats = json.loads(request.POST['flats'])
+        improc = SecondPassProcessor(path)
+        improc.applyFlats(flats)
+    return process_path(request,applier)
+        
+
 
