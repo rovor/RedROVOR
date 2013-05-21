@@ -62,7 +62,11 @@ class SecondPassProcessor:
         of the flat to use for that filter
         @returns self
         '''
+        self.logger.info("Applying Flats to "+self.folder)
+        self.ensure_objectList()
         for filt,flat in flatDict.items():
+            self.logger.debug("filt={0}".format(filt))
+            self.logger.debug("flat={0}".format(flat))
             if filt and filt in self.objects:
                 applyFlat(flat,*self.objects[filt],save_inplace=True)
         return self

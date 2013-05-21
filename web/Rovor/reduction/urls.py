@@ -13,5 +13,5 @@ urlpatterns = patterns('',
     url(r'^makeFlats',views.makeFlats),
     url(r'^subZeroDark',views.subZeroDark),
     url(r'^firstPass',views.firstPass),
-    url(r'^applyZeros',view.applyZeros),
+    url(r'^applyFlats',views.applyFlats),
     )

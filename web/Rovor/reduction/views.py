@@ -8,8 +8,8 @@ from redrovor.secondpass import  SecondPassProcessor
 
 #import some views from another module, this allows some seperation
 #between views used for html and views used for AJAX
-from action_views import renameAll, makeZero, makeDark, \
-    makeFlats, subZeroDark, firstPass, applyZeros
+from action_views import renameAll, makeZero, makeDark, makeFlats, \
+    subZeroDark, firstPass, applyFlats
 
 
 from dirmanage.models import Filesystem
@@ -38,7 +38,7 @@ def flatSelectForm(request):
         except (ValueError, Filesystem.DoesNotExist, IOError):
             return render(request,'reduction/flatDirSelect.html',{'error':'Invalid path, try again'})
             
-        context = {'improc':SecondPassProcessor(path)}
+        context = {'improc':SecondPassProcessor(path), 'path':request.POST['path']}
         return render(request, 'reduction/flatFrameSelect.html',context)
     else:
         #we haven't gotten a path yet, so display page to select path

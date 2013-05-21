@@ -1,15 +1,42 @@
 {% extends 'base.html' %}
 {% load FSforms %}
+{% load staticfiles %}
 
 {% block title %}
 Select Flat Frames
 {% endblock %}
 
 {% block header %}
+<script type="text/javascript" src="{% static 'util.js' %}"></script>
 <script type="text/javascript">
     $(function(){
         $("#flatForm input.browseButton").click(function(){
             flatDialog.open(selectFlat.bind($(this)));
+        });
+
+        $("#flatForm").submit(function(e){
+            e.preventDefault();
+            var request = {'path': $(this).find("#path_input").val()};
+            var flats = {}
+            $(this).find('input[type="text"]').each(function(index){
+                flats[$(this).attr("name")] = $(this).val();
+            });
+            request['flats'] = JSON.stringify(flats);
+            $.ajax('/reduce/applyFlats',{
+                crossDomain: false,
+                data:request,
+                headers: {"X-CSRFToken": getCookie("csrftoken")},
+                type: 'POST',
+            }).done(function(data){
+                if(data.ok){
+                    alert("Success!");
+                }else{
+                    alert(data.error);
+                }
+            }).fail(function(xhr,stat,error){
+                alert(stat + ":" + error);
+            });
+            
         });
     });
 
@@ -22,9 +49,10 @@ Select Flat Frames
 {% block content %}
     <h1>Select Flat Frames to use</h1>
 <form id="flatForm">
+    <input type="hidden" name="path" id="path_input" value="{{path}}" />
 {% for filt in improc.neededFilters %}
     <p>{{filt}} Flat
-    <input type="text" name="flat_{{filt}}" id="flat_{{filt}}"/>
+    <input type="text" name="{{filt}}" id="flat_{{filt}}"/>
     <input type="button" class="browseButton" value="browse" data-textselector="#flat_{{filt}}"/>
     </p>
 {% endfor %}
