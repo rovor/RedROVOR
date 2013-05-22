@@ -15,4 +15,5 @@ urlpatterns = patterns('',
     url(r'^firstPass',views.firstPass),
     url(r'^applyFlats',views.applyFlats),
     url(r'^applyWCS',views.appplyWCS),
+    url(r'^secondpass',views.secondPass),
     )

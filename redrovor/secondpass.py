@@ -92,4 +92,9 @@ class SecondPassProcessor:
                     outdir=path.join(self.folder,'WCS')
                 )
 
+def doSecondPass(path,flatDict):
+    '''perform the second pass on images in the given folder'''
+    improc = SecondPassProcessor(path)
+    improc.applyFlats(flatDict)
+    improc.applyWCS()
 

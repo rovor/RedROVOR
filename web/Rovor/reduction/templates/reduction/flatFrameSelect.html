@@ -51,6 +51,16 @@ Select Flat Frames
             });
             alert("WCS request sent\nThe processing will be done asynchronously, since it could take a very long time, look in the WCS subdirectory to confirm success");
         });
+
+        $("#secondPassButton").click(function(){
+            $.ajax('/reduce/secondpass',{
+                crossDomain:false,
+                data: {'path':'{{path}}'},
+                headers: {'X-CSRFToken':getCookie("csrftoken")},
+                type: 'POST',
+            });
+            alert("started second pass\ndon't wait up for it");
+        });
     });
 
     function selectFlat(path){

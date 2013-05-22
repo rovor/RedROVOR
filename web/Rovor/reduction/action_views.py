@@ -9,7 +9,7 @@ import os
 from redrovor import renamer
 from redrovor.process import makeZero
 from redrovor.zerodarkprocess import ZeroDarkProcessor, doFirstPass
-from redrovor.secondpass import SecondPassProcessor 
+from redrovor.secondpass import SecondPassProcessor, doSecondPass
 from dirmanage.models import Filesystem
 
 import logging
@@ -87,10 +87,20 @@ def applyFlats(request):
     return process_path(request,applier)
 
 def applyWCS(request):
+    '''apply world coordinate system to 
+    images'''
     def applier(path):
         improc = SecondPassProcessor(path)
         improc.applyWCS()
     return process_path(request,applier)
+
+def secondPass(request):
+    '''perform the second pass over the folder
+    i.e. apply flats and apply world coordinate system
+    '''
+    return process_path(request,doSecondPass)
+        
+    
         
 
 

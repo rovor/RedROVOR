@@ -9,7 +9,7 @@ from redrovor.secondpass import  SecondPassProcessor
 #import some views from another module, this allows some seperation
 #between views used for html and views used for AJAX
 from action_views import renameAll, makeZero, makeDark, makeFlats, \
-    subZeroDark, firstPass, applyFlats, applyWCS
+    subZeroDark, firstPass, applyFlats, applyWCS, secondPass
 
 
 from dirmanage.models import Filesystem
