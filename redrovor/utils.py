@@ -41,3 +41,8 @@ def findFrames(folder):
     for ext in validExtensions:
         frames.extend( glob(folder+'/*'+ext) )
     return frames
+
+
+def shell_quote(s):
+    'quote string to be safe in shell'
+    return "'" + s.replace("'",r"'\''") + "'"

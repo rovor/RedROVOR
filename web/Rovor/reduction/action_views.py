@@ -85,6 +85,12 @@ def applyFlats(request):
         improc = SecondPassProcessor(path)
         improc.applyFlats(flats)
     return process_path(request,applier)
+
+def applyWCS(request):
+    def applier(path):
+        improc = SecondPassProcessor(path)
+        improc.applyWCS()
+    return process_path(request,applier)
         
 
 

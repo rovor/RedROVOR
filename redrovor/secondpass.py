@@ -6,10 +6,15 @@ NOTE: we may change the name of this module at a later time'''
 
 import logging
 import json
+import pyfits
 from os import path
+
+import observatories
 
 from utils import findFrames
 from frameTypes import getFrameLists, splitByFilter
+from fitsHeader import getRA, getDec
+from coords import astrometrySolve
 
 from process import applyFlat
 
@@ -70,5 +75,21 @@ class SecondPassProcessor:
             if filt and filt in self.objects:
                 applyFlat(flat,*self.objects[filt],save_inplace=True)
         return self
-                
+
+    def applyWCS(self,observatory = observatories.ROVOR):
+        '''apply world coordinate systems to the images using data from
+        the observatory information to set paramaters to astrometry.net'''
+        self.ensure_objectList()
+        for frames in self.objects.values():
+            for frame in frames:
+                header = pyfits.getheader(frame)
+                ra = ':'.join(getRA(header))
+                dec = ':'.join(getDec(header))
+                astrometrySolve(frame,
+                    guess=(ra,dec),
+                    lowscale=observatory.lowscale, 
+                    highscale=observatory.highscale,
+                    outdir=path.join(self.folder,'WCS')
+                )
+
 
