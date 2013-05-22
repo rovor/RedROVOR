@@ -73,6 +73,8 @@ def process_path(request, block):
     will simply be {"ok":true} '''
     try:
         res = PathProcessView.pathOnly(block)(request)
+        if isinstance(res,HttpResponse):
+            return res
     except Exception as err:
         #if there was some kind of uncaught exception return it to the client
         resp = {"ok":False, "error":str(err), "errtype":type(err).__name__,"traceback":traceback.format_exc()}
