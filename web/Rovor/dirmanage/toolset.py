@@ -23,6 +23,7 @@ class PathProcessView(View):
     error_mimetype='text/plain'
     invalidPathResult = 'Invalid path'
     noPathResult = "no path supplied"
+    innerView = None #lambda request,path: return HttpResponse("")  #default behaviour is to do nothing
 
     def post(self,request):
         '''method to wrap the code for getting the true path
@@ -41,8 +42,17 @@ class PathProcessView(View):
     @classmethod
     def decorate(cls, innerView):
         '''decorate a function innerView and change it into a view as 
-        returned by as_view'''
+        returned by as_view
+        the function should take two paramaters: 
+        @param request the request object
+        @param path the true path on the server machine'''
         return cls.as_view(innerView=innerView)
+    @classmethod
+    def pathOnly(cls, innerFunc):
+        '''decorate a function which takes only one paramater, the true path
+        and return a view which will call that function with the true path
+        '''
+        return cls.as_view(innerView= lambda req,path: innerFunc(path))
 
 
 
@@ -62,7 +72,7 @@ def process_path(request, block):
     if block returns None the result
     will simply be {"ok":true} '''
     try:
-        res = PathProcessPath.as_view(innerView=block)(request)
+        res = PathProcessView.pathOnly(block)(request)
     except Exception as err:
         #if there was some kind of uncaught exception return it to the client
         resp = {"ok":False, "error":str(err), "errtype":type(err).__name__,"traceback":traceback.format_exc()}

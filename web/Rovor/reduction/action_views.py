@@ -11,11 +11,11 @@ from redrovor.process import makeZero
 from redrovor.zerodarkprocess import ZeroDarkProcessor, doFirstPass
 from redrovor.secondpass import SecondPassProcessor, doSecondPass
 from dirmanage.models import Filesystem
+from dirmanage.toolset import process_path
 
 import logging
 logger = logging.getLogger('Rovor')
 
-from dirmanage.toolset import process_path
 
 
 @login_required
