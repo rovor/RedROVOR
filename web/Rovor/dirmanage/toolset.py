@@ -1,5 +1,6 @@
 
 from django.http import Http404, HttpResponse, HttpResponseBadRequest
+from django.views.generic import View
 
 import logging
 
@@ -12,8 +13,45 @@ import json
 import traceback
 
 
+
+class PathProcessView(View):
+    '''View class for Views that want to use the true path from
+    a path provided by the 'path' POST request
+    '''
+
+    http_method_names = ['post','options']  #only allow post requests
+    error_mimetype='text/plain'
+    invalidPathResult = 'Invalid path'
+    noPathResult = "no path supplied"
+
+    def post(self,request):
+        '''method to wrap the code for getting the true path
+        and calling the actual code, which takes too paramaters,
+        the request object and the path and returns an HttpResponse'''
+        if 'path' in request.POST:
+            try: 
+                path = Filesystem.getTruePath(request.POST['path'])
+            except (ValueError, Filesystem.DoesNotExist, IOError):
+                logger.info("Attempted access to invalid path: "+request.POST['path'])
+                return HttpResponseBadRequest(self.invalidPathResult, mimetype=error_mimetype)
+            return self.innerView(request,path)
+        else:
+            return HttpResponseBadRequest(noPathResult, mimetype=error_mimetype)
+
+    @classmethod
+    def decorate(cls, innerView):
+        '''decorate a function innerView and change it into a view as 
+        returned by as_view'''
+        return cls.as_view(innerView=innerView)
+
+
+
+
 def process_path(request, block):
-    '''helper function to abstract common code when accessing 
+    '''
+    @deprecated[use the PathProcessView and PathProcessView.decorate instead]
+    
+    helper function to abstract common code when accessing 
     a path over POST method. This will check that the method is POST
     and that path is a supplied field and a valid path, if it is not
     it will return a proper HttpResponse. If path is a valid path,
@@ -23,26 +61,15 @@ def process_path(request, block):
     
     if block returns None the result
     will simply be {"ok":true} '''
-    if request.method != 'POST':
-        logger.info('Non-POST attempt to acces POST-only resource')
-        return HttpResponseBadRequest("<h1>This page only accepts POST request, received {0} request</h1>".format(request.method))
-    if 'path' in request.POST:
-        try:
-            path = Filesystem.getTruePath(request.POST['path'])
-        except (ValueError, Filesystem.DoesNotExist, IOError):
-            logger.info('Attempted access to invalid path: '+request.POST['path'])
-            return HttpResponse('{"ok":false,"error":"Invalid path"}',mimetype='application/json')
-        try:
-            res = block(path)
-        except Exception as err:
-            #if there was some kind of uncaught exception return it to the client
-            resp = {"ok":False, "error":str(err), "errtype":type(err).__name__,"traceback":traceback.format_exc()}
-            return HttpResponse(json.dumps(resp),mimetype='application/json')
-        #default to simply responding an ok response if return was false
-        if res is None:
-            res = '{"ok":true}'
-        else:
-            res = json.dumps(res)
-        return HttpResponse(res,mimetype='application/json')
+    try:
+        res = PathProcessPath.as_view(innerView=block)(request)
+    except Exception as err:
+        #if there was some kind of uncaught exception return it to the client
+        resp = {"ok":False, "error":str(err), "errtype":type(err).__name__,"traceback":traceback.format_exc()}
+        return HttpResponse(json.dumps(resp),mimetype='application/json')
+    #default to simply responding an ok response if return was false
+    if res is None:
+        res = '{"ok":true}'
     else:
-        return HttpResponse('{"ok":false,"error":"No Path supplied"}',mimetype='application/json')
+        res = json.dumps(res)
+    return HttpResponse(res,mimetype='application/json')
