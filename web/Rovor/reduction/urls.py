@@ -14,4 +14,5 @@ urlpatterns = patterns('',
     url(r'^subZeroDark',views.subZeroDark),
     url(r'^firstPass',views.firstPass),
     url(r'^applyFlats',views.applyFlats),
+    url(r'^applyWCS',views.appplyWCS),
     )

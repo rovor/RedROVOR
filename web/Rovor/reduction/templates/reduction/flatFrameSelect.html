@@ -41,6 +41,16 @@ Select Flat Frames
             });
             
         });
+
+        $("#astrometryButton").click(function(){
+            $.ajax('/reduce/applyWCS',{
+                crossDomain: false,
+                data: {'path':'{{path}}'},
+                headers: {"X-CSRFToken":getCookie("csrftoken")},
+                type: 'POST',
+            });
+            alert("WCS request sent\nThe processing will be done asynchronously, since it could take a very long time, look in the WCS subdirectory to confirm success");
+        });
     });
 
     function selectFlat(path){
