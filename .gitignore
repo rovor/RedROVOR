@@ -14,4 +14,9 @@ logfile   #ignore the logfile
 *.log     #ignore other logfiles
 */*.log
 
+#ignore build directory
+./build
+#ignore static files
+./rovorweb/static
+
 
