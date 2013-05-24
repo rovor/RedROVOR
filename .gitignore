@@ -14,9 +14,13 @@ logfile   #ignore the logfile
 *.log     #ignore other logfiles
 */*.log
 
+*.sqlite
+
 #ignore build directory
 /build/
 #ignore static files
 /rovorweb/static/
+#ignore the production settings
+/rovorweb/rovorweb/settings.production.py
 
 
