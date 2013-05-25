@@ -1,5 +1,5 @@
-
-web_prefix=/var/www    #location to install the rovorweb web application to
+#location to install the rovorweb web application to
+web_prefix=/var/www
 
 #the module to use for the settings, this assumes that there is a module called settings.production.py
 # in the rovorweb/rovorweb folder (i.e. where the setting.py file should be, which in our case is simply a symlink)
@@ -22,9 +22,10 @@ install_redrovor:
 install_rovorweb:
 	cp -r rovorweb $(web_prefix)
 	$(web_prefix)/rovorweb/manage.py collectstatic #collect static files for use in the website
-	ifeq ($(wildcard $(settings_module_path)),)
-		ln -s $(settings_path) $(settings_module_path)   #make link for settings
-	endif
+ifeq ($(wildcard $(settings_module_path)),)
+	#make link for settings
+	ln -sf  $(settings_module_path)   $(settings_path)
+endif
 
 
 
