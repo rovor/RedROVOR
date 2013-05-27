@@ -8,6 +8,10 @@ settings_module=settings.production.py
 settings_module_path=$(web_prefix)/rovorweb/rovorweb/$(settings_module)
 settings_path=$(web_prefix)/rovorweb/rovorweb/settings.py
 
+#any aptions to pass to python when compiling
+#for example to optimize use -O or -OO
+pcompile_options=""
+
 
 
 none:
@@ -29,6 +33,8 @@ ifneq ($(wildcard $(settings_module_path)),)
 	#delete compiled settings if they exist
 	rm -f $(web_prefix)/rovorweb/rovorweb/settings.pyc
 endif
+	#compile pyc files for rovorweb
+	python $(pcompile_options) -m compileall $(web_prefix)/rovorweb >/dev/null
 
 
 
