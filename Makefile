@@ -10,7 +10,7 @@ settings_path=$(web_prefix)/rovorweb/rovorweb/settings.py
 
 #any aptions to pass to python when compiling
 #for example to optimize use -O or -OO
-pcompile_options=""
+pcompile_options=
 
 
 
