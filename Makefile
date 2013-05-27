@@ -23,11 +23,11 @@ install_rovorweb:
 	cp -r rovorweb $(web_prefix)
 	#collect static files for use in the website
 	$(web_prefix)/rovorweb/manage.py collectstatic -l --noinput
-ifeq ($(wildcard $(settings_module_path)),)
+ifneq ($(wildcard $(settings_module_path)),)
 	#make link for settings
 	ln -sf  $(settings_module_path)   $(settings_path)
 	#delete compiled settings if they exist
-	rm $(web_prefix)/rovorweb/rovorweb/settings.pyc
+	rm -f $(web_prefix)/rovorweb/rovorweb/settings.pyc
 endif
 
 
