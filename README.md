@@ -41,6 +41,7 @@ You should configure your server to use SSL, and to run a django site, probably 
 and Django deployment for more information.
 
 For Apache a sample configuration (assuming SSL and WSGI are loaded and configured) is:
+```apache
 
 WSGISocketPrefix run/wsgi
 
@@ -64,6 +65,7 @@ Order deny,allow
 Allow from all
 </Files>
 </Directory>
+```
 
 Note that WSGISocketPrefix must be in the global context, and that we have set
 up an alias for /static to /var/www/rovorweb/static, which is necessary in order to access static files such as css, javascript, and images. 
