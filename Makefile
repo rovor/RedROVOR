@@ -29,6 +29,8 @@ ifneq ($(wildcard $(settings_module_path)),)
 	#delete compiled settings if they exist
 	rm -f $(web_prefix)/rovorweb/rovorweb/settings.pyc
 endif
+	#compile pyc files for rovorweb
+	python -m compileall $(web_prefix)/rovorweb >/dev/null
 
 
 
