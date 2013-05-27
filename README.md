@@ -70,6 +70,8 @@ Allow from all
 Note that WSGISocketPrefix must be in the global context, and that we have set
 up an alias for /static to /var/www/rovorweb/static, which is necessary in order to access static files such as css, javascript, and images. 
 
+This assumes that your web directory is /var/www
+
 Special Issues
 -------------
 
@@ -79,4 +81,4 @@ Special Issues
 * Since we were using RedHat we needed to enable the httpd_can_network_connect boolean in SELinux to be visible to the outside world
 * We also needed to update iptables to allow traffic on ports 443 and 80 (https and http respectevely)
 
-This assumes that your web directory is /var/www
+
