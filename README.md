@@ -37,6 +37,8 @@ At the very least your production settings should include the following:
 * Set SECRET_KEY to a random secret key which you DO NOT SHARE! Please DO NOT USE SAME SECRET_KEY AS IN settings.development.py
 * Set ALLOWED_HOSTS to the hosts that you will accept requests to
 
+You may also want to set up your email system in the settings
+
 You should configure your server to use SSL, and to run a django site, probably using WSGI. Please see documentatin for your server
 and Django deployment for more information.
 

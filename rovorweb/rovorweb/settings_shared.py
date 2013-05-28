@@ -6,7 +6,6 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(__file__))   #get the directory o
 
 
 ADMINS = (
-     ('Thayne McCombs', 'astrothayne@gmail.com'),
      ('ROVOR-admin', ''),
 )
 
