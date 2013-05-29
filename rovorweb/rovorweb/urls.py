@@ -12,6 +12,7 @@ urlpatterns = patterns('',
     url(r'^reduce/',include('reduction.urls')),
     url(r'^odb/',include('obs_database.urls')), #observation database
     url(r'^accounts/',include('accounts.urls')),
+    url(r'^targets/',include('targets.urls')),
     # Examples:
     # url(r'^$', 'Rovor.views.home', name='home'),
     # url(r'^Rovor/', include('Rovor.foo.urls')),

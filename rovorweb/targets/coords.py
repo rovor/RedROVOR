@@ -31,10 +31,14 @@ class RA_coord(object):
         return "{0:02}:{1:02}:{2:05.2f}".format(self.h,self.m,self.s)
     @classmethod
     def fromStr(cls,s):
-        '''retrieve the RA from a string in the fromat hh:mm:ss.ss'''
+        '''retrieve the RA from a string in the fromat hh:mm:ss.ss
+        if invalid format return None'''
         match = RA_coord.ra_expr.match(s)
-        h,m,s = match.group(1,2,3)
-        return cls(h,m,s)
+        if match:
+            h,m,s = match.group(1,2,3)
+            return cls(h,m,s)
+        else:
+            return None
     @classmethod
     def fromHours(cls,hrs):
         '''convert to RA_coord from decimal representation of RA in hours'''
@@ -94,10 +98,14 @@ class Dec_coord(object):
         return "{0:+03}:{1:02}:{2:05.2f}".format(self.d,self.m,self.s)
     @classmethod
     def fromStr(cls,s):
-        '''retrieve the dec from a string in the fromat hh:mm:ss.ss'''
-        match = RA_coord.ra_expr.match(s)
-        d,m,s = match.group(1,2,3)
-        return cls(d,m,s)
+        '''retrieve the dec from a string in the fromat hh:mm:ss.ss
+        if invalid format return none'''
+        match = Dec_coord.dec_expr.match(s)
+        if match:
+            d,m,s = match.group(1,2,3)
+            return cls(d,m,s)
+        else:
+            return None
     @classmethod
     def fromDegrees(cls,deg):
         '''convert to Dec_coord from decimal representation of dec in degrees'''

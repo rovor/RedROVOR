@@ -12,8 +12,8 @@ from coords import Coords
 class Target(models.Model):
     '''model for target objects (i.e. astronomical objects we are observing)'''
 
-    name = models.CharField(max_length=100) #name we use for object
-    simbadName = models.CharField(max_length=100)  #the primary name for it in simbad
+    name = models.CharField(unique=True,max_length=100) #name we use for object
+    simbadName = models.CharField(unique=True,max_length=100)  #the primary name for it in simbad
     ra = RAField()
     dec = DecField()
 

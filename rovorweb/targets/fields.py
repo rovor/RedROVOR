@@ -21,15 +21,15 @@ class RAField(models.Field):
 
     def to_python(self,value):
         '''get python value from serialized place'''
-        if isinstance(value,str):
+        if isinstance(value,str) or isinstance(value,unicode):
             try:
                 return RA_coord.fromStr(value)
             except:
-                raise ValidationError("Invalid input for RA")
-        elif isinstance(value, RA_coord):
+                raise ValidationError("Invalid input for RA: "+value)
+        elif isinstance(value, RA_coord) or value is None:
             return value
         else:
-            raise TypeError("unable to convert to RA_coord")
+            raise TypeError("unable to convert {0} of type {1} to RA_coord",value,type(value).__name__)
     def get_prep_value(self,value):
         '''prepare value for serialization'''
         return str(value)
@@ -71,12 +71,12 @@ class DecField(models.Field):
 
     def to_python(self,value):
         '''get python value from serialized place'''
-        if isinstance(value,str):
+        if isinstance(value,str) or isinstance(value,unicode):
             try:
                 return Dec_coord.fromStr(value)
             except:
-                raise ValidationError("Invalid input for Declination")
-        elif isinstance(value, Dec_coord):
+                raise ValidationError("Invalid input for Declination:"+str(value))
+        elif isinstance(value, Dec_coord) or value is None:
             return value
         else:
             raise TypeError("unable to convert to Dec_coord")
