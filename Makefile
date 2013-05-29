@@ -25,6 +25,11 @@ install_redrovor:
 
 install_rovorweb:
 	cp -r rovorweb $(web_prefix)
+	#detele any static and media files we might have
+	rm -rf $(web_prefix)/rovorweb/static/*
+	rm -rf $(web_prefix)/rovorweb/media/*
+	#set read and write permission for everyone in the media folder
+	chmod 777 $(web_prefix)/rovorweb/media
 	#collect static files for use in the website
 	$(web_prefix)/rovorweb/manage.py collectstatic -l --noinput
 ifneq ($(wildcard $(settings_module_path)),)
@@ -35,6 +40,7 @@ ifneq ($(wildcard $(settings_module_path)),)
 endif
 	#compile pyc files for rovorweb
 	python $(pcompile_options) -m compileall $(web_prefix)/rovorweb >/dev/null
+
 
 
 

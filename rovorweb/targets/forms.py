@@ -23,7 +23,13 @@ class RAWidget(forms.MultiWidget):
 
     def __init__(self, attrs=None):
         '''initalize RAWidget '''
-        widgets  = [forms.widgets.TextInput(), forms.widgets.TextInput(), forms.widgets.TextInput()]
+        nattrs = {'maxlength':2, 'size':2}
+        sattrs = {'maxlength':5, 'size':5}
+        widgets  = [
+            forms.widgets.TextInput(attrs=nattrs), 
+            forms.widgets.TextInput(attrs=nattrs), 
+            forms.widgets.TextInput(attrs=sattrs)
+        ]
         super(RAWidget,self).__init__(widgets=widgets,attrs=attrs)
 
     def decompress(self, value):
@@ -56,7 +62,14 @@ class DecWidget(forms.MultiWidget):
 
     def __init__(self, attrs=None):
         '''initalize DecWidget '''
-        widgets  = [forms.widgets.TextInput(), forms.widgets.TextInput(), forms.widgets.TextInput()]
+        dattrs = {'maxlength':3, 'size':3}
+        mattrs = {'maxlength':2, 'size':2}
+        sattrs = {'maxlength':5, 'size':5}
+        widgets  = [
+            forms.widgets.TextInput(attrs=dattrs), 
+            forms.widgets.TextInput(attrs=mattrs), 
+            forms.widgets.TextInput(attrs=sattrs)
+        ]
         super(DecWidget,self).__init__(widgets=widgets,attrs=attrs)
 
     def decompress(self, value):

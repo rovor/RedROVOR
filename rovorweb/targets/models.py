@@ -21,6 +21,9 @@ class Target(models.Model):
     def coords(self):
         return Coords(ra=ra,dec=dec)
 
+    def __str__(self):
+        return self.name
+
 
 def getUploadPath(self, filename):
     '''compute the file path for an uploaded coordfile
