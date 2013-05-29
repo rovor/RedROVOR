@@ -2,6 +2,7 @@
 
 from decimal import Decimal
 from collections import namedtuple
+from math import copysign
 import re
 
 class RA_coord(object):
@@ -22,6 +23,9 @@ class RA_coord(object):
     def toDegrees(self):
         '''convert the RA to degrees and return the result as a Decimal'''
         return  self.toHours()*15
+    def toASeconds(self):
+        '''compute the RA in arcseconds (more accurate representation for numeric computation'''
+        return 15*(self.h*3600 + self.m*60 + self.s)
     def __str__(self):
         '''convert to a string of numbers seperated by colons'''
         return "{0:02}:{1:02}:{2:05.2f}".format(self.h,self.m,self.s)
@@ -47,6 +51,11 @@ class RA_coord(object):
         if isinstance(deg,float):
             deg = "{0:.2}".format(deg)
         return cls.fromHours(Decimal(deg)/15)
+
+    def __sub__(self, other):
+        '''compute the difference between two RA measures
+        in arcseconds'''
+        return self.toASeconds() - other.toASeconds()
 
     @property
     def hours(self):
@@ -75,7 +84,11 @@ class Dec_coord(object):
         self.s = abs(Decimal(s))
     def toDegrees(self):
         '''return the dec as a Decimal approximation'''
-        return self.d+Decimal(self.m)/60 +Decimal(self.s)/3600
+        return copysign(abs(self.d)+Decimal(self.m)/60 +Decimal(self.s)/3600,self.d)
+    def toASeconds(self):
+        '''compute the declination in arcseconds'''
+        return self.d*3600 + self.m*60 + self.s
+
     def __str__(self):
         '''convert to a string of numbers seperated by colons'''
         return "{0:+03}:{1:02}:{2:05.2f}".format(self.d,self.m,self.s)
@@ -88,13 +101,16 @@ class Dec_coord(object):
     @classmethod
     def fromDegrees(cls,deg):
         '''convert to Dec_coord from decimal representation of dec in degrees'''
-        tmp = deg
-        h = int(tmp)
+        tmp = abs(deg)
+        d = copysign(int(tmp),deg)   #keep sign in the degrees part
         tmp *= 60
         m = int(tmp % 60)
         tmp *= 60
         s = tmp % 60
-        return cls(h,m,s)
+        return cls(d,m,s)
+    def __sub__(self,other):
+        '''compute the difference between two declinations in arcseconds'''
+        return self.toASeconds() - other.toASeconds()
 
     @property
     def degrees(self):
@@ -107,3 +123,12 @@ class Dec_coord(object):
         return self.s
 
 Coords = namedtuple('Coords',['ra','dec']) #type for tuple of ra and dec
+
+def __cwithinradius(self, other,radius):
+    '''compute whether or not the other Coords is within radius arcseconds of
+    self, this assumes rectangular coordinates so it is only accurate if the 
+    two objects are close to each other'''
+    return (self.ra-other.ra)**2 + (self.dec-other.dec)**2 < radius**2
+
+Coords.withinRadius = __cwithinradius
+

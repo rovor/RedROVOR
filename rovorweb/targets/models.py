@@ -1,4 +1,5 @@
 from django.db import models
+from django.forms import ModelForm
 
 from fields import RAField, DecField
 from coords import Coords
@@ -19,3 +20,24 @@ class Target(models.Model):
     @property
     def coords(self):
         return Coords(ra=ra,dec=dec)
+
+
+def getUploadPath(self, filename):
+    '''compute the file path for an uploaded coordfile
+    This assumes that the target field has been set'''
+    return "coordfiles/{0:s}/{1:s}".format(self.target.name,filename)
+
+class CoordFileModel(models.Model):
+    '''model for coordinate files that have been uploaded'''
+    target = models.ForeignKey(Target)  #the target the coordfile is for
+    coordfile = models.FileField(upload_to=getUploadPath,null=True)
+
+#forms for the models
+
+class TargetForm(ModelForm):
+    class Meta:
+        model = Target
+
+class CoordFileModelForm(ModelForm):
+    class Meta:
+        model = CoordFileModel

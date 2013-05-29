@@ -3,6 +3,8 @@ from django.core.exceptions import ValidationError
 
 from coords import RA_coord, Dec_coord
 
+import forms
+
 class RAField(models.Field):
     description = "The Right Ascension of an object or image"
 
@@ -44,8 +46,12 @@ class RAField(models.Field):
     def value_to_string(self,obj):
         value = self._get_val_from_obj(obj)
         return self.get_prep_value(value)
-
-    #TODO define a formfield for this
+    
+    def formfield(self, **kwargs):
+        defaults = {'form_class': forms.RAField}
+        defaults.update(kwargs)
+        return super(RAField, self).formfield(**defaults)
+        
 
 
 
@@ -91,6 +97,10 @@ class DecField(models.Field):
         value = self._get_val_from_obj(obj)
         return self.get_prep_value(value)
 
-    #TODO define a formfield for this
+    def formfield(self, **kwargs):
+        defaults = {'form_class': forms.DecField}
+        defaults.update(kwargs)
+        return super(DecField, self).formfield(**defaults)
+
 
 
