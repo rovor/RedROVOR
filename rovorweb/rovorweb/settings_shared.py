@@ -125,6 +125,7 @@ INSTALLED_APPS = (
     'accounts',
     'reduction',
     'obs_database',
+    'targets',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -167,7 +168,7 @@ LOGGING = {
     },
     'loggers': {
         'django.request': {
-            'handlers': ['mail_admins'],
+            'handlers': ['mail_admins','console'],
             'level': 'ERROR',
             'propagate': True,
         },
