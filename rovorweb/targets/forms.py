@@ -1,8 +1,6 @@
 from django import forms
-from coords import RA_coord, Dec_coord
+from redrovor.coords import RA_coord, Dec_coord
 from decimal import Decimal
-
-
 
 class RAField(forms.MultiValueField):
     '''Form field for inputting RA'''

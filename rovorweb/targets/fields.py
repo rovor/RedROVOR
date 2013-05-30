@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 
-from coords import RA_coord, Dec_coord
+from redrovor.coords import RA_coord, Dec_coord
 
 import forms
 

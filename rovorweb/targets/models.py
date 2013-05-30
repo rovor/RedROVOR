@@ -2,7 +2,7 @@ from django.db import models
 from django.forms import ModelForm
 
 from fields import RAField, DecField
-from coords import Coords
+from redrovor.coords import Coords
 
 # Create your models here.
 
