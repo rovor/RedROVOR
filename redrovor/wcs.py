@@ -1,12 +1,9 @@
-'''classes for holding coordinate objects'''
+#!/usr/bin/python
 
-from decimal import Decimal
+import os
+from subprocess import Popen
 from collections import namedtuple
-from math import copysign
-import re
 
-class RA_coord(object):
-    '''A coordinate in RA'''
 
 SOLVE_PATH = "/usr/local/astrometry/bin/solve-field"
 

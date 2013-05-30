@@ -20,7 +20,6 @@ import updateHeaders
 import frameTypes
 import process
 #import imProc
-import coords
 
 from utils import writeListToFileName, getTimeString
 

@@ -14,7 +14,7 @@ import observatories
 from utils import findFrames
 from frameTypes import getFrameLists, splitByFilter
 from fitsHeader import getRA, getDec
-from coords import astrometrySolve
+from wcs import astrometrySolve
 
 from process import applyFlat
 
