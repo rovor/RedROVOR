@@ -7,4 +7,5 @@ urlpatterns = patterns('',
     url(r'addObject',views.addObject),
     url(r'^targetList',views.targetList),
     url(r'^uploadCoordfile',views.uploadCoordFile),
+    url(r'^editTargets',views.edit_targets),
 )

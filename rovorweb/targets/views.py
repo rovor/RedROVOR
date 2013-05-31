@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedire
 from django.template import Context, loader
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from django.forms.models import modelformset_factory
 
 
 from models import Target,TargetForm, CoordFileModelForm
@@ -46,3 +47,8 @@ def uploadCoordFile(request):
         form = CoordFileModelForm()
     return render(request, 'targets/uploadCoordFile.html',{'form':form})
 
+
+def edit_targets(request):
+    '''allow user to edit targets in database'''
+    formset = modelformset_factory(Target)
+    return render(request, 'targets/edit_objs.html',{'formset':formset}
