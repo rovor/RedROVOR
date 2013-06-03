@@ -32,8 +32,12 @@
         <ul class="link-list">
             <li><a href="/reduce">Reduce Data</a></li>
             <li><a href="/files">Browse Filesystem</a></li>
+            <li><a href="/targets/editTargets">Edit Targets</a></li>
             <li><a href="/admin">Administration</a></li>
             <li><a href="/accounts/logout">Logout</a></li>
+            {% block moreLinks %}
+            {# allow user to add more links if so desired #}
+            {% endblock %}
         </ul>
         </div>
         {% endblock %}
