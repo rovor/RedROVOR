@@ -3,10 +3,9 @@ from django.forms import ModelForm
 
 from fields import RAField, DecField
 from redrovor.coords import Coords
+import forms
 
 # Create your models here.
-
-
 
 
 class Target(models.Model):
@@ -19,7 +18,7 @@ class Target(models.Model):
 
     @property
     def coords(self):
-        return Coords(ra=ra,dec=dec)
+        return Coords(ra=self.ra,dec=self.dec)
 
     def __str__(self):
         return self.name
@@ -42,8 +41,8 @@ class TargetForm(ModelForm):
         model = Target
 
 class ShortTargetForm(ModelForm):
-    #ra = RAField(label='Right Ascension',required=False)
-    #dec = DecField(label='Declination', required=False)
+    ra = forms.RAField(label='Right Ascension',required=False)
+    dec = forms.DecField(label='Declination', required=False)
     class Meta:
         model = Target
         fields=['name','ra','dec']
