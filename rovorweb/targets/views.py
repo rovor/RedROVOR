@@ -8,7 +8,8 @@ from django.forms.models import modelformset_factory
 from django.forms.formsets import formset_factory
 
 
-from models import Target,TargetForm, CoordFileModelForm, ShortTargetForm
+from models import Target
+from forms import TargetForm, CoordFileModelForm, ShortTargetForm
 
 def index(request):
     '''index page, just view a list
@@ -55,7 +56,7 @@ def edit_targets(request):
     if request.method == 'POST':
         formset = TargetFormset(request.POST)
         if formset.is_valid():
-            pass
+            formset.save()
     else:
         formset = TargetFormset()
     return render(request, 'targets/edit_objs.html',{'formset':formset})

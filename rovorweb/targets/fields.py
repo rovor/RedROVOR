@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 
 from redrovor.coords import RA_coord, Dec_coord
 
-import forms
+import form_fields
 
 class RAField(models.Field):
     description = "The Right Ascension of an object or image"
@@ -48,7 +48,7 @@ class RAField(models.Field):
         return self.get_prep_value(value)
     
     def formfield(self, **kwargs):
-        defaults = {'form_class': forms.RAField}
+        defaults = {'form_class': form_fields.RAField}
         defaults.update(kwargs)
         return super(RAField, self).formfield(**defaults)
         
@@ -98,7 +98,7 @@ class DecField(models.Field):
         return self.get_prep_value(value)
 
     def formfield(self, **kwargs):
-        defaults = {'form_class': forms.DecField}
+        defaults = {'form_class': form_fields.DecField}
         defaults.update(kwargs)
         return super(DecField, self).formfield(**defaults)
 

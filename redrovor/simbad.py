@@ -1,4 +1,5 @@
 from urllib import urlopen,urlencode
+from coords import RA_coord, Dec_coord,Coords
 
 SIMBAD_URL = "http://simbad.u-strasbg.fr/simbad/"
 SIMBAD_SCRIPT_URL = SIMBAD_URL + "/sim-script"
@@ -10,7 +11,6 @@ def script_request(script):
     of strings (each item is a single line of the output)'''
     #first prepend a line to quiet the console and script echo
     script = "output console=off script=off\n" + script
-    print script
     resource = urlopen(SIMBAD_SCRIPT_URL, urlencode({'script':script}))
     result = [x.strip() for x in resource if x.strip()] 
     resource.close()
@@ -52,6 +52,7 @@ def getMainName(name):
     if the name wasn't found return the name that was passed in'''
     script = r'''format object "%IDLIST(1)[%*(S)]"
     query id {0}'''.format(name)
+    result = script_request(script)
     if ':error:' in result[0]:
         #error, so just return the name that was given to us
         return name

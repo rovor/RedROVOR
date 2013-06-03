@@ -1,9 +1,7 @@
 from django.db import models
-from django.forms import ModelForm
 
 from fields import RAField, DecField
 from redrovor.coords import Coords
-import forms
 
 # Create your models here.
 
@@ -16,9 +14,18 @@ class Target(models.Model):
     ra = RAField()
     dec = DecField()
 
-    @property
-    def coords(self):
+    def get_coords(self):
         return Coords(ra=self.ra,dec=self.dec)
+    def set_coords(self, coords):
+        '''set coordinates from a Coords object
+        or tuple of ra and dec'''
+        if not coords:
+            self.ra = None
+            self.dec = None
+        else:
+            self.ra, self.dec = coords
+
+    coords = property(get_coords,set_coords)
 
     def __str__(self):
         return self.name
@@ -33,24 +40,3 @@ class CoordFileModel(models.Model):
     '''model for coordinate files that have been uploaded'''
     target = models.ForeignKey(Target)  #the target the coordfile is for
     coordfile = models.FileField(upload_to=getUploadPath,null=True)
-
-#forms for the models
-
-class TargetForm(ModelForm):
-    class Meta:
-        model = Target
-
-class ShortTargetForm(ModelForm):
-    ra = forms.RAField(label='Right Ascension',required=False)
-    dec = forms.DecField(label='Declination', required=False)
-    class Meta:
-        model = Target
-        fields=['name','ra','dec']
-class TargetNameOnlyForm(ModelForm):
-    class Meta:
-        model = Target
-        fields=['name']
-
-class CoordFileModelForm(ModelForm):
-    class Meta:
-        model = CoordFileModel
