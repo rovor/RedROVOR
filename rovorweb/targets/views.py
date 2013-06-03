@@ -5,9 +5,10 @@ from django.template import Context, loader
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.forms.models import modelformset_factory
+from django.forms.formsets import formset_factory
 
 
-from models import Target,TargetForm, CoordFileModelForm
+from models import Target,TargetForm, CoordFileModelForm, ShortTargetForm
 
 def index(request):
     '''index page, just view a list
@@ -50,5 +51,11 @@ def uploadCoordFile(request):
 
 def edit_targets(request):
     '''allow user to edit targets in database'''
-    formset = modelformset_factory(Target)
-    return render(request, 'targets/edit_objs.html',{'formset':formset}
+    TargetFormset = modelformset_factory(Target,form=ShortTargetForm,can_delete=True)
+    if request.method == 'POST':
+        formset = TargetFormset(request.POST)
+        if formset.is_valid():
+            pass
+    else:
+        formset = TargetFormset()
+    return render(request, 'targets/edit_objs.html',{'formset':formset})

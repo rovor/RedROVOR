@@ -41,6 +41,17 @@ class TargetForm(ModelForm):
     class Meta:
         model = Target
 
+class ShortTargetForm(ModelForm):
+    #ra = RAField(label='Right Ascension',required=False)
+    #dec = DecField(label='Declination', required=False)
+    class Meta:
+        model = Target
+        fields=['name','ra','dec']
+class TargetNameOnlyForm(ModelForm):
+    class Meta:
+        model = Target
+        fields=['name']
+
 class CoordFileModelForm(ModelForm):
     class Meta:
         model = CoordFileModel

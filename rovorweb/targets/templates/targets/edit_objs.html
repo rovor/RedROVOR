@@ -1,25 +1,36 @@
 {% extends 'base.html' %}
 
-{% block title %}Edit Targets{% block title %}
+{% block title %}Edit Targets{% endblock title %}
 
 {% block content %}
 <h1>Targets</h1>
-<table>
-    <tr>
-        <th></th>
-        <th>Name</th>
-        <th>Right Ascension</th>
-        <th>Declination</th>
-        <th></th>
-    </tr>
+<form method="post" action="">
+    {% csrf_token %}
+    {{formset.management_form }}
+    <table>
+    <thead><tr>
+    <th>Name</th>
+    <th>Right Ascension</th>
+    <th>Declination</th>
+    <th>Delete</th>
+    </tr></thead>
     {% for form in formset %}
-    <tr>
-        {{ form.id }}
-        <td>{{ form.name }}</td>
-        <td>{{ form.ra }}</td>
-        <td>{{ form.dec }}</td>
-    </tr>
+        <tr class="{% cycle row1,row2 %}">
+            {% for field in form.visible_fields %}
+            <td>
+                {% if forloop.first %}
+                    {# include hidden fields #}
+                    {% for hidden in form.hidden_fields %}
+                    {{hidden}}
+                    {% endfor %}
+                {% endif %}
+                {{field.errors.as_ul}}
+                {{field}}
+            </td>
+            {% endfor %}
+        </tr>
     {% endfor %}
-
-</table>
+    </table>
+    <input type="submit" value="Save" />
+</form>
 {% endblock %}
