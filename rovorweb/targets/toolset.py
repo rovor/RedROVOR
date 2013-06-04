@@ -3,8 +3,6 @@ from django.views.generic import View
 
 from mimeparse import best_match
 
-
-
 class html_or_json(View):
     html_view = None
     json_view = None
@@ -12,7 +10,10 @@ class html_or_json(View):
     def dispatch(self,request, *args, **kwargs):
         '''determine appropriate content-type
         and dispatch to that method'''
-        content_type = best_match({'text/html','application/json'},
+        if 'HTTP_ACCEPT' not in request.META:
+            #default to json
+            return self.json_view(request,*args,**kwargs)
+        content_type = best_match(['text/html','application/json'],
                 request.META['HTTP_ACCEPT'])
         if content_type == 'application/json' and self.json_view:
             return self.json_view(request,*args, **kwargs)
