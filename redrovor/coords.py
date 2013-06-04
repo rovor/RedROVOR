@@ -8,7 +8,7 @@ import re
 class RA_coord(object):
     '''A coordinate in RA'''
 
-    ra_expr = re.compile(r'(\d{1,2})[: ](\d{1,2})[: ](\d{1,2}(\.\d+))?')
+    ra_expr = re.compile(r'(\d{1,2})[: ](\d{1,2})[: ](\d{1,2}(\.\d+)?)')
     def __init__(self,h,m,s):
         '''intialize with hours, minutes, and seconds
         note that the signs are ignored since RA is always positive '''
@@ -29,6 +29,9 @@ class RA_coord(object):
     def __str__(self):
         '''convert to a string of numbers seperated by colons'''
         return "{0:02}:{1:02}:{2:05.2f}".format(self.h,self.m,self.s)
+    def __repr__(self):
+        '''representation of RA_coord'''
+        return "RA_coord({0},{1},{2})".format(self.h,self.m,self.s)
     @classmethod
     def fromStr(cls,s):
         '''retrieve the RA from a string in the fromat hh:mm:ss.ss
@@ -76,7 +79,7 @@ class RA_coord(object):
 class Dec_coord(object):
     '''A coordinate in declination'''
 
-    dec_expr = re.compile(r'([+-]?\d{1,2})[: ](\d{1,2})[: ](\d{1,2}(\.\d+))?')
+    dec_expr = re.compile(r'([+-]?\d{1,2})[: ](\d{1,2})[: ](\d{1,2}(\.\d+)?)')
     def __init__(self,d,m,s):
         '''intialize with degrees, minutes, and seconds
         note that the signs are ignored for m and s, and the sign
@@ -96,6 +99,9 @@ class Dec_coord(object):
     def __str__(self):
         '''convert to a string of numbers seperated by colons'''
         return "{0:+03}:{1:02}:{2:05.2f}".format(self.d,self.m,self.s)
+    def __repr__(self):
+        '''representation of Dec_coord'''
+        return "Dec_coord({0},{1},{2})".format(self.d,self.m,self.s)
     @classmethod
     def fromStr(cls,s):
         '''retrieve the dec from a string in the fromat hh:mm:ss.ss
