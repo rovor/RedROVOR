@@ -4,7 +4,7 @@
 .*~
 
 #the pyraf directory
-redrovor/pyraf/*
+pyraf/
 
 #compiled files
 *.pyc
