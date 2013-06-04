@@ -32,6 +32,7 @@ install_rovorweb:
 	chmod 777 $(web_prefix)/rovorweb/media
 	#collect static files for use in the website
 	$(web_prefix)/rovorweb/manage.py collectstatic -l --noinput
+	$(web_prefix)/rovorweb/manage.py syncdb
 ifneq ($(wildcard $(settings_module_path)),)
 	#make link for settings
 	ln -sf  $(settings_module_path)   $(settings_path)
