@@ -7,6 +7,16 @@ Pyraf, Python, etc. scripts for the Data reduction pipline for ROVOR (Remote Obs
 This has been tested on RHEL with Python 2.6.6, Pyfits 2.3.1, numpy 1.4.1 and Django 1.4.5, getting it to run on another configuration
 may require some tweaking. Django is only required for the web part, pyfits is required for the reduction.
 
+Dependencies
+------------
+
+* Python  (>=2.6 and < 3.0)
+* Pyfits 
+* numpy  
+* Django 
+* astrometry.net
+
+
 Installation
 ------------
 
@@ -82,5 +92,6 @@ Special Issues
 * Since our data folders were on a mounted NTFS filesystem we had to enable the httpd_use_fusefs boolean in SELinux to access it
 * Since we were using RedHat we needed to enable the httpd_can_network_connect boolean in SELinux to be visible to the outside world
 * We also needed to update iptables to allow traffic on ports 443 and 80 (https and http respectevely)
+* We needed to add the apache user to the iraf group so he has write access to the iraf home folder, where the login.cl, uparm and pyraf folders are
 
 
