@@ -94,7 +94,7 @@ def background_data(imageName, center_coords, size=100):
     return (center, sigma)
 
 def getAverageFWHM(image,coord_file):
-    '''calculate the average Full Width Half Max for the objects in image
+'''calculate the average Full Width Half Max for the objects in image
     at the coords specified in coord_file
     the coordinates in coord_file should be in the same world coordiantes
     as the WCS applied to the image'''
@@ -113,4 +113,6 @@ def getAverageFWHM(image,coord_file):
     return float(match.group(1))
 
 getAverageFWHM.numMatch = re.compile(r'(\d+(\.\d+)?)')
+
+
 
