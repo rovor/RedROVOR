@@ -1,5 +1,4 @@
 import os
-import re
 import tempfile
 from decimal import Decimal
 
@@ -44,26 +43,6 @@ def init(iraf_dir=DEFAULT_IRAF_DIR):
     return
 
 
-def getAverageFWHM(image,coord_file):
-    '''calculate the average Full Width Half Max for the objects in image
-    at the coords specified in coord_file
-    the coordinates in coord_file should be in the same world coordiantes
-    as the WCS applied to the image'''
-    if not _initialized:
-        raise InitializationError()
-    psfmeasure = iraf.psfmeasure
-    #set up all paramaters
-    psfmeasure.coords = "mark1"
-    psfmeasure.wcs = "world"
-    psfmeasure.display = no
-    psfmeasure.size = "FWHM"
-    psfmeasure.imagecur = coord_file
-    psfmeasure.graphcur = '/dev/null' #file that is empty by definition
-    res = psfmeasure(image,Stdout=1)[-1]  #get last line of output
-    match = getAverageFWHM.numMatch.search(res)
-    return float(match.group(1))
-
-getAverageFWHM.numMatch = re.compile(r'(\d+(\.\d+)?)')
 
 def makeICommandFile(image,coord_file):
     '''create a temporary icommand file for getting the 

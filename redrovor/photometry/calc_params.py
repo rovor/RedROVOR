@@ -7,6 +7,10 @@ import pyfits
 from scipy.interpolate import UnivariateSpline as uniSpline
 from scipy.stats import tstd
 
+
+import irafmod
+import re
+
 def getBox(image, center, size=100):
     ''' get a box centered at \p center with a size of \p size
     pixels.
@@ -88,4 +92,25 @@ def background_data(imageName, center_coords, size=100):
     center = x[midx]
     sigma = tstd(box, [0,2*center]) #trim to twice the the peak value
     return (center, sigma)
+
+def getAverageFWHM(image,coord_file):
+    '''calculate the average Full Width Half Max for the objects in image
+    at the coords specified in coord_file
+    the coordinates in coord_file should be in the same world coordiantes
+    as the WCS applied to the image'''
+    if not irafmod._initialized:
+        raise irafmod.InitializationError()
+    psfmeasure = irafmod.iraf.psfmeasure
+    #set up all paramaters
+    psfmeasure.coords = "mark1"
+    psfmeasure.wcs = "world"
+    psfmeasure.display = irafmod.no
+    psfmeasure.size = "FWHM"
+    psfmeasure.imagecur = coord_file
+    psfmeasure.graphcur = '/dev/null' #file that is empty by definition
+    res = psfmeasure(image,Stdout=1)[-1]  #get last line of output
+    match = getAverageFWHM.numMatch.search(res)
+    return float(match.group(1))
+
+getAverageFWHM.numMatch = re.compile(r'(\d+(\.\d+)?)')
 
