@@ -3,7 +3,9 @@ should only be used internally by the phot package'''
 
 import pywcs
 import numpy
+import pyfits
 from scipy.interpolate import UnivariateSpline as uniSpline
+from scipy.stats import tstd
 
 def getBox(image, center, size=100):
     ''' get a box centered at \p center with a size of \p size
@@ -49,11 +51,13 @@ class NoPeakFoundError(Exception):
     '''no peak in distribution'''
     pass
 
-def center_and_fwhm(x,y):
+def center_and_fwhm(x,y,bins=1000):
     '''calculate the full width half max of the function y(x),
     and get the center of the thing
     @returns (center, fwhm) where center is the x value of the center of the peak and fwhm is
-    the full width half max of the peak'''
+    the full width half max of the peak
+    
+    we won't actually use this for now, but we will keep it case we want it later'''
     midx = numpy.argmax(y) #get index of maximum
     half_max = y[midx]/2 #get half the maximum
     center = x[midx] #get the value of the center
@@ -67,8 +71,21 @@ def center_and_fwhm(x,y):
         raise NoPeakFoundError("There doesn't appear to be a proper peak")
     else:
         return (center, abs(roots[1]-roots[0]))
-    
 
-
-
+def background_data(imageName, center_coords, size=100):
+    '''calculate the background value and standard deviations
+    and return as a tuple (background, sigma)
+    @param imageName the path to the image to get the data for
+    @param center_coords the coordinates to center the sampling box around, probably the coordinates of the target object
+    @param size the size of the sampling box in pixels
+    @returns a modal value with bins of size 1 count and a trimmed standard deviation reject values more than twice the background value'''
+    with pyfits.open(imageName) as im:
+        box = getBox(im[0], center_coords,size)
+    bins = numpy.arange(box.min(), box.max(),1) #use bins of size 1 ranging from the minimum to maximum values of the sample box
+    x,y = im_histogram(box, bins=bins)
+    #compute the location of the peak of the histogram
+    midx = numpy.argmax(y)
+    center = x[midx]
+    sigma = tstd(box, [0,2*center]) #trim to twice the the peak value
+    return (center, sigma)
 
