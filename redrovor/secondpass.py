@@ -18,6 +18,8 @@ from wcs import astrometrySolve
 
 from process import applyFlat
 
+import renamer
+
 
 class SecondPassProcessor:
     '''Class for taking care of all the processing needed for 
@@ -91,6 +93,8 @@ class SecondPassProcessor:
                     highscale=observatory.highscale,
                     outdir=path.join(self.folder,'WCS')
                 )
+        #astrometry.net names the new files with .new extension, rename them
+        renamer.renameAll(path.join(self.folder,'WCS'),oldExt=".new")
 
 def doSecondPass(path,flatDict):
     '''perform the second pass on images in the given folder'''

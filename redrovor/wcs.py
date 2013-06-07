@@ -17,12 +17,6 @@ def astrometrySolve(*fnames,**kwargs):
     return proc.wait() #wait until it completes, we may want to do some threading so that we can do more than one at at a time, but not all of them at once 
     #which would fill up memory really fast
 
-        
-
-
-
-
-
 def buildArgList(fnames,args):
     '''build a string for the options to the solve-field command, this should not be
     used directly, but as a helper for astrometrySolve'''
@@ -43,7 +37,6 @@ def buildArgList(fnames,args):
         result.append('--fits-image')
     result.extend(['--no-plots','--no-fits2fits']) #disable making plots and sanitizing fits files
     result.extend(fnames)
-    print result
     return result
 
 
