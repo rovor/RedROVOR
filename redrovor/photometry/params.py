@@ -3,6 +3,8 @@ for iraf tasks'''
 
 from calc_params import getAverageFWHM, background_data 
 
+from redrovor.coords import Coords, RA_coord, Dec_coord
+
 
 
 class Params(dict):
@@ -116,3 +118,19 @@ def getDAOParams(imageName, coord_file, target_coords=None, size=100, **kwargs):
     params['fwhm'] = getAverageFWHM(imageName, coord_file)
     params['background'], params['sigma'] = background_data(imageName, target_coords,size)
     return params
+
+def parse_first_coords(coord_file):
+    '''parse the coordinates of the first object
+    in the coordinate file and return a Coords object'''
+    with open(coord_file) as cf:
+        line = cf.readline()
+        while line and (line.isspace() or line.startswith('#')):
+            #skip over blank lines and comments
+            line = cf.readline()
+    if not line:
+        raise Exception("Unable to parse coordinates") #TODO use better exception type
+    rastr, decstr = line.split()[0:2] #assume seperationg by whitespace and no internal whitespace
+    ra = RA_coord.fromStr(rastr)
+    dec = Dec_coord.fromStr(decstr)
+    return Coords(ra,dec)
+

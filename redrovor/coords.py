@@ -5,6 +5,8 @@ from collections import namedtuple
 from math import copysign
 import re
 
+decimal_re = re.compile(r'\d+(\.\d+)?') #somewhat restrictive re for decimal numbers
+
 class RA_coord(object):
     '''A coordinate in RA'''
 
@@ -40,6 +42,8 @@ class RA_coord(object):
         if match:
             h,m,s = match.group(1,2,3)
             return cls(h,m,s)
+        elif decimal_re.match(s):
+            return cls.fromDegrees(s)
         else:
             return None
     @classmethod
@@ -110,6 +114,8 @@ class Dec_coord(object):
         if match:
             d,m,s = match.group(1,2,3)
             return cls(d,m,s)
+        elif decimal_re.match(s):
+            return cls.fromDegrees(s)
         else:
             return None
     @classmethod
