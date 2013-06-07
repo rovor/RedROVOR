@@ -25,8 +25,8 @@ class Params(dict):
             'filter':'filter',
             'datamax': 50000, #point where CCD saturates
         }
-        defaults.update(kwargs)
         super(Params,self).__init__(defaults)
+        self.update(kwargs)
 
     def __call__(self,*args,**kwargs):
         '''calling the method simply forwards the call to
@@ -72,8 +72,8 @@ class Params(dict):
 class DAO_params(Params):
     '''class to take care of setting up paramaters for dao photting'''
     def __init__(self,**kwargs):
-        super(DAO_params,self).__init__(**kwargs)
-        #default paramaters for datapars
+        super(DAO_params,self).__init__(fitfunction='gauss')
+        self.update(kwargs)
 
     def applyParams(self):
         '''apply paramaters for daophot'''
@@ -99,6 +99,8 @@ class DAO_params(Params):
         #daopars
         iraf.daopars.psfrad = 4.0*self['fwhm']+1.0
         iraf.daopars.fitrad = self.aperture
+        #psfpars
+        iraf.psf.function = self['fitfunction']
         #make sure we are using world coordinate system
         iraf.daophot.wcsin="world"
         iraf.daophot.wcsout="world"
