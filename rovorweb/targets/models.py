@@ -14,6 +14,7 @@ class Target(models.Model):
     ra = RAField()
     dec = DecField()
 
+
     def get_coords(self):
         return Coords(ra=self.ra,dec=self.dec)
     def set_coords(self, coords):
@@ -40,3 +41,32 @@ class CoordFileModel(models.Model):
     '''model for coordinate files that have been uploaded'''
     target = models.ForeignKey(Target)  #the target the coordfile is for
     coordfile = models.FileField(upload_to=getUploadPath,null=True)
+
+
+class FieldObjects(models.Model):
+    '''model for other objects in the field
+    of a target, such as comparison stars, and the target itself'''
+
+    target = models.ForeignKey(Target)  #the target field this coordinate is associated with
+    ra = RAField()
+    dec = DecField()
+    isTarget = models.BooleanField()
+
+    def get_coords(self):
+        return Coords(ra=self.ra,dec=self.dec)
+    def set_coords(self,coords):
+        if not coords:
+            self.ra = None
+            self.dec = None
+        else:
+            self.ra,self.dec = coords
+    coords = property(get_coords,set_coords)
+
+class CalibrationMagnitudes:
+    '''model to keep track of calibration magnitudes and errors
+    for each filter for each calibration star'''
+
+    star = models.ForeignKey(FieldObjects)
+    mag = models.DecimalField()
+    err = models.DecimalField()
+
