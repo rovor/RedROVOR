@@ -13,7 +13,7 @@ def phot(imageName, coordFile, target_coords=None,sample_size=100,params=None,**
 
     #first ensure that irafmod has been initialized
     if not irafmod._initialized:
-        raise InitializationError("unable to phot")
+        raise irafmod.InitializationError("unable to phot")
     daophot = irafmod.iraf.daophot
 
     #first get the paramaters we need

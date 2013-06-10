@@ -5,6 +5,8 @@ from calc_params import getAverageFWHM, background_data
 
 from redrovor.coords import Coords, RA_coord, Dec_coord
 
+import irafmod
+
 
 
 class Params(dict):
@@ -44,7 +46,7 @@ class Params(dict):
         '''return a tuple of the inner and outer annuli in scale units'''
         return self['annulus_ratio']*self['fwhm']
     @property
-    def annulus(self):
+    def dannulus(self):
         '''return a tuple of the inner and outer annuli in scale units'''
         return self['dannulus_ratio']*self['fwhm']
 
@@ -77,9 +79,15 @@ class DAO_params(Params):
 
     def applyParams(self):
         '''apply paramaters for daophot'''
+        if not irafmod._initialized:
+            raise irafmod.InitializationError("DAO_params.applyParams")
+        iraf = irafmod.iraf
+
         #photpars
         iraf.photpars.aperture = self.aperture
         iraf.photpars.zmag = self['zmag']
+        #set world coordinates as input for phot
+        iraf.phot.wcsin="world"
         #datapars
         iraf.datapars.fwhmpsf = self['fwhm']
         iraf.datapars.sigma = self.get('sigma',0)
@@ -101,9 +109,11 @@ class DAO_params(Params):
         iraf.daopars.fitrad = self.aperture
         #psfpars
         iraf.psf.function = self['fitfunction']
-        #make sure we are using world coordinate system
-        iraf.daophot.wcsin="world"
-        iraf.daophot.wcsout="world"
+        #make sure we are using default logical coordinate system
+        #for everything except the phot command
+        iraf.daophot.wcsin="logical"
+        iraf.daophot.wcsout="logical"
+        iraf.daophot.verify=iraf.no
 
 
 def getDAOParams(imageName, coord_file, target_coords=None, size=100, **kwargs):

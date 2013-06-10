@@ -43,7 +43,7 @@ class RA_coord(object):
             h,m,s = match.group(1,2,3)
             return cls(h,m,s)
         elif decimal_re.match(s):
-            return cls.fromDegrees(s)
+            return cls.fromDegrees(Decimal(s))
         else:
             return None
     @classmethod
@@ -115,7 +115,7 @@ class Dec_coord(object):
             d,m,s = match.group(1,2,3)
             return cls(d,m,s)
         elif decimal_re.match(s):
-            return cls.fromDegrees(s)
+            return cls.fromDegrees(Decimal(s))
         else:
             return None
     @classmethod
