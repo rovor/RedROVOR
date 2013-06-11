@@ -3,14 +3,15 @@
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.template import Context, loader
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.forms.models import modelformset_factory
 from django.forms.formsets import formset_factory
+from django.views.decorators.http import require_POST
 
 import json
 
 
-from models import Target
+from models import Target, FieldObject
 from forms import TargetForm, CoordFileModelForm, ShortTargetForm
 
 @login_required
@@ -71,3 +72,34 @@ def edit_targets(request):
     else:
         formset = TargetFormset()
     return render(request, 'targets/edit_objs.html',{'formset':formset})
+
+@login_required
+def edit_fieldObjects(request):
+    '''allow user to add and modify coordinates for field objects'''
+    context = {
+        'targets': Target.objects.all()
+    }
+    return render(request, 'targets/edit_fieldObjects.html',context)
+
+@login_required
+def coordlist_json(request, targetID=None):
+    '''get a list of FieldObject objects in JSON
+    for the given target id, if targetID is None, then
+    return all FieldObjects'''
+    if not targetID:
+        objs = FieldObject.objects.all()
+    else:
+        objs = FieldObject.objects.filter(target_id=targetID)
+    result = [{'id': t.id, 'ra':str(t.ra), 'dec':str(t.dec), 'isTarget':t.isTarget} for t in objs]
+    return HttpResponse(json.dumps(result),mimetype='applicatin/json')
+#TODO make view for coordlist_html
+
+
+@login_required
+@require_POST
+def fieldObjectDelete(request,objID):
+    '''perform some action for the FieldObject given by ID'''
+    obj = get_object_or_404(FieldObject, pk=objID)
+    obj.delete()
+    return HttpResponse("Deleted {0}".format(objID))
+        

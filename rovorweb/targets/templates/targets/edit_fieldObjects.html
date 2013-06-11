@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block header %}
+<style type="text/css">
+    table {
+        padding: 10px;
+    }
+    td,th {
+        padding: 9px;
+    }
+</style>
+<script type="text/javascript" src="{% static 'util.js' %}"></script>
+<script type="text/javascript">
+$(function (){
+    $("#target_select").change(populate);
+    populate.call($("#target_select"));
+});
+
+/**
+* function to populate the table
+*/
+function populate(){
+    var target_id = $(this).val();
+    var body = $("#content_body");
+    body.empty();
+    if( ! target_id ){
+        return;
+    }
+    $.getJSON(target_id+'/coordlist',{},function(data){
+        for( var i=0, l=data.length; i !== l; ++i){
+            addRow(body, data[i]);
+        }
+    });
+}
+
+function addRow(tbody, obj){
+    var deleteButton = $("<input type='button' value='delete' />");
+    deleteButton.click(function(){ deleteCoords.call(this,obj.id); });
+    var row = $("<tr>").append(
+        "<td>"+obj.id+"</td>").append(
+        "<td><input type='text' value='"+obj.ra+"' readonly /></td>").append(
+        "<td><input type='text' value='"+obj.dec+"' readonly /></td>");
+    if( obj.isTarget){
+        row.append("<td>yes</td>");
+    } else {
+        row.append("<td>no</td>");
+    }
+    row.append($("<td>").append(deleteButton));
+    tbody.append(row);
+}
+
+function deleteCoords(id){
+    var row = $(this).closest("tr");
+    row.css('background-color','red');
+    $.ajax('fieldobject/'+id+'/delete',{
+        method: 'POST',
+        headers: {'X-CSRFToken':getCookie('csrftoken')}
+    }).done(function(){
+        alert('done');
+        row.remove();
+    });
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<h1>Coordinates for objects in target fields</h1>
+<p><label for="target_select">Target Field:</label>
+<select name="target" id="target_select">
+<option value="" selected="selected">--------------</option>
+{% for target in targets %}
+<option value="{{target.id}}">{{target.name}}</option>
+{% endfor %}
+</select>
+
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Right Ascension</th>
+<th>Declination</th>
+<th>Target?</th>
+</tr>
+</thead>
+<tbody id="content_body">
+</tbody>
+</table>
+{% endblock %}

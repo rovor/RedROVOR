@@ -43,7 +43,7 @@ class CoordFileModel(models.Model):
     coordfile = models.FileField(upload_to=getUploadPath,null=True)
 
 
-class FieldObjects(models.Model):
+class FieldObject(models.Model):
     '''model for other objects in the field
     of a target, such as comparison stars, and the target itself'''
 
@@ -62,11 +62,13 @@ class FieldObjects(models.Model):
             self.ra,self.dec = coords
     coords = property(get_coords,set_coords)
 
-class CalibrationMagnitudes:
+class CalibrationMagnitudes(models.Model):
     '''model to keep track of calibration magnitudes and errors
     for each filter for each calibration star'''
 
-    star = models.ForeignKey(FieldObjects)
-    mag = models.DecimalField()
-    err = models.DecimalField()
+    star = models.ForeignKey(FieldObject)
+    filt = models.CharField(max_length=50)
+    #should we use decimal fields or float fields?
+    mag = models.DecimalField(decimal_places=3,max_digits=6)
+    err = models.DecimalField(decimal_places=5,max_digits=7)
 
