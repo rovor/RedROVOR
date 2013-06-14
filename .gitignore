@@ -17,6 +17,9 @@ logfile   #ignore the logfile
 
 *.sqlite
 
+*.orig
+*~
+
 #ignore build directory
 /build/
 #ignore static files and media files

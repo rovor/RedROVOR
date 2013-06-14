@@ -7,6 +7,7 @@ from django.shortcuts import render, get_object_or_404
 from django.forms.models import modelformset_factory, modelform_factory
 from django.forms.formsets import formset_factory
 from django.views.decorators.http import require_POST
+from django.db import transaction
 
 import json
 
@@ -17,6 +18,21 @@ logger = logging.getLogger("Rovor")
 
 from models import Target, FieldObject
 from forms import TargetForm, CoordFileModelForm, ShortTargetForm
+
+from redrovor.coords import parseCoords
+
+#TODO figure out a better place to put these functions
+def okJSONResponse(res=None):
+    '''return an httpresponse encapsulating a json object
+    with two properties, ok and result where ok is true
+    and result is the JSON representation of result'''
+    return HttpResponse(json.dumps({'ok':True, 'result':res}),mimetype='application/json')
+
+def errorJSONResponse(err):
+    '''return an httpresponse encapsulating a json object
+    with two properties, ok and error where ok is true
+    and error is the JSON representation of err'''
+    return HttpResponse(json.dumps({'ok':False, 'error':err}))
 
 
 @login_required
@@ -54,16 +70,21 @@ def targetList_json(request):
 
 
 @login_required
-def uploadCoordFile(request):
+@require_POST
+def uploadCoordFile(request,targetID):
     '''upload a coordinate file for a target'''
-    if request.method == 'POST':
-        form = CoordFileModelForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect('/targets/')
-    else:
-        form = CoordFileModelForm()
-    return render(request, 'targets/uploadCoordFile.html',{'form':form})
+    try:
+        f = request.FILES['coords']
+        result = []
+        with transaction.commit_on_success():
+            for ra,dec in parseCoords(f):
+                logger.info("Adding object at {0} {1}".format(ra,dec))
+                obj = FieldObject(target_id=targetID,ra=ra,dec=dec,isTarget=False)
+                obj.save()
+                result.append(FieldObject2dict(obj))
+        return okJSONResponse(result)
+    except Exception as ex:
+        return errorJSONResponse(str(ex))
 
 
 @login_required
@@ -125,11 +146,9 @@ def fieldObjectAdd(request):
     form = FOForm(request.POST)
     if form.is_valid():
         obj = form.save()
-        res = {'ok':True, 'result':{'id':obj.id, 'ra':str(obj.ra),'dec':str(obj.dec), 'isTarget':obj.isTarget} }
-        return HttpResponse(json.dumps(res),mimetype='application/json')
+        return okJSONResponse({'id':obj.id, 'ra':str(obj.ra),'dec':str(obj.dec), 'isTarget':obj.isTarget})
     else:
-        res = {'ok':False, 'errors':form.errors}
-        return HttpResponse(json.dumps(res), mimetype='applicaiont/json')
+        return errorJSONResponse(form.errors)
 
 @login_required
 @require_POST
@@ -139,8 +158,7 @@ def fieldObjectAddTarget(request):
         targ = Target.objects.get(pk=request.POST['target'])
         fobj = FieldObject(target=targ, ra=targ.ra, dec=targ.dec,isTarget=True)
         fobj.save() 
-        res = {'ok':True, 'result':FieldObject2dict(fobj)}
-        return HttpResponse(json.dumps(res),mimetype="application/json")
+        return okJSONResponse(FieldObject2dict(fobj))
     except Exception as e:
         logger.debug(e)
-        return HttpResponse('{"ok":false, "error":"targetID must be supplied and a valid target"}',mimetype="application/json")
+        return errorJSONResponse("targetID must be supplied and a valid target")

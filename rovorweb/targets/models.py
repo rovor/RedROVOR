@@ -65,10 +65,8 @@ class FieldObject(models.Model):
 class CalibrationMagnitudes(models.Model):
     '''model to keep track of calibration magnitudes and errors
     for each filter for each calibration star'''
-
     star = models.ForeignKey(FieldObject)
     filt = models.CharField(max_length=50)
     #should we use decimal fields or float fields?
     mag = models.DecimalField(decimal_places=3,max_digits=6)
     err = models.DecimalField(decimal_places=5,max_digits=7)
-

@@ -17,6 +17,7 @@ $(function (){
     populate.call($("#target_select"));
     $("#addObjectForm").submit(addManual);
     $("#addTargetButton").click(addTarget);
+    $("#uploadForm").submit(uploadCoords);
 });
 
 /**
@@ -76,7 +77,7 @@ function addManual(ev){
             $("#newObj input:text").val("");
         } else {
             {#TODO do something more elegant here #}
-            alert(JSON.stringify(res.errors))
+            alert(JSON.stringify(res.error))
         }
     }).fail(function(xhr, tstatus, err){
         alert(tstatus+": "+err);
@@ -98,6 +99,25 @@ function addTarget(){
         alert(tstatus+": "+err);
     });
 }
+
+function uploadCoords(ev){
+    ev.preventDefault();
+    //note that the way we handle the file will only work on modern browsers
+    var data = new FormData(this);
+    $.ajax({
+        url: $("#target_select").val()+"/uploadCoordFile",
+        data: data,
+        contentType: false,
+        processData: false,
+        type: 'POST',
+    }).done(function(res){
+        if( res.ok){
+            res.result.forEach(addRow.bind(null,$("#content_body")));
+        } else {
+            alert(res.error);
+        }
+    });
+}
 </script>
 {% endblock %}
 
@@ -114,8 +134,10 @@ function addTarget(){
 <input type="button" value="Add Target" id="addTargetButton" />
 </p>
 <p>
-<form>
-<input type="file" name="coordFile" /><input type="submit" value="Upload" />
+ <form id="uploadForm" enctype="multipart/form-data">
+{% csrf_token %}
+<input type="file" name="coords"  accept="text/*" />
+<input type="submit" value="Upload" />
 </form>
 </p>
 
