@@ -1,7 +1,7 @@
 from django import forms
-<<<<<<< HEAD
-from redrovor.coords import RA_coord, Dec_coord
 from decimal import Decimal
+from redrovor.coords import RA_coord, Dec_coord
+
 
 class RAField(forms.MultiValueField):
     '''Form field for inputting RA'''
@@ -14,6 +14,8 @@ class RAField(forms.MultiValueField):
         super(RAField,self).__init__(fields=fields, widget = RAWidget, **kwargs)
     def compress(self, data_list):
         '''compress field into RA_coord'''
+        if not data_list or data_list == [None,None,None]:
+            return None
         return RA_coord(*data_list)
 
 
@@ -51,6 +53,8 @@ class DecField(forms.MultiValueField):
         super(DecField,self).__init__(fields=fields, widget = DecWidget, **kwargs)
     def compress(self, data_list):
         '''compress field into RA_coord'''
+        if not data_list or data_list == [None,None,None]:
+            return None
         return Dec_coord(*data_list)
 
 
@@ -76,46 +80,3 @@ class DecWidget(forms.MultiWidget):
             return [value.degrees, value.minutes, value.seconds]
         return [None, None, None]
             
-
-=======
-from redrovor import simbad
-from models import Target, CoordFileModel
-from form_fields import RAField, DecField
-
-
-
-#forms for the models
-
-class TargetForm(forms.ModelForm):
-    class Meta:
-        model = Target
-
-class ShortTargetForm(forms.ModelForm):
-    ra = RAField(label='Right Ascension',required=False)
-    dec = DecField(label='Declination', required=False)
-
-    def save(self,commit=True):
-        '''save the fully instantiated instance of the 
-        target, looking up unknown information on simbad'''
-        inst = super(ShortTargetForm,self).save(commit=False)
-        if not inst.simbadName:
-            inst.simbadName = simbad.getMainName(inst.name)
-        if not ( inst.ra and inst.dec):
-            inst.coords = simbad.getRADec(inst.name)
-        if commit:
-            inst.save()
-        return inst
-
-    class Meta:
-        model = Target
-        fields=['name','ra','dec']
-
-class TargetNameOnlyForm(forms.ModelForm):
-    class Meta:
-        model = Target
-        fields=['name']
-
-class CoordFileModelForm(forms.ModelForm):
-    class Meta:
-        model = CoordFileModel
->>>>>>> thirdpass

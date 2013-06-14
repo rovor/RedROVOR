@@ -45,7 +45,7 @@ def flatSelectForm(request):
         return render(request,'reduction/flatDirSelect.html')
 
 @login_required
-def astrometry(request):
+def photometry_start(request):
     '''Page for doing astrometry'''
     return HttpResponse("<h1>Under Construction</h1>")
 

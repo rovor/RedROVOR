@@ -4,7 +4,7 @@
 .*~
 
 #the pyraf directory
-redrovor/pyraf/*
+pyraf/
 
 #compiled files
 *.pyc
@@ -17,11 +17,16 @@ logfile   #ignore the logfile
 
 *.sqlite
 
+*.orig
+*~
+
 #ignore build directory
 /build/
-#ignore static files
-/rovorweb/static/
+#ignore static files and media files
+/rovorweb/static/*
+/rovorweb/media/*
 #ignore the production settings
 /rovorweb/rovorweb/settings.production.py
+
 
 

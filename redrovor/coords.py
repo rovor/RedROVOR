@@ -152,3 +152,19 @@ def __cwithinradius(self, other,radius):
 
 Coords.withinRadius = __cwithinradius
 
+import logging
+logger = logging.getLogger("Rovor")
+
+def parseCoords(f):
+    '''parse a list of Coords from a file like object
+    @param f a file-like object which has at least two columns, the first of
+    which is the RA and the second is dec, they can either be in sexigesimal
+    or decimal degree format (not that if decimal RA is assumed to be degrees, not hours
+    @returns a generator which iterates over the coordinates in a file
+    and returns Coords objects'''
+    for line in f.readlines():
+        if not (line.isspace() or line.startswith("#") ):
+            #only deal with lines that have content and don't start with '#'
+            rastr, decstr = line.split()[0:2]
+            yield Coords(ra=RA_coord.fromStr(rastr), dec=Dec_coord.fromStr(decstr))
+    return

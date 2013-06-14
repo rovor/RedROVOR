@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{%block title %}Targets {% endblock %}
+
+
+{% block content %}
+<h1>Target Currently Available</h1>
+<table id="targetTable">
+<th><td>Name</td><td>Simbad Name</td><td>Right Ascension</td><td>Declination</td></th>
+{% for target in targets %}
+<tr>
+    <td>{{ target.id }}</td>
+    <td>{{ target.name }}</td>
+    <td>{{ target.simbadName }}</td>
+    <td>{{ target.ra }}</td>
+    <td>{{ target.dec }}</td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}

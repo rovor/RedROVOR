@@ -1,12 +1,9 @@
 from django.db import models
-from django.forms import ModelForm
 
 from fields import RAField, DecField
 from redrovor.coords import Coords
 
 # Create your models here.
-
-
 
 
 class Target(models.Model):
@@ -17,9 +14,19 @@ class Target(models.Model):
     ra = RAField()
     dec = DecField()
 
-    @property
-    def coords(self):
-        return Coords(ra=ra,dec=dec)
+
+    def get_coords(self):
+        return Coords(ra=self.ra,dec=self.dec)
+    def set_coords(self, coords):
+        '''set coordinates from a Coords object
+        or tuple of ra and dec'''
+        if not coords:
+            self.ra = None
+            self.dec = None
+        else:
+            self.ra, self.dec = coords
+
+    coords = property(get_coords,set_coords)
 
     def __str__(self):
         return self.name
@@ -35,12 +42,31 @@ class CoordFileModel(models.Model):
     target = models.ForeignKey(Target)  #the target the coordfile is for
     coordfile = models.FileField(upload_to=getUploadPath,null=True)
 
-#forms for the models
 
-class TargetForm(ModelForm):
-    class Meta:
-        model = Target
+class FieldObject(models.Model):
+    '''model for other objects in the field
+    of a target, such as comparison stars, and the target itself'''
 
-class CoordFileModelForm(ModelForm):
-    class Meta:
-        model = CoordFileModel
+    target = models.ForeignKey(Target)  #the target field this coordinate is associated with
+    ra = RAField()
+    dec = DecField()
+    isTarget = models.BooleanField()
+
+    def get_coords(self):
+        return Coords(ra=self.ra,dec=self.dec)
+    def set_coords(self,coords):
+        if not coords:
+            self.ra = None
+            self.dec = None
+        else:
+            self.ra,self.dec = coords
+    coords = property(get_coords,set_coords)
+
+class CalibrationMagnitudes(models.Model):
+    '''model to keep track of calibration magnitudes and errors
+    for each filter for each calibration star'''
+    star = models.ForeignKey(FieldObject)
+    filt = models.CharField(max_length=50)
+    #should we use decimal fields or float fields?
+    mag = models.DecimalField(decimal_places=3,max_digits=6)
+    err = models.DecimalField(decimal_places=5,max_digits=7)

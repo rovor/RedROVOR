@@ -14,6 +14,9 @@ Dependencies
 * Pyfits 
 * numpy  
 * Django 
+* pywcs 
+* IRAF
+* PyRaf
 * astrometry.net
 
 
