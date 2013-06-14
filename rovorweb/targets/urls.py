@@ -14,5 +14,7 @@ urlpatterns = patterns('',
     url(r'^editCoords',views.edit_fieldObjects),
     url(r'^(?P<targetID>\d+?)/coordlist',views.coordlist_json),
     url(r'^fieldobject/(?P<objID>\d+?)/delete$', views.fieldObjectDelete),
+    url(r'^fieldobject/add$', views.fieldObjectAdd),
+    url(r'^fieldobject/addTarget$',views.fieldObjectAddTarget),
     url(r'^coordlist/$',views.coordlist_json),
 )

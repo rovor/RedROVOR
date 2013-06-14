@@ -4,15 +4,20 @@ from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedire
 from django.template import Context, loader
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
-from django.forms.models import modelformset_factory
+from django.forms.models import modelformset_factory, modelform_factory
 from django.forms.formsets import formset_factory
 from django.views.decorators.http import require_POST
 
 import json
 
+import logging
+
+logger = logging.getLogger("Rovor")
+
 
 from models import Target, FieldObject
 from forms import TargetForm, CoordFileModelForm, ShortTargetForm
+
 
 @login_required
 def index(request):
@@ -77,9 +82,16 @@ def edit_targets(request):
 def edit_fieldObjects(request):
     '''allow user to add and modify coordinates for field objects'''
     context = {
-        'targets': Target.objects.all()
+        'targets': Target.objects.all(),
+        'addForm': modelform_factory(FieldObject)
     }
     return render(request, 'targets/edit_fieldObjects.html',context)
+
+
+def FieldObject2dict(fieldobject):
+    '''get a dict representing the fieldobject, so that it  is
+    easier to convert it to JSON'''
+    return {'id':fieldobject.id, 'ra':str(fieldobject.ra), 'dec':str(fieldobject.dec), 'isTarget':fieldobject.isTarget}
 
 @login_required
 def coordlist_json(request, targetID=None):
@@ -90,9 +102,11 @@ def coordlist_json(request, targetID=None):
         objs = FieldObject.objects.all()
     else:
         objs = FieldObject.objects.filter(target_id=targetID)
-    result = [{'id': t.id, 'ra':str(t.ra), 'dec':str(t.dec), 'isTarget':t.isTarget} for t in objs]
+    result = [FieldObject2dict(t) for t in objs]
+    logger.debug("result: {0}".format(result))
     return HttpResponse(json.dumps(result),mimetype='applicatin/json')
 #TODO make view for coordlist_html
+
 
 
 @login_required
@@ -103,3 +117,30 @@ def fieldObjectDelete(request,objID):
     obj.delete()
     return HttpResponse("Deleted {0}".format(objID))
         
+@login_required
+@require_POST
+def fieldObjectAdd(request):
+    '''add a field object to the database'''
+    FOForm = modelform_factory(FieldObject,fields=['target','ra','dec','isTarget'])
+    form = FOForm(request.POST)
+    if form.is_valid():
+        obj = form.save()
+        res = {'ok':True, 'result':{'id':obj.id, 'ra':str(obj.ra),'dec':str(obj.dec), 'isTarget':obj.isTarget} }
+        return HttpResponse(json.dumps(res),mimetype='application/json')
+    else:
+        res = {'ok':False, 'errors':form.errors}
+        return HttpResponse(json.dumps(res), mimetype='applicaiont/json')
+
+@login_required
+@require_POST
+def fieldObjectAddTarget(request):
+    '''add the target object to the list of coordinates for that target'''
+    try:
+        targ = Target.objects.get(pk=request.POST['target'])
+        fobj = FieldObject(target=targ, ra=targ.ra, dec=targ.dec,isTarget=True)
+        fobj.save() 
+        res = {'ok':True, 'result':FieldObject2dict(fobj)}
+        return HttpResponse(json.dumps(res),mimetype="application/json")
+    except Exception as e:
+        logger.debug(e)
+        return HttpResponse('{"ok":false, "error":"targetID must be supplied and a valid target"}',mimetype="application/json")

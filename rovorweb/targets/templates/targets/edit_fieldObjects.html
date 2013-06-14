@@ -15,6 +15,8 @@
 $(function (){
     $("#target_select").change(populate);
     populate.call($("#target_select"));
+    $("#addObjectForm").submit(addManual);
+    $("#addTargetButton").click(addTarget);
 });
 
 /**
@@ -52,13 +54,48 @@ function addRow(tbody, obj){
 
 function deleteCoords(id){
     var row = $(this).closest("tr");
-    row.css('background-color','red');
     $.ajax('fieldobject/'+id+'/delete',{
         method: 'POST',
         headers: {'X-CSRFToken':getCookie('csrftoken')}
     }).done(function(){
-        alert('done');
         row.remove();
+    });
+}
+
+function addManual(ev){
+    ev.preventDefault();
+    var form = $(this);
+    var data = form.serializeArray();
+    data.push({'name':'target', 'value':$("#target_select").val()});
+    $.ajax('fieldobject/add',{
+        method: 'POST',
+        data: data,
+    }).done(function(res){
+        if(res.ok){
+            addRow($("#content_body"),res.result);
+            $("#newObj input:text").val("");
+        } else {
+            {#TODO do something more elegant here #}
+            alert(JSON.stringify(res.errors))
+        }
+    }).fail(function(xhr, tstatus, err){
+        alert(tstatus+": "+err);
+    });
+}
+
+function addTarget(){
+    $.ajax('fieldobject/addTarget',{
+        method: 'POST',
+        data: $('#target_select').serialize(),
+        headers: {'X-CSRFToken':getCookie('csrftoken')},
+    }).done(function(res){
+        if(res.ok){
+            addRow($("#content_body"),res.result);
+        } else {
+            alert(res.error);
+        }
+    }).fail(function(xhr, tstatus, err){
+        alert(tstatus+": "+err);
     });
 }
 </script>
@@ -73,6 +110,14 @@ function deleteCoords(id){
 <option value="{{target.id}}">{{target.name}}</option>
 {% endfor %}
 </select>
+<p>
+<input type="button" value="Add Target" id="addTargetButton" />
+</p>
+<p>
+<form>
+<input type="file" name="coordFile" /><input type="submit" value="Upload" />
+</form>
+</p>
 
 <table>
 <thead>
@@ -84,6 +129,17 @@ function deleteCoords(id){
 </tr>
 </thead>
 <tbody id="content_body">
+</tbody>
+<tbody id="newObj">
+<tr>
+<form method="POST" id="addObjectForm">
+<td>{% csrf_token %}</td> {# empty cell where id would go #}
+<td>{{addForm.ra}}</td>
+<td>{{addForm.dec}}</td>
+<td>{{addForm.isTarget}}</td>
+<td><input type="submit" value="add" /></td>
+</form>
+</tr>
 </tbody>
 </table>
 {% endblock %}
