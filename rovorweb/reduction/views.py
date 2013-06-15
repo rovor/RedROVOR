@@ -48,8 +48,4 @@ def flatSelectForm(request):
 def photometry_start(request):
     '''Page for doing astrometry'''
     return HttpResponse("<h1>Under Construction</h1>")
-
-
-
-
     

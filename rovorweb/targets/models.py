@@ -49,6 +49,11 @@ class Target(models.Model):
                 coofile.write("{0}  {1}\n".format(coord.ra.toDegrees(),coord.dec.toDegrees()))
         return fname
 
+    def hasCoordinates(self):
+        '''returns true if this target has one or more coordinates 
+        associated with it, and false if it doesn't have any coordinates'''
+        return FieldObject.objects.filter(targets=self).exists()
+
 
             
 

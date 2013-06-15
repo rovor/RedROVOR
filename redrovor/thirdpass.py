@@ -1,3 +1,7 @@
+from collections import defaultdict
+from os import path
+import pyfits
+
 import photometry
 from photometry import phot
 from utils import findFrames
@@ -40,9 +44,9 @@ class ThirdPassProcessor:
             if path.isfile(objectPath):
                 with open(objectPath,'r') as f:
                     self.objects = json.load(f)
-                else:
-                    logger.info("Creating object lists")
-                    self.buildObjectList()
+            else:
+                logger.info("Creating object lists")
+                self.buildObjectList()
         return self
     def objectNames(self):
         '''Get the normalized names of the objects we
