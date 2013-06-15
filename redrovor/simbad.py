@@ -8,7 +8,8 @@ SIMBAD_SCRIPT_URL = SIMBAD_URL + "/sim-script"
 
 def script_request(script):
     '''run a simbad script and return the result as an array
-    of strings (each item is a single line of the output)'''
+    of strings (each item is a single line of the output),
+    this uses caching to improve performance'''
     #first prepend a line to quiet the console and script echo
     script = "output console=off script=off\n" + script
     resource = urlopen(SIMBAD_SCRIPT_URL, urlencode({'script':script}))
@@ -50,10 +51,17 @@ def getMainName(name):
     '''get the "main" name for the given object in simbad,
     useful for uniquely identifying an object
     if the name wasn't found return the name that was passed in'''
+    if name in getMainName.cache:
+        return getMainName.cache[name]
     script = r'''format object "%IDLIST(1)[%*(S)]"
     query id {0}'''.format(name)
-    result = script_request(script)
-    if ':error:' in result[0]:
+    response = script_request(script)
+    if ':error:' in response[0]:
         #error, so just return the name that was given to us
-        return name
-    return result[0]
+        result = name
+    else:
+        result = response[0]
+    getMainName.cache[name] = result
+    return result
+getMainName.cache = {}
+

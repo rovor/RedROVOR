@@ -52,7 +52,7 @@ class Target(models.Model):
     def hasCoordinates(self):
         '''returns true if this target has one or more coordinates 
         associated with it, and false if it doesn't have any coordinates'''
-        return FieldObject.objects.filter(targets=self).exists()
+        return FieldObject.objects.filter(target=self).exists()
 
 
             

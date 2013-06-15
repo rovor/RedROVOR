@@ -1,6 +1,7 @@
 from collections import defaultdict
 from os import path
 import pyfits
+import json
 
 import photometry
 from photometry import phot
