@@ -40,13 +40,13 @@ class SecondPassProcessor:
         frameTypes = getFrameLists( frames ) #get frame types
         self.objects = splitByHeader(frameTypes['object'],'filter')
         #save a cache of the frame info to speed up future uses of the ZeroDarkProcessor
-        with open(path.join(self.folder,'objectLists.json'),'w') as f:
+        with open(path.join(self.folder,'filterLists.json'),'w') as f:
             json.dump(self.objects,f)
         return self
     def ensure_objectList(self):
         '''ensure that frameTypes is set'''
         if not self.objects:
-            objectPath = path.join(self.folder,'objectLists.json')
+            objectPath = path.join(self.folder,'filterLists.json')
             #if we have a previously made file load that
             if path.isfile(objectPath):
                 with open(objectPath,'r') as f:

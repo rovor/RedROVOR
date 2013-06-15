@@ -3,6 +3,7 @@ import os.path
 import re
 
 import obsDB
+import simbad
 
 zeroRE = re.compile(r'([zZ]ero)|([Bb]ias)')
 darkRE = re.compile(r'[dD]ark')
@@ -53,6 +54,15 @@ def getObjectName(header):
             #return 'unknown' #if there was a problem retrieving it is unknown
             #if we don't know the name create a name from RA and dec
             return makeRADecName(header)
+
+def normalizedName(header):
+    '''get a normalized name from simbad from the header, 
+    
+    this is just a convenience method which calls getObjectName and 
+    then uses simbad to get the "main name" wich is the primary name 
+    from simbad'''
+    name = getObjectName(header)
+    return simbad.getMainName(name)
 
 def getFilter(header):
     if 'filter' in header:
