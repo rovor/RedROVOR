@@ -3,6 +3,8 @@ from django.db import models
 from fields import RAField, DecField
 from redrovor.coords import Coords
 
+from tempfile import NamedTemporaryFile
+
 # Create your models here.
 
 
@@ -30,6 +32,26 @@ class Target(models.Model):
 
     def __str__(self):
         return self.name
+
+    def tempCoordFile(self):
+        '''create a temporary file containing a coordinate list
+        of the coordinates for the target, from the FieldObject
+        database.
+        
+        This returns the path to the temporary file, and it is up to
+        the user to take care of deleting it.'''
+        #TODO figure out how we should order the objects
+        #sort by isTarget descending so targets are at top of list
+        objs = FieldObject.objects.filter(target=self).order_by('-isTarget','id')
+        with NamedTemporaryFile('w',suffix='.coo',delete=False) as coofile:
+            fname = coofile.name #save the name so we can return it
+            for coord in objs:
+                coofile.write("{0}  {1}\n".format(coord.ra.toDegrees(),coord.dec.toDegrees()))
+        return fname
+
+
+            
+
 
 
 def getUploadPath(self, filename):
@@ -61,6 +83,7 @@ class FieldObject(models.Model):
         else:
             self.ra,self.dec = coords
     coords = property(get_coords,set_coords)
+
 
 class CalibrationMagnitudes(models.Model):
     '''model to keep track of calibration magnitudes and errors
