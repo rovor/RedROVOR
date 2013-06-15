@@ -92,3 +92,18 @@ def makeRADecName(header):
         return 'unknown'
     return 'R{0}_{1}D{2}_{3}'.format(ra[0],ra[1],dec[0],dec[1])
 
+def splitByHeader(imlist,keyword):
+    '''split a list of filenames by a header keyword, throw out any non-fits 
+    files.
+    @returns a dict where the keys are the values of the supplied header and
+    the values are lists of images which have that value in the header.
+    
+    if the keyword isn't in the header, then the empty string is used as 
+    the value'''
+    result = defaultdict(list)
+    for im in iter(imlist):
+        if isFits(im):
+            #put each image into a list identified by the filter
+            #if the filter keyword isn't supplied default to empty string
+            result[pyfits.getheader(im).get(keyword,'')].append(im)
+    return result

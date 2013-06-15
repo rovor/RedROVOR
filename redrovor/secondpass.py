@@ -12,8 +12,8 @@ from os import path
 import observatories
 
 from utils import findFrames
-from frameTypes import getFrameLists, splitByFilter
-from fitsHeader import getRA, getDec
+from frameTypes import getFrameLists 
+from fitsHeader import getRA, getDec, splitByHeader
 from wcs import astrometrySolve
 
 from process import applyFlat
@@ -38,7 +38,7 @@ class SecondPassProcessor:
         self.logger.info("Building Object List")
         frames = findFrames(self.folder)
         frameTypes = getFrameLists( frames ) #get frame types
-        self.objects = splitByFilter(frameTypes['object'])
+        self.objects = splitByHeader(frameTypes['object'],'filter')
         #save a cache of the frame info to speed up future uses of the ZeroDarkProcessor
         with open(path.join(self.folder,'objectLists.json'),'w') as f:
             json.dump(self.objects,f)

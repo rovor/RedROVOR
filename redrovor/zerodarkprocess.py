@@ -19,7 +19,7 @@ import pyfits
 import updateHeaders
 import frameTypes
 import process
-#import imProc
+from fitsHeader import splitByHeader
 
 from utils import writeListToFileName, getTimeString
 
@@ -146,7 +146,7 @@ always works in place'''
         self.ensure_zero()
         self.ensure_dark()
         flatBase = path.join(self.processedFolder,'Flat')
-        flats = frameTypes.splitByFilter(self.frameTypes['flat'])
+        flats = splitByHeader(self.frameTypes['flat'],'filter')
         for filter in flats:
             outName = "{0}_{1}.fits".format(flatBase,filter)  #name is the base flat name plus the filter type
             process.makeFlat(*flats[filter],zero=self.zeroFrame,dark=self.darkFrame,output=outName)
@@ -164,7 +164,7 @@ always works in place'''
         self.ensure_dark()
         for (obj,flist) in self.objects.items():
             #iterate over each object
-            for (filt, frames) in frameTypes.splitByFilter(flist).items():
+            for (filt, frames) in splitByHeader(flist,'filter').items():
                 baseName = "{0}/{1}{2}-".format(self.processedFolder, obj.replace(' ','_'),filt)
                 with process.ImageList(*frames) as imlist:
                     imlist.subZero(self.zeroFrame)
