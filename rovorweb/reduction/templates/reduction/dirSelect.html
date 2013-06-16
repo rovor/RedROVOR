@@ -3,8 +3,7 @@
 
 {% comment %}
 This is a template which allows the user to select a folder to do processing on.
-It's required paramaters are submission_action, which is the action to perform when the user has selected a folder
-and start_path which is the virtual filesystem url to start the browser at
+It's required paramater is start_path which is the virtual filesystem url to start the browser at
 {% endcomment %}
 
 {% block headerext %}
@@ -22,7 +21,7 @@ function updateBrowserPath(){
 {% if error %}
 <p class="error">{{error}}</p>
 {% endif %}
-<form id="pathForm" method="POST" action="{{submission_action}}">
+<form id="pathForm" method="POST">
 {% csrf_token %}
 <input type="text" name="path" id="pathInput" />
 <input type="submit" value="Select Folder" />
