@@ -1,6 +1,12 @@
 {% extends 'dirmanage/twoFrameBrowser.html' %}
 {% load FSforms %}
 
+{% comment %}
+This is a template which allows the user to select a folder to do processing on.
+It's required paramaters are submission_action, which is the action to perform when the user has selected a folder
+and start_path which is the virtual filesystem url to start the browser at
+{% endcomment %}
+
 {% block headerext %}
 <script type="text/javascript">
 function updateBrowserPath(){
@@ -16,12 +22,12 @@ function updateBrowserPath(){
 {% if error %}
 <p class="error">{{error}}</p>
 {% endif %}
-<form id="pathForm" method="POST" action="/reduce/flatSelectForm">
+<form id="pathForm" method="POST" action="{{submission_action}}">
 {% csrf_token %}
 <input type="text" name="path" id="pathInput" />
 <input type="submit" value="Select Folder" />
 </form>
-{% twoFrameBrowse 'path-browser' 'Processed/' 'pathBrowser' %}
+{% twoFrameBrowse 'path-browser' start_path 'pathBrowser' %}
 <script type="text/javascript">
     $(function(){
         pathBrowser.pathUpdated(function(path){

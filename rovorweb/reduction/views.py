@@ -32,17 +32,19 @@ def zeroDark(request):
 @login_required
 def flatSelectForm(request):
     '''Form for selecting flats'''
+    fcontext = {'submission_action':'reduce/flatSelectForm','start_path':'Processed/'}
     if 'path' in request.POST:
         try:
             path = Filesystem.getTruePath(request.POST['path'])
         except (ValueError, Filesystem.DoesNotExist, IOError):
-            return render(request,'reduction/flatDirSelect.html',{'error':'Invalid path, try again'})
+            fcontext.update({'error':'Invalid path, try again'})
+            return render(request,'reduction/flatDirSelect.html',fonctext)
             
         context = {'improc':SecondPassProcessor(path), 'path':request.POST['path']}
         return render(request, 'reduction/flatFrameSelect.html',context)
     else:
         #we haven't gotten a path yet, so display page to select path
-        return render(request,'reduction/flatDirSelect.html')
+        return render(request,'reduction/flatDirSelect.html',fcontext)
 
 @login_required
 def photometry_start(request):
