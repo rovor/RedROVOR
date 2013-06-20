@@ -6,7 +6,22 @@
 $(function(){
     $("#photForm").click(function(e) {
         e.preventDefault();
-        alert("placeholder phot");
+        var data = $(this).serialize();
+        $.ajax({
+            url:'/reduce/phot',
+            type:'POST',
+            data: data,
+        }).done(function(resp){
+            if( resp.ok){
+                alert("Finished Photting");
+            }else {
+                alert("Error: "+resp.error);
+            }
+        }).fail(function(xhr, stat, err){
+            alert(stat + ": " + err);
+        });
+
+            
     });
 });
 </script>

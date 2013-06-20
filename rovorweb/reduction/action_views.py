@@ -1,7 +1,7 @@
 '''This is just a helper module to factor out the actions of reduction from the actual pages, everything in here is imported into the main views module'''
 
 
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponseBadRequest
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 import json
@@ -165,12 +165,12 @@ def phot_service(request):
     #the mapping object has rather sensitive information in it
     #so we don't want the client to deal with it, so we need to
     #have everything in the session
-    if 'path' in request.session and 'mapping' in request.session:
-        path = request.session['path']
-        mapping = request.session['mapping']
+    path = request.session.get('phot.path')
+    mapping = request.session.get('phot.object_mapping')
+    if path and mapping:
         #clean up session
-        del request.session['path'] 
-        del request.session['mapping'] 
+        del request.session['phot.path'] 
+        del request.session['phot.object_mapping'] 
     else:
         return HttpResponseBadRequest("No mapping specified")
     try:
