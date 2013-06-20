@@ -1,4 +1,4 @@
-from django.http import HttpResponse, HttpResponseBadRequest Http404
+from django.http import HttpResponse, HttpResponseBadRequest, Http404
 from django.template import Context, loader
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
@@ -40,6 +40,7 @@ class DirSelect(TemplateView):
         '''get context to use for rendering template'''
         context = super(DirSelect, self).get_context_data(**kwargs)
         context['start_path'] = self.start_path
+        return context
 
     def post(self, request, *args, **kwargs):
         '''respond to post when a form was submitted'''
@@ -50,7 +51,7 @@ class DirSelect(TemplateView):
         except:
             context = self.get_context_data(error='Invalid path, try again')
             return self.render_to_response(context)
-        return handler(request,path)
+        return self.handler(request,path)
 
     @classmethod
     def decorate(cls, start_path='/'):
@@ -65,13 +66,13 @@ class DirSelect(TemplateView):
 @DirSelect.decorate('Processed/')
 def flatSelectForm(request, path):
     '''Form for selecting flats'''
-        context = {'improc':SecondPassProcessor(path), 'path':path}
-        return render(request, 'reduction/flatFrameSelect.html',context)
+    context = {'improc':SecondPassProcessor(path), 'path':path}
+    return render(request, 'reduction/flatFrameSelect.html',context)
 
 
 @login_required
 @DirSelect.decorate('Processed/')
-def photometry_start(request):
+def photometry_start(request,path):
     '''Page for doing astrometry'''
     return HttpResponse("<h1>Under Construction</h1>")
 

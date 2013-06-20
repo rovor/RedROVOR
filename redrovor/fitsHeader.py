@@ -5,6 +5,9 @@ import re
 import obsDB
 import simbad
 
+from collections import defaultdict
+import pyfits
+
 zeroRE = re.compile(r'([zZ]ero)|([Bb]ias)')
 darkRE = re.compile(r'[dD]ark')
 flatRE = re.compile(r'[Ff]lat')
