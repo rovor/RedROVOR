@@ -17,9 +17,11 @@ $(function(){
                 window.location = '/reduce';
             }else {
                 alert("Error: "+resp.error);
+                window.location = '/reduce';
             }
         }).fail(function(xhr, stat, err){
             alert(stat + ": " + err);
+            window.location = '/reduce';
         });
 
             
