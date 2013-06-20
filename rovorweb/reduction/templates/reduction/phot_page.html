@@ -17,11 +17,11 @@ $(function(){
                 window.location = '/reduce';
             }else {
                 alert("Error: "+resp.error);
-                window.location = '/reduce';
+                window.location = '/reduce/photometry-start';
             }
         }).fail(function(xhr, stat, err){
             alert(stat + ": " + err);
-            window.location = '/reduce';
+            window.location = '/reduce/photometry-start';
         });
 
             
