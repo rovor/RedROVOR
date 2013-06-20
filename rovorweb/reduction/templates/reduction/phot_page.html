@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Phot{% endblock %}
+
+{% block header %}
+<script type="text/javascript">
+$(function(){
+    $("#photForm").click(function(e) {
+        e.preventDefault();
+        alert("placeholder phot");
+    });
+});
+</script>
+{% endblock %}
+
+
+{% block content %}
+{% if path and mapping %}
+    <h1> Phot folder </h1>
+    <h3> We are photting the following objects</h3>
+    <ul>
+    {% for target in mapping %}
+    <li>{{target}}</li>
+    {% endfor %}
+    </ul>
+    <form method="POST" action="." id="photForm">
+    {% csrf_token %}
+    {# TODO add options to control the phot method #}
+    <input type="submit" value="Phot" />
+    </form>
+{% else %}
+    <h1> Error</h1>
+    <p>Your session does not contain the necessary information.
+    Please start the photting from <a href='{% url reduction.views.photometry_start %}'>here</a>.</p>
+{% endif %}
+{% endblock %}

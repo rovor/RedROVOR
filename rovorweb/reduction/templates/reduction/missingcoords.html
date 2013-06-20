@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Missing Coordinates{% endblock %}
+
+
+{% block content %}
+<h1>You are missing field coordinates for the following objects.</h1>
+<h2>You need to supply coordinates for these objects in order to phot them.</h2>
+<p>You can add coordinates <a href="/targets/editCoords">here</a></p>
+
+<ul>
+{% for target in missing %}
+<li>{{target}}</li>
+{% endfor %}
+</ul>
+
+<p><a href="/reduce/phot"><button>Continue with targets that we can process </button></a></p>
+
+{% endblock %}

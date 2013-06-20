@@ -1,7 +1,7 @@
 from django.http import HttpResponse, HttpResponseBadRequest, Http404
 from django.template import Context, loader
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response
 from django.views.generic.base import TemplateView
 
 from redrovor.secondpass import  SecondPassProcessor
@@ -76,9 +76,24 @@ def flatSelectForm(request, path):
 def photometry_start(request,path):
     '''Page for doing astrometry'''
     mapping, missing = getObjectMapping(path)
+    #store the mapping and path in the session
+    request.session['phot.object_mapping'] = mapping 
+    request.session['phot.path'] = path
     if missing:
-        return HttpResponse("Missing coordinates for: "+', '.join(missing))
+        return render(request,'reduction/missingcoords.html',{'missing':missing})
     else:
-        return HttpResponse("All coordinates accounted for")
+        return redirect(phot_page)
+
+@login_required
+def phot_page(request):
+    '''page for actually doing the photometry.'''
+    context = {
+        'mapping': request.session.get('phot.object_mapping'),
+        'path': request.session.get('phot.path')
+    }
+    return render(request,'reduction/phot_page.html',context)
+
+
+
     
 
