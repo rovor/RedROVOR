@@ -3,6 +3,7 @@
 
 from django.http import HttpResponse, Http404
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 import json
 import os
 
@@ -10,6 +11,7 @@ from redrovor import renamer
 from redrovor.process import makeZero
 from redrovor.zerodarkprocess import ZeroDarkProcessor, doFirstPass
 from redrovor.secondpass import SecondPassProcessor, doSecondPass
+from redrovor.thirdpass import ThirdPassProcessor, doThirdPass
 from dirmanage.models import Filesystem
 from dirmanage.toolset import PathProcessView, process_path
 
@@ -156,7 +158,26 @@ def secondPass(request):
         logger.debug(traceback.format_exc()) #log the traceback
         raise e
         
-    
-        
-
+@login_required
+@require_POST
+def phot_service(request):
+    '''web service to perform the photometry'''
+    #the mapping object has rather sensitive information in it
+    #so we don't want the client to deal with it, so we need to
+    #have everything in the session
+    if 'path' in request.session and 'mapping' in request.session:
+        path = request.session['path']
+        mapping = request.session['mapping']
+        #clean up session
+        del request.session['path'] 
+        del request.session['mapping'] 
+    else:
+        return HttpResponseBadRequest("No mapping specified")
+    try:
+        doThirdPass(path,mapping)
+    except Exception as e:
+        logger.debug(traceback.format_exc())
+        logger.warning(str(e))
+        return HttpResponse('{{"ok":false,"error":{0}"}}'.format(e),mimetype='application/json')
+    return HttpResponse('{"ok":true}',mimetype='application/json')
 

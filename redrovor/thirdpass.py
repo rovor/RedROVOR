@@ -72,7 +72,7 @@ class ThirdPassProcessor:
                 phot(im,coordfile,targetCoords,**kwargs)
         return self
             
-def doThirdPass(path, coordfile, target_coords=None, **kwargs):
+def doThirdPass(path, obj_mapping,**kwargs):
     '''perform the third pass, for now this just does the photometry, 
     although at some later point we may add other processing such as 
     combining data for the same object-filter combinations, not that this 
@@ -81,6 +81,9 @@ def doThirdPass(path, coordfile, target_coords=None, **kwargs):
     also, additional options to control the phot process can be passed in 
     as kwargs
     '''
+    proc = ThirdPassProcessor(path)
+    return proc.phot(obj_mapping,**kwargs)
+
 
     
     

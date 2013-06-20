@@ -10,8 +10,7 @@ from photcontrol import getObjectMapping
 
 #import some views from another module, this allows some seperation
 #between views used for html and views used for AJAX
-from action_views import renameAll, makeZero, makeDark, makeFlats, \
-    subZeroDark, firstPass, applyFlats, applyWCS, secondPass
+from action_views import *
 
 
 from dirmanage.models import Filesystem
@@ -92,8 +91,4 @@ def phot_page(request):
         'path': request.session.get('phot.path')
     }
     return render(request,'reduction/phot_page.html',context)
-
-
-
-    
 
