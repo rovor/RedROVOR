@@ -55,10 +55,6 @@ class Target(models.Model):
         return FieldObject.objects.filter(target=self).exists()
 
 
-            
-
-
-
 def getUploadPath(self, filename):
     '''compute the file path for an uploaded coordfile
     This assumes that the target field has been set'''

@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.views.generic.base import TemplateView
 
 from redrovor.secondpass import  SecondPassProcessor
+from photcontrol import getObjectMapping
 
 
 #import some views from another module, this allows some seperation
@@ -74,5 +75,10 @@ def flatSelectForm(request, path):
 @DirSelect.decorate('Processed/')
 def photometry_start(request,path):
     '''Page for doing astrometry'''
-    return HttpResponse("<h1>Under Construction</h1>")
+    mapping, missing = getObjectMapping(path)
+    if missing:
+        return HttpResponse("Missing coordinates for: "+', '.join(missing))
+    else:
+        return HttpResponse("All coordinates accounted for")
+    
 
