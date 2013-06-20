@@ -6,6 +6,8 @@
 #the pyraf directory
 pyraf/
 
+logfile
+
 #compiled files
 *.pyc
 */*.pyc

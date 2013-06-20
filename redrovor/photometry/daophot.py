@@ -2,8 +2,10 @@
 
 import irafmod
 from params import getDAOParams
+from redrovor.utils import workingDirectory
 
-def phot(imageName, coordFile, target_coords=None,sample_size=100,params=None,**kwargs):
+
+def phot(imageName, output_dir,coordFile, target_coords=None,sample_size=100,params=None,**kwargs):
     '''perform daophot on imageName with the supplied
     coordinate file, and optionally the target coordinates, which
     defaults to the first coordinates in coordFile
@@ -22,18 +24,22 @@ def phot(imageName, coordFile, target_coords=None,sample_size=100,params=None,**
     params.update(kwargs)
     params.applyParams()
 
-    daophot.phot(imageName,coordFile,"default")
-    daophot.pstselect(imageName,"default","default")
-    #params: imagename photfile pstfile psfimage opstfile groupfile
-    daophot.psf(imageName,"default","default","default","default","default",
-        interactive=irafmod.no)
-    #TODO should we be more sophisticated and do multiple runs of psf
-    #along with using nstar and substar to try and get best fit?
+    with workingDirectory(output_dir):
+        #temporarily change working directory
 
-    #use nstar for now, but we will make it a seperate function
-    #so it is easy to switch out with peak or allstar
-    #if we desire later
-    do_nstar(imageName)
+        daophot.phot(imageName,coordFile,"default")
+        #params:  image, photfile, pstfile, maxnpsf
+        daophot.pstselect(imageName,"default","default",25)
+        #params: imagename photfile pstfile psfimage opstfile groupfile
+        daophot.psf(imageName,"default","default","default","default","default",
+            interactive=irafmod.no)
+        #TODO should we be more sophisticated and do multiple runs of psf
+        #along with using nstar and substar to try and get best fit?
+
+        #use nstar for now, but we will make it a seperate function
+        #so it is easy to switch out with peak or allstar
+        #if we desire later
+        do_nstar(imageName)
 
 
 def do_nstar(imageName):

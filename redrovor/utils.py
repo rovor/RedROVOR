@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 from glob import glob
+from contextlib import contextmanager
 import sys
 
 def ensure_dir(path):
@@ -46,3 +47,17 @@ def findFrames(folder):
 def shell_quote(s):
     'quote string to be safe in shell'
     return "'" + s.replace("'",r"'\''") + "'"
+
+@contextmanager
+def workingDirectory(path):
+    '''Create a context manager that temporarily changes into a 
+    working directory, and gaurantees to return to the original workign directory'''
+    oldDir = os.getcwd()
+    try:
+        os.chdir(path)
+        yield 
+    finally:
+        os.chdir(oldDir)
+    return
+
+

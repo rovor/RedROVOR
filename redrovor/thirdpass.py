@@ -1,4 +1,5 @@
 from collections import defaultdict
+import os
 from os import path
 import pyfits
 import json
@@ -54,25 +55,33 @@ class ThirdPassProcessor:
         are dealing with in this folder.'''
         self.ensure_objectLists()
         return list(self.objects.keys())
-    def phot(self,obj_mapping,**kwargs):
+    def phot(self,obj_mapping,output_dir=None,**kwargs):
         '''
         Phot the frames in the folder
 
         obj_mapping must be a dict mapping the normalized name of objects
         to a tuple containing the coordinate file and optionally a 
-        coords.Coords object  containing the coordinates of the target
+        coords.Coords object  containing the coordinates of the target.
+        output_dir is the directory to save the output folders in,
+        it defaults to a subdirectory of self.folder named "photometry"
+        and will be created if it does not already exist.
 
         all kwargs are passed through to the phot method
         '''
         logger.info("Photting folder: "+self.folder)
         self.ensure_objectLists()
+        if output_dir is None:
+            output_dir = path.join(self.folder,'photometry')
+        if not path.isdir(output_dir):
+            #only create directory if it does not already exist
+            os.makedirs(output_dir)
         for objName, (coordfile,targetCoords) in obj_mapping.items():
             for im in self.objects[objName]:
                 logger.info("Photting image: "+im)
-                phot(im,coordfile,targetCoords,**kwargs)
+                phot(im,output_dir,coordfile,targetCoords,**kwargs)
         return self
             
-def doThirdPass(path, obj_mapping,**kwargs):
+def doThirdPass(path, obj_mapping,output=None,**kwargs):
     '''perform the third pass, for now this just does the photometry, 
     although at some later point we may add other processing such as 
     combining data for the same object-filter combinations, not that this 
@@ -82,7 +91,7 @@ def doThirdPass(path, obj_mapping,**kwargs):
     as kwargs
     '''
     proc = ThirdPassProcessor(path)
-    return proc.phot(obj_mapping,**kwargs)
+    return proc.phot(obj_mapping,output,**kwargs)
 
 
     

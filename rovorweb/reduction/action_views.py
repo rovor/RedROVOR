@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 import json
 import os
+import traceback
 
 from redrovor import renamer
 from redrovor.process import makeZero
