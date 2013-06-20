@@ -45,7 +45,7 @@ def relocateFiles(fileList, destFolder):
     '''takes a list of filenames (fileList) and adds the destFolder to the beginning of them, returning a new list'''
     return [ path.join(destFolder, path.basename(fname)) for fname in fileList ]
 
-class ZeroDarkProcessor:
+class FirstPassProcessor:
     '''Class to handle image processing for a folder, we use a class to 
 make it easier to keep track of the state'''
 
@@ -53,7 +53,7 @@ make it easier to keep track of the state'''
         '''initialize the processor in the folder containing the raw data'''
 
         # set up logger
-        self.logger = logging.getLogger('Rovor.ZeroDarkProcessor_{0}'.format(id(self)))
+        self.logger = logging.getLogger('Rovor.FirstPassProcessor_{0}'.format(id(self)))
 
         self.rawFolder = rawFolder
         #TODO figure out a robust way to determine the date of observation
@@ -93,7 +93,7 @@ always works in place'''
         self.logger.info("Building Lists")
         self.frameTypes = frameTypes.getFrameLists( self.frames ) #get frame types
         self.objects = frameTypes.makeObjectMap( self.frameTypes['object'] )
-        #save a cache of the frame info to speed up future uses of the ZeroDarkProcessor
+        #save a cache of the frame info to speed up future uses of the FirstPassProcessor
         with open(path.join(self.rawFolder,'frameInfo.json'),'w') as f:
             json.dump([self.frameTypes,self.objects],f)
         return self
@@ -193,9 +193,9 @@ always works in place'''
 
 
 def doFirstPass(path):
-    '''convenience wrapper function for the ZeroDarkProcessor.firstPass, which takes the path 
-    opens a ZeroDarkProcessor and calls firstPass'''
-    improc = ZeroDarkProcessor(path)
+    '''convenience wrapper function for the FirstPassProcessor.firstPass, which takes the path 
+    opens a FirstPassProcessor and calls firstPass'''
+    improc = FirstPassProcessor(path)
     improc.firstPass()
 
 

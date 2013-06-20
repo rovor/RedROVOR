@@ -10,7 +10,7 @@ import traceback
 
 from redrovor import renamer
 from redrovor.process import makeZero
-from redrovor.zerodarkprocess import ZeroDarkProcessor, doFirstPass
+from redrovor.firstpass import FirstPassProcessor, doFirstPass
 from redrovor.secondpass import SecondPassProcessor, doSecondPass
 from redrovor.thirdpass import ThirdPassProcessor, doThirdPass
 from dirmanage.models import Filesystem
@@ -34,7 +34,7 @@ def renameAll(path):
 def makeZero(path):
     '''make a master zero from a folder'''
     try:
-        improc = ZeroDarkProcessor(path)
+        improc = FirstPassProcessor(path)
         logger.info("Making zero at path " + path)
         improc.makeZero()
         return HttpResponse('{"ok":true}',mimetype='application/json')
@@ -50,7 +50,7 @@ def makeZero(path):
 def makeDark(path):
     '''make a master dark from a folder'''
     try:
-        improc = ZeroDarkProcessor(path)
+        improc = FirstPassProcessor(path)
         logger.info("Making dark at path " + path)
         improc.makeDark()
         return HttpResponse('{"ok":true}',mimetype='applicatin/json')
@@ -66,7 +66,7 @@ def makeDark(path):
 def makeFlats(path):
     '''make master flats from a folder'''
     try:
-        improc = ZeroDarkProcessor(path)
+        improc = FirstPassProcessor(path)
         logger.info("Making flats at path " + path)
         improc.makeFlats()
         return HttpResponse('{"ok":true}',mimetype='applicatin/json')
@@ -82,7 +82,7 @@ def makeFlats(path):
 def subZeroDark(path):
     '''subtract zeros and darks from the object files in a folder'''
     try:
-        improc = ZeroDarkProcessor(path)
+        improc = FirstPassProcessor(path)
         logger.info("Processing object files in "+path)
         improc.zero_and_dark_subtract()
         return HttpResponse('{"ok":true}',mimetype='applicatin/json')
