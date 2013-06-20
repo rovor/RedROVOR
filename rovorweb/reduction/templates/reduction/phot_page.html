@@ -14,6 +14,7 @@ $(function(){
         }).done(function(resp){
             if( resp.ok){
                 alert("Finished Photting");
+                window.location = '/reduce';
             }else {
                 alert("Error: "+resp.error);
             }

@@ -182,6 +182,6 @@ def phot_service(request):
     except Exception as e:
         logger.debug(traceback.format_exc())
         logger.warning(str(e))
-        return HttpResponse('{{"ok":false,"error":{0}"}}'.format(e),mimetype='application/json')
+        return HttpResponse(json.dumps({"ok":false,"error":str(e)}),mimetype='application/json')
     return HttpResponse('{"ok":true}',mimetype='application/json')
 
