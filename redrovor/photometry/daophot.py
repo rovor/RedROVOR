@@ -14,8 +14,7 @@ def phot(imageName, output_dir,coordFile, target_coords=None,sample_size=100,par
     kwargs are additional args to pass to constructor for params (or update params)'''
 
     #first ensure that irafmod has been initialized
-    if not irafmod._initialized:
-        raise irafmod.InitializationError("unable to phot")
+    irafmod.check_init("unable to phot")
     daophot = irafmod.iraf.daophot
 
     #first get the paramaters we need

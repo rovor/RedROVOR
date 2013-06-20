@@ -55,7 +55,7 @@ class ThirdPassProcessor:
         are dealing with in this folder.'''
         self.ensure_objectLists()
         return list(self.objects.keys())
-    def phot(self,obj_mapping,output_dir=None,**kwargs):
+    def phot(self,obj_mapping,**kwargs):
         '''
         Phot the frames in the folder
 
@@ -70,8 +70,7 @@ class ThirdPassProcessor:
         '''
         logger.info("Photting folder: "+self.folder)
         self.ensure_objectLists()
-        if output_dir is None:
-            output_dir = path.join(self.folder,'photometry')
+        output_dir = path.join(self.folder,'photometry')
         if not path.isdir(output_dir):
             #only create directory if it does not already exist
             os.makedirs(output_dir)
@@ -80,6 +79,13 @@ class ThirdPassProcessor:
                 logger.info("Photting image: "+im)
                 phot(im,output_dir,coordfile,targetCoords,**kwargs)
         return self
+
+    def makeLightCurves(self):
+        '''create light curves from the output of the 
+        photting process.'''
+        #this will just wrap a function in redrovor.photometry
+        #TODO
+        pass
             
 def doThirdPass(path, obj_mapping,output=None,**kwargs):
     '''perform the third pass, for now this just does the photometry, 
@@ -91,7 +97,8 @@ def doThirdPass(path, obj_mapping,output=None,**kwargs):
     as kwargs
     '''
     proc = ThirdPassProcessor(path)
-    return proc.phot(obj_mapping,output,**kwargs)
+    proc.phot(obj_mapping,output,**kwargs)
+    proc.makeLightCurves()
 
 
     

@@ -42,6 +42,11 @@ def init(iraf_dir=DEFAULT_IRAF_DIR):
     os.chdir(old_path) #restore original path
     return
 
+def check_init(error_msg="Not initialized"):
+    '''check that the irafmod module has been initialized'''
+    if not _initialized:
+        raise InitializationError(error_msg)
+
 
 
 def makeICommandFile(image,coord_file):
