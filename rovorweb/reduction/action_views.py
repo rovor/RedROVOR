@@ -176,12 +176,14 @@ def phot_service(request):
         return HttpResponseBadRequest("No mapping specified")
     try:
         doThirdPass(path,mapping)
-        for tempFile, _ in mapping.values():
-            #clean up all the temporary files
-            os.remove(tempFile)
     except Exception as e:
         logger.debug(traceback.format_exc())
         logger.warning(str(e))
         return HttpResponse(json.dumps({"ok":false,"error":str(e)}),mimetype='application/json')
+    finally:
+        #clean up all the temporary files
+        # we need to do this no matter what
+        for tempFile, _ in mapping.values():
+            os.remove(tempFile)
     return HttpResponse('{"ok":true}',mimetype='application/json')
 
