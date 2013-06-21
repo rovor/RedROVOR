@@ -82,6 +82,7 @@ def edit_targets(request):
         formset = TargetFormset(request.POST)
         if formset.is_valid():
             formset.save()
+            formset = TargetFormset() #reset form so we have the updated form
     else:
         formset = TargetFormset()
     return render(request, 'targets/edit_objs.html',{'formset':formset})
