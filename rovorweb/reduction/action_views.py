@@ -161,7 +161,7 @@ def secondPass(request):
         
 @login_required
 @require_POST
-def phot_service(request):
+def thirdPass(request):
     '''web service to perform the photometry'''
     #the mapping object has rather sensitive information in it
     #so we don't want the client to deal with it, so we need to
@@ -179,11 +179,13 @@ def phot_service(request):
     except Exception as e:
         logger.debug(traceback.format_exc())
         logger.warning(str(e))
-        return HttpResponse(json.dumps({"ok":false,"error":str(e)}),mimetype='application/json')
+        return HttpResponse(json.dumps({"ok":False,"error":str(e)}),mimetype='application/json')
     finally:
         #clean up all the temporary files
         # we need to do this no matter what
         for tempFile, _ in mapping.values():
             os.remove(tempFile)
-    return HttpResponse('{"ok":true}',mimetype='application/json')
+    return HttpResponse('{"ok":True}',mimetype='application/json')
+
+
 

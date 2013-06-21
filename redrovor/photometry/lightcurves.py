@@ -4,8 +4,12 @@ lightcurves'''
 
 import irafmod
 import os
+import csv
 
 from cStringIO import StringIO
+
+import logging
+logger = logging.getLogger('Rovor.photometry')
 
 def sortphotfiles(folder, suffix=".nst.1"):
     '''sort all of the phot files in \p folder
@@ -57,7 +61,7 @@ def photdump_all(globber,output):
     iraf.pdump(globber,FIELD_STR,iraf.yes,Stdout=output)
     return output
 
-def splitdump(dumpfile,prefix):
+def splitdump(dumpfile,prefix,delim=' '):
     '''split a phot dump into seperate files for each id and filter 
     combination.
 
@@ -65,12 +69,17 @@ def splitdump(dumpfile,prefix):
     unfortunately it would be rather difficult to also support opening
     the file for you. Sorry'''
     fdict = {}
+    reader = csv.reader(dumpfile,delimiter=delim,skipinitialspace=True)
     try:
-        for line in dumpfile:
-            starid, filt, *rest = line.split()
+        for line in reader:
+            #in python three we could write it like this:
+            #starid, filt, *rest = line
+            logger.debug(str(line))
+            starid, filt = line[0:2]
+            rest = line[2:]
             if (starid, filt) not in fdict:
                 fdict[(starid,filt)] = open(prefix+"_"+filt+"_"+starid+".lc",'w')
-            fdict[(starid,filt)].write('  '.join(rest)+"\n")
+            fdict[(starid,filt)].write(delim.join(rest)+"\n")
     finally:
         for f in fdict.values():
             #close all the open files

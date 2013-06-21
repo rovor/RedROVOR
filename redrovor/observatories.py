@@ -32,6 +32,7 @@ class Observatory:
         **kwargs):
 
         self.__dict__['_dict'] = kwargs
+        self._dict['name'] = name
         self._dict['units'] = 'degrees' #default units are degrees
         self._dict['width'] = Decimal(width)
         self._dict['height'] = Decimal(height)

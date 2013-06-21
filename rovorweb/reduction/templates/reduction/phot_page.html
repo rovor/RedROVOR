@@ -8,7 +8,7 @@ $(function(){
         e.preventDefault();
         var data = $(this).serialize();
         $.ajax({
-            url:'/reduce/phot',
+            url:'/reduce/thirdPass',
             type:'POST',
             data: data,
         }).done(function(resp){
@@ -40,10 +40,10 @@ $(function(){
     <li>{{target}}</li>
     {% endfor %}
     </ul>
-    <form method="POST" action="." id="photForm">
+    <form method="POST" id="photForm">
     {% csrf_token %}
     {# TODO add options to control the phot method #}
-    <input type="submit" value="Phot" />
+    <input type="submit" value="Do Third Pass" />
     </form>
 {% else %}
     <h1> Error</h1>

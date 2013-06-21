@@ -86,10 +86,14 @@ class ThirdPassProcessor:
         #this will just wrap a function in redrovor.photometry
         for targ,flist in self.objects.items():
             prefix = path.join(self.folder,'photometry',targ)
-            lightcurves.makeLightCurves(flist,prefix)
+            lightcurves.makeLightCurves(map(self._getNstName,flist),prefix)
+
+    def _getNstName(self, fitsPath):
+        base = path.basename(fitsPath)
+        return path.join(self.folder,'photometry',base+".nst.1")
             
             
-def doThirdPass(path, obj_mapping,output=None,**kwargs):
+def doThirdPass(path, obj_mapping,**kwargs):
     '''perform the third pass, for now this just does the photometry, 
     although at some later point we may add other processing such as 
     combining data for the same object-filter combinations, not that this 
@@ -99,5 +103,5 @@ def doThirdPass(path, obj_mapping,output=None,**kwargs):
     as kwargs
     '''
     proc = ThirdPassProcessor(path)
-    proc.phot(obj_mapping,output,**kwargs)
+    proc.phot(obj_mapping,**kwargs)
     proc.makeLightCurves()

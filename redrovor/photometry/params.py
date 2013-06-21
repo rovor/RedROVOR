@@ -82,9 +82,9 @@ class Params(dict):
 
 class DAO_params(Params):
     '''class to take care of setting up paramaters for dao photting'''
-    def __init__(self,observ,**kwargs):
-        super(DAO_params,self).__init__(observ,fitfunction='gauss',
-            readnoise=observ.readnoise,gain=observer.gain)
+    def __init__(self,observat,**kwargs):
+        super(DAO_params,self).__init__(observat,fitfunction='gauss',
+            readnoise=observat.readnoise,gain=observat.gain)
         self.update(kwargs)
 
     def applyParams(self):
@@ -124,8 +124,10 @@ class DAO_params(Params):
         iraf.daophot.wcsout="logical"
         iraf.daophot.verify=iraf.no
         # setjd paramaters
+        iraf.observatory.observatory = self['observat']
         iraf.setjd.date = self['obsdate']
         iraf.setjd.time = self['obstime']
+        iraf.setjd.observatory = self['observat']
         iraf.setjd.exposur = self['exposure']
         iraf.setjd.epoch = self['epoch']
         iraf.setjd.ra = self['ra_key']
