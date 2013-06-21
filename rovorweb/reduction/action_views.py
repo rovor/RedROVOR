@@ -16,6 +16,8 @@ from redrovor.thirdpass import ThirdPassProcessor, doThirdPass
 from dirmanage.models import Filesystem
 from dirmanage.toolset import PathProcessView, process_path
 
+from root import okJSONResponse, errorJSONResponse
+
 import logging
 logger = logging.getLogger('Rovor')
 
@@ -26,7 +28,7 @@ logger = logging.getLogger('Rovor')
 def renameAll(path):
     '''rename all files in a folder to be .fit instead of .FIT'''
     renamer.renameAll(path) #rename the files
-    return HttpResponse('{"ok":true}',mimetype='application/json')
+    return okJSONResponse()
 
 
 @login_required
@@ -37,9 +39,9 @@ def makeZero(path):
         improc = FirstPassProcessor(path)
         logger.info("Making zero at path " + path)
         improc.makeZero()
-        return HttpResponse('{"ok":true}',mimetype='application/json')
+        return okJSONResponse()
     except ValueError as e:
-        return HttpResponse('{{"ok":false, "error":"{0}"}}'.format(e),mimetype='application/json')
+        return errorJSONResponse(str(e))
     except Exception as e:
         #an unexpected exception
         logger.debug(traceback.format_exc()) #log the traceback
@@ -53,9 +55,9 @@ def makeDark(path):
         improc = FirstPassProcessor(path)
         logger.info("Making dark at path " + path)
         improc.makeDark()
-        return HttpResponse('{"ok":true}',mimetype='applicatin/json')
+        return okJSONResponse()
     except ValueError as e:
-        return HttpResponse('{{"ok":false, "error":"{0}"}}'.format(e), mimetype='application/json')
+        return errorJSONResponse(str(e))
     except Exception as e:
         #an unexpected exception
         logger.debug(traceback.format_exc()) #log the traceback
@@ -69,9 +71,9 @@ def makeFlats(path):
         improc = FirstPassProcessor(path)
         logger.info("Making flats at path " + path)
         improc.makeFlats()
-        return HttpResponse('{"ok":true}',mimetype='applicatin/json')
+        return okJSONResponse()
     except ValueError as e:
-        return HttpResponse('{{"ok":false, "error":"{0}"}}'.format(e), mimetype='application/json')
+        return errorJSONResponse(str(e))
     except Exception as e:
         #an unexpected exception
         logger.debug(traceback.format_exc()) #log the traceback
@@ -85,9 +87,9 @@ def subZeroDark(path):
         improc = FirstPassProcessor(path)
         logger.info("Processing object files in "+path)
         improc.zero_and_dark_subtract()
-        return HttpResponse('{"ok":true}',mimetype='applicatin/json')
+        return okJSONResponse()
     except ValueError as e:
-        return HttpResponse('{{"ok":false, "error":"{0}"}}'.format(e), mimetype='application/json')
+        return errorJSONResponse(str(e))
     except Exception as e:
         #an unexpected exception
         logger.debug(traceback.format_exc()) #log the traceback
@@ -102,9 +104,9 @@ def firstPass(path):
     '''
     try:
         doFirstPass(path)
-        return HttpResponse('{"ok":true}',mimetype='applicatin/json')
+        return okJSONResponse()
     except ValueError as e:
-        return HttpResponse('{{"ok":false, "error":"{0}"}}'.format(e), mimetype='application/json')
+        return errorJSONResponse(str(e))
     except Exception as e:
         #an unexpected exception
         logger.debug(traceback.format_exc()) #log the traceback
@@ -121,9 +123,9 @@ def applyFlats(request,path):
             flats[filt] = Filesystem.getTruePath(flat)
         improc = SecondPassProcessor(path)
         improc.applyFlats(flats)
-        return HttpResponse('{"ok":true}',mimetype='applicatin/json')
+        return okJSONResponse()
     except ValueError as e:
-        return HttpResponse('{{"ok":false, "error":"{0}"}}'.format(e), mimetype='application/json')
+        return errorJSONResponse(str(e))
     except Exception as e:
         #an unexpected exception
         logger.debug(traceback.format_exc()) #log the traceback
@@ -137,7 +139,7 @@ def applyWCS(path):
     try:
         improc = SecondPassProcessor(path)
         improc.applyWCS()
-        return HttpResponse('{"ok":true}',mimetype='applicatin/json')
+        return okJSONResponse()
     except Exception as e:
         #an unexpected exception
         logger.debug(traceback.format_exc()) #log the traceback
@@ -151,9 +153,9 @@ def secondPass(request):
     '''
     try:
         doSecondPass(path)
-        return HttpResponse('{"ok":true}',mimetype='applicatin/json')
+        return okJSONResponse()
     except ValueError as e:
-        return HttpResponse('{{"ok":false, "error":"{0}"}}'.format(e), mimetype='application/json')
+        return errorJSONResponse(str(e))
     except Exception as e:
         #an unexpected exception
         logger.debug(traceback.format_exc()) #log the traceback
@@ -178,14 +180,12 @@ def thirdPass(request):
         doThirdPass(path,mapping)
     except Exception as e:
         logger.debug(traceback.format_exc())
-        logger.warning(str(e))
-        return HttpResponse(json.dumps({"ok":False,"error":str(e)}),mimetype='application/json')
+        return errorJSONResponse(str(e))
     finally:
         #clean up all the temporary files
         # we need to do this no matter what
         for tempFile, _ in mapping.values():
             os.remove(tempFile)
-    return HttpResponse('{"ok":true}',mimetype='application/json')
-
+    return okJSONResponse()
 
 

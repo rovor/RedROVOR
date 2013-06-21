@@ -8,6 +8,7 @@ from redrovor.secondpass import  SecondPassProcessor
 from photcontrol import getObjectMapping
 
 
+
 #import some views from another module, this allows some seperation
 #between views used for html and views used for AJAX
 from action_views import *
