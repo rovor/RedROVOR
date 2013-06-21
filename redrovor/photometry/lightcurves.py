@@ -36,10 +36,11 @@ def photdump(files, output):
     airmass
     '''
     irafmod.check_init("can't dump")
+    iraf = irafmod.iraf
     if isinstance(output, str):
         output = open(output,'w')
     for pfile in files:
-        irafmod.iraf.pdump(pfile, FIELD_STR, iraf.yes, Stdout=output)
+        iraf.pdump(pfile, FIELD_STR, iraf.yes, Stdout=output)
     return output
 
 def photdump_all(globber,output):
@@ -48,9 +49,10 @@ def photdump_all(globber,output):
     glob expression for the files to use, 
     ex. *.nst.1'''
     irafmod.check_init("can't dump")
+    iraf = irafmod.iraf
     if isinstance(output,str):
         output = open(output,'w')
-    irafmod.iraf.pdump(globber,FIELD_STR,iraf.yes,Stdout=output)
+    iraf.pdump(globber,FIELD_STR,iraf.yes,Stdout=output)
     return output
 
 
