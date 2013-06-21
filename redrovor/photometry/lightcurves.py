@@ -15,7 +15,7 @@ def sortphotfiles(folder, suffix=".nst.1"):
 
 
 #constant holding the list of fields to dump from phot files
-FIELD_STR = "id,otime,mag,airmass,ifilter"
+FIELD_STR = "id,ifilter,otime,mag,airmass"
 
 def photdump(files, output):
     '''dump photometric information in the given list of 
@@ -30,16 +30,16 @@ def photdump(files, output):
     it dumpst the following fields in the given order:
 
     id
+    ifilter
     otime (observation time)
     magnitude
     airmass
-    ifilter
     '''
     irafmod.check_init("can't dump")
     if isinstance(output, str):
         output = open(output,'w')
     for pfile in files:
-        iraf.pdump(pfile, FIELD_STR, iraf.yes, Stdout=output)
+        irafmod.iraf.pdump(pfile, FIELD_STR, iraf.yes, Stdout=output)
     return output
 
 def photdump_all(globber,output):
@@ -50,7 +50,7 @@ def photdump_all(globber,output):
     irafmod.check_init("can't dump")
     if isinstance(output,str):
         output = open(output,'w')
-    iraf.pdump(globber,FIELD_STR,iraf.yes,Stdout=output)
+    irafmod.iraf.pdump(globber,FIELD_STR,iraf.yes,Stdout=output)
     return output
 
 
