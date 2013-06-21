@@ -147,7 +147,7 @@ def applyWCS(path):
 
 @login_required
 @PathProcessView.pathOnly
-def secondPass(request):
+def secondPass(path):
     '''perform the second pass over the folder
     i.e. apply flats and apply world coordinate system
     '''
@@ -188,4 +188,25 @@ def thirdPass(request):
             os.remove(tempFile)
     return okJSONResponse()
 
-
+@login_required
+@PathProcessView.decorate
+def photSelectFolder(request,path):
+    '''Allows a client to select a path for performing,
+    photometry. The client must supply the paramater 'path',
+    which is the virtual path to the folder to perform photometry in,
+    and will receive a Json object which contains an object of the following form
+        ok: True if the request succeeded
+        error: the error message if ok is false, not present if ok is true
+        result: the response if ok is true, not present if ok is false, it will be a list
+            of objects that do not have coordinates for them, if all objects have coordinates it will
+            be an empty list.
+    It is up to the client whether to continue forward or not if there are missing coordinates, the client
+    can also use the targets API to upload more coordinates.'''
+    try:
+       mapping, missing = getObjectMapping(path)
+       request.session['phot.object_mapping'] = mapping
+       request.session['phot.path'] = path
+       return okJSONResponse(missing)
+    except Exception as e:
+        logger.debug(traceback.format_exc())
+        return errorJSONResponse(str(e))
