@@ -34,6 +34,7 @@ class Params(dict):
             'ra_key': observ.ra_key,
             'dec_key':observ.dec_key,
             'observat':observ.name, #this needs to be set up for the right telescope
+            'otime': 'hjd', #header keyword for the time to output in phot files
         }
         super(Params,self).__init__(defaults)
         self.update(kwargs)
@@ -88,8 +89,7 @@ class DAO_params(Params):
 
     def applyParams(self):
         '''apply paramaters for daophot'''
-        if not irafmod._initialized:
-            raise irafmod.InitializationError("DAO_params.applyParams")
+        irafmod.check_init("DAO_params.applyParams")
         iraf = irafmod.iraf
 
         #photpars
@@ -102,7 +102,7 @@ class DAO_params(Params):
         iraf.datapars.sigma = self.get('sigma',0)
         iraf.datapars.datamax = self.datamax
         iraf.datapars.datamin = self.datamin
-        iraf.datapars.obstime = self['obstime']
+        iraf.datapars.obstime = self['otime']
         iraf.datapars.exposure = self['exposure']
         iraf.datapars.airmass = self['airmass']
         iraf.datapars.filter = self['filter']
