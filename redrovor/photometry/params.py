@@ -15,17 +15,25 @@ class Params(dict):
     IRAF paramaters, it is sort of a wrapper around a dictionary'''
     def __init__(self,**kwargs):
         #start with default options
+        #TODO some of these are dependent on the system
+        # we should make a way to abstract those part out into 
+        # a seperate object for system-dependent permanent settings
         defaults = {
             'aperture_ratio':1.2,
             'annulus_ratio':4,
             'dannulus_ratio':3,
             'zmag': 25,
             #header keywords
+            'obsdate':'date-obs',
             'obstime':'date-obs',
             'exposure':'exptime',
             'airmass':'airmass',
             'filter':'filter',
             'datamax': 50000, #point where CCD saturates
+            'epoch': 'equinox',
+            'ra_key': 'objctra',
+            'dec_key':'objctdec',
+            'observat':'rovor', #this needs to be set up for the right telescope
         }
         super(Params,self).__init__(defaults)
         self.update(kwargs)
@@ -114,6 +122,14 @@ class DAO_params(Params):
         iraf.daophot.wcsin="logical"
         iraf.daophot.wcsout="logical"
         iraf.daophot.verify=iraf.no
+        # setjd paramaters
+        iraf.setjd.date = self['obsdate']
+        iraf.setjd.time = self['obstime']
+        iraf.setjd.exposur = self['exposure']
+        iraf.setjd.epoch = self['epoch']
+        iraf.setjd.ra = self['ra_key']
+        iraf.setjd.dec = self['dec_key']
+
 
 
 def getDAOParams(imageName, coord_file, target_coords=None, size=100, **kwargs):

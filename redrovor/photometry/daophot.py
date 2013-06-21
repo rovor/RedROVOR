@@ -26,6 +26,7 @@ def phot(imageName, output_dir,coordFile, target_coords=None,sample_size=100,par
     with workingDirectory(output_dir):
         #temporarily change working directory
 
+        #irafmod.iraf.setjd(imageName)
         daophot.phot(imageName,coordFile,"default")
         #params:  image, photfile, pstfile, maxnpsf
         daophot.pstselect(imageName,"default","default",25)
