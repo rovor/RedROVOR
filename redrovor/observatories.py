@@ -3,9 +3,16 @@ from decimal import Decimal
 
 class Observatory:
     '''class to hold constants for a specific observatory,
-    this should be set for any observatory you use.'''
+    this should be set for any observatory you use.
+    
+    The name should be the name of the observatory and should
+    match the name of the observatory in the IRAF observatory
+    database. This is necessary for the HJD to be set when photting.
+    
+    For accurate photometry the readnoise and gain of the detector should
+    be set to good values for the system.'''
     def __init__(self,
-        name,
+        name, #name of the observatory, should match IRAF observatory database
         width=Decimal(1),
         height=Decimal(1),
         lowscale=Decimal('0.1'),

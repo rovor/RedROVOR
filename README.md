@@ -87,6 +87,17 @@ up an alias for /static to /var/www/rovorweb/static, which is necessary in order
 
 This assumes that your web directory is /var/www
 
+Observatory Setup
+-----------------
+
+When setting up RedROVOR for a different observatory, you need to create an Observatory object for your observatory which contains paramaters
+specific to your observatory, and make sure that that Observatory object is used instead of the default ROVOR object. Eventually we might add in
+a way to switch between observatories at runtime, or at least make the configuration more simple, but for now it isn't a very high priority.
+
+Also, in order for photometry to work with setting the HJD, you need to set up your observatory in IRAF's observatory database, and it must have the same
+name as the name attribute of the Observatory object. If you do not want to use HJD, or already have the HJD in your header, then comment out the line that 
+calls setjd in `daophot.py`.
+
 Special Issues
 -------------
 
