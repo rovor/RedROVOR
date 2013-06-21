@@ -3,9 +3,11 @@
 import irafmod
 from params import getDAOParams
 from redrovor.utils import workingDirectory
+from redrovor.observatories import ROVOR
 
 
-def phot(imageName, output_dir,coordFile, target_coords=None,sample_size=100,params=None,**kwargs):
+def phot(imageName, output_dir,coordFile, target_coords=None,
+    sample_size=100,params=None,observat=ROVOR,**kwargs):
     '''perform daophot on imageName with the supplied
     coordinate file, and optionally the target coordinates, which
     defaults to the first coordinates in coordFile
@@ -19,7 +21,8 @@ def phot(imageName, output_dir,coordFile, target_coords=None,sample_size=100,par
 
     #first get the paramaters we need
     if not params:
-        params = getDAOParams(imageName, coordFile, target_coords, size=sample_size)
+        params = getDAOParams(observat,imageName, coordFile, 
+            target_coords, size=sample_size)
     params.update(kwargs)
     params.applyParams()
 

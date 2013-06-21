@@ -13,7 +13,7 @@ class Params(dict):
     '''class to take care of holding paramaters, this is more abstract
     and is intended as a superclass for classes that can actually set the
     IRAF paramaters, it is sort of a wrapper around a dictionary'''
-    def __init__(self,**kwargs):
+    def __init__(self,observ,**kwargs):
         #start with default options
         #TODO some of these are dependent on the system
         # we should make a way to abstract those part out into 
@@ -23,17 +23,17 @@ class Params(dict):
             'annulus_ratio':4,
             'dannulus_ratio':3,
             'zmag': 25,
+            'datamax': observ.datamax, #point where CCD saturates
             #header keywords
-            'obsdate':'date-obs',
-            'obstime':'date-obs',
-            'exposure':'exptime',
-            'airmass':'airmass',
-            'filter':'filter',
-            'datamax': 50000, #point where CCD saturates
-            'epoch': 'equinox',
-            'ra_key': 'objctra',
-            'dec_key':'objctdec',
-            'observat':'rovor', #this needs to be set up for the right telescope
+            'obsdate':observ.date_key,
+            'obstime':observ.time_key,
+            'exposure':observ.exp_key,
+            'airmass':observ.air_key,
+            'filter':observ.filt_key,
+            'epoch': observ.epoch_key,
+            'ra_key': observ.ra_key,
+            'dec_key':observ.dec_key,
+            'observat':observ.name, #this needs to be set up for the right telescope
         }
         super(Params,self).__init__(defaults)
         self.update(kwargs)
@@ -81,8 +81,9 @@ class Params(dict):
 
 class DAO_params(Params):
     '''class to take care of setting up paramaters for dao photting'''
-    def __init__(self,**kwargs):
-        super(DAO_params,self).__init__(fitfunction='gauss')
+    def __init__(self,observ,**kwargs):
+        super(DAO_params,self).__init__(observ,fitfunction='gauss',
+            readnoise=observ.readnoise,gain=observer.gain)
         self.update(kwargs)
 
     def applyParams(self):
@@ -132,7 +133,7 @@ class DAO_params(Params):
 
 
 
-def getDAOParams(imageName, coord_file, target_coords=None, size=100, **kwargs):
+def getDAOParams(observ,imageName, coord_file, target_coords=None, size=100, **kwargs):
     '''calculate the paramaters for performing daophot for an image
     using the coordinate file and possibly the coordinate of the target,
     if target_coords is None or not supplied, we assume that the target is the
@@ -142,7 +143,7 @@ def getDAOParams(imageName, coord_file, target_coords=None, size=100, **kwargs):
     size is the size of the sampling box for getting sigma and background'''
     if target_coords is None:
         target_coords = parse_first_coords(coord_file)
-    params = DAO_params(**kwargs)
+    params = DAO_params(observ,**kwargs)
     params['fwhm'] = getAverageFWHM(imageName, coord_file)
     params['background'], params['sigma'] = background_data(imageName, target_coords,size)
     return params
