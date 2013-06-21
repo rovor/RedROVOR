@@ -5,7 +5,7 @@ import pyfits
 import json
 
 import photometry
-from photometry import phot
+from photometry import phot, lightcurves
 from utils import findFrames
 from fitsHeader import normalizedName
 
@@ -84,8 +84,10 @@ class ThirdPassProcessor:
         '''create light curves from the output of the 
         photting process.'''
         #this will just wrap a function in redrovor.photometry
-        #TODO
-        pass
+        for targ,flist in self.objects.items():
+            prefix = path.join(self.folder,'photometry',targ)
+            lightcurves.makeLightCurves(flist,prefix)
+            
             
 def doThirdPass(path, obj_mapping,output=None,**kwargs):
     '''perform the third pass, for now this just does the photometry, 
@@ -99,8 +101,3 @@ def doThirdPass(path, obj_mapping,output=None,**kwargs):
     proc = ThirdPassProcessor(path)
     proc.phot(obj_mapping,output,**kwargs)
     proc.makeLightCurves()
-
-
-    
-    
-    
