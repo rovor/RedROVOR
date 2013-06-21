@@ -71,6 +71,7 @@ class Target(models.Model):
         for obj in remote_objs:
             if not cls.objects.filter(simbadName=obj['simbadName']).exists():
                 cls.objects.create(name=obj['name'],simbadName=obj['simbadName'])
+        #TODO figure out how to push results to remote server
                 
 
 

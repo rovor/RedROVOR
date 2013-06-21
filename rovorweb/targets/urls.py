@@ -17,4 +17,5 @@ urlpatterns = patterns('',
     url(r'^fieldobject/add$', views.fieldObjectAdd),
     url(r'^fieldobject/addTarget$',views.fieldObjectAddTarget),
     url(r'^coordlist/$',views.coordlist_json),
+    url(r'^synchronize$',views.synchronizeTargets),
 )

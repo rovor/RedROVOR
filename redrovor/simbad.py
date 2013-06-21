@@ -46,7 +46,6 @@ def getRADec(name):
         return None
     ra,dec = result[0].split('|')
     ra = RA_coord.fromStr(ra.strip())
-    print "|"+dec
     match = getRADec._min_re.match(dec.strip())
     if match:
         #we need to take care of the special case when we get fractional minutes instead of seconds

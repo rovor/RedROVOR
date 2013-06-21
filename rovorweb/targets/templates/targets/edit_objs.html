@@ -1,9 +1,36 @@
 {% extends 'base.html' %}
+{% load staticfiles %}
 
 {% block title %}Edit Targets{% endblock title %}
 
+{% block header %}
+<script type="text/javascript" src="{%static 'util.js'%}"></script>
+<script type="text/javascript">
+$(function(){
+    $("#syncButton").click(function(){
+        $.ajax({
+            url: '/targets/synchronize',
+            type: 'POST',
+            data: {},
+            headers: {'X-CSRFToken':getCookie('csrftoken')},
+            crossDomain: false,
+        }).done(function(data){
+            if(data.ok){
+                window.location.reload(True);
+            } else {
+                alert("something went wrong");
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
+
 {% block content %}
 <h1>Targets</h1>
+<p>
+<input type="button" value="Synchronize with rovor.byu.edu" id="syncButton" />
+<em>Warning:</em> This will take a very long time!
 <form method="post" action="">
     {% csrf_token %}
     {{formset.management_form }}

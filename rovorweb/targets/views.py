@@ -150,3 +150,10 @@ def fieldObjectAddTarget(request):
     except Exception as e:
         logger.debug(e)
         return errorJSONResponse("targetID must be supplied and a valid target")
+
+@login_required
+@require_POST
+def synchronizeTargets(request):
+    '''synchronize the targets database with rovor.byu.edu'''
+    Target.synchronize()
+    return okJSONResponse()
