@@ -1,5 +1,7 @@
 from urllib import urlopen,urlencode
 from coords import RA_coord, Dec_coord,Coords
+from decimal import Decimal
+import re
 
 SIMBAD_URL = "http://simbad.u-strasbg.fr/simbad/"
 SIMBAD_SCRIPT_URL = SIMBAD_URL + "/sim-script"
@@ -44,8 +46,20 @@ def getRADec(name):
         return None
     ra,dec = result[0].split('|')
     ra = RA_coord.fromStr(ra.strip())
-    dec = Dec_coord.fromStr(dec.strip())
+    print "|"+dec
+    match = getRADec._min_re.match(dec.strip())
+    if match:
+        #we need to take care of the special case when we get fractional minutes instead of seconds
+        d = int(match.group(1))
+        mins = Decimal(match.group(2))
+        m = int(mins)
+        s = (mins-m)*60
+        dec = Dec_coord(d,m,s)
+    else:
+        dec = Dec_coord.fromStr(dec.strip())
     return Coords(ra,dec)
+
+getRADec._min_re = re.compile(r'^([+-]?\d+):(\d+\.?\d*)$')
 
 def getMainName(name):
     '''get the "main" name for the given object in simbad,
