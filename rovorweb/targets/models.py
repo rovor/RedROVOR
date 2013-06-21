@@ -67,10 +67,10 @@ class Target(models.Model):
         #this is going to be kind of slow. Ideally we would 
         #set up a system so that each server notifies the other
         #when there is a change
-        remote_objs = obsDB.get_objs()
-        for obj in remote_objs['objects']:
+        remote_objs = obsDB.get_objs()['objects']
+        for obj in remote_objs:
             if not cls.objects.filter(simbadName=obj['simbadName']).exists():
-                pass
+                cls.objects.create(name=obj['name'],simbadName=obj['simbadName'])
                 
 
 
