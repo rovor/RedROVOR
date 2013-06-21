@@ -15,18 +15,6 @@ class ShortTargetForm(forms.ModelForm):
     ra = RAField(label='Right Ascension',required=False)
     dec = DecField(label='Declination', required=False)
 
-    def save(self,commit=True):
-        '''save the fully instantiated instance of the 
-        target, looking up unknown information on simbad'''
-        inst = super(ShortTargetForm,self).save(commit=False)
-        if not inst.simbadName:
-            inst.simbadName = simbad.getMainName(inst.name)
-        if not ( inst.ra and inst.dec):
-            inst.coords = simbad.getRADec(inst.name)
-        if commit:
-            inst.save()
-        return inst
-
     class Meta:
         model = Target
         fields=['name','ra','dec']

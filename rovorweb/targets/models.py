@@ -2,6 +2,7 @@ from django.db import models
 
 from fields import RAField, DecField
 from redrovor.coords import Coords
+from redrovor import obsDB, simbad
 
 from tempfile import NamedTemporaryFile
 
@@ -30,6 +31,13 @@ class Target(models.Model):
 
     coords = property(get_coords,set_coords)
 
+    def save(self, *args, **kwargs):
+        if not self.simbadName:
+            self.simbadName = simbad.getMainName(self.name)
+        if not (self.ra and self.dec):
+            self.coords = simbad.getRADec(self.simbadName)
+        super(Target,self).save(*args, **kwargs)
+
     def __str__(self):
         return self.name
 
@@ -40,7 +48,6 @@ class Target(models.Model):
         
         This returns the path to the temporary file, and it is up to
         the user to take care of deleting it.'''
-        #TODO figure out how we should order the objects
         #sort by isTarget descending so targets are at top of list
         objs = FieldObject.objects.filter(target=self).order_by('-isTarget','id')
         with NamedTemporaryFile('w',suffix='.coo',delete=False) as coofile:
@@ -53,6 +60,18 @@ class Target(models.Model):
         '''returns true if this target has one or more coordinates 
         associated with it, and false if it doesn't have any coordinates'''
         return FieldObject.objects.filter(target=self).exists()
+
+    @classmethod
+    def synchronize(cls):
+        '''synchronize the target database with the database at rovor.byu.edu'''
+        #this is going to be kind of slow. Ideally we would 
+        #set up a system so that each server notifies the other
+        #when there is a change
+        remote_objs = obsDB.get_objs()
+        for obj in remote_objs['objects']:
+            if not cls.objects.filter(simbadName=obj['simbadName']).exists():
+                pass
+                
 
 
 def getUploadPath(self, filename):
