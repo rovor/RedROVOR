@@ -55,4 +55,24 @@ def photdump_all(globber,output):
     iraf.pdump(globber,FIELD_STR,iraf.yes,Stdout=output)
     return output
 
+def splitdump(dumpfile,prefix):
+    '''split a phot dump into seperate files for each id and filter 
+    combination.
+
+    dumpfile is a file like object open for reading in text mode,
+    unfortunately it would be rather difficult to also support opening
+    the file for you. Sorry'''
+    fdict = {}
+    try:
+        for line in dumpfile:
+            starid, filt, *rest = line.split()
+            if (starid, filt) not in fdict:
+                fdict[(starid,filt)] = open(prefix+"_"+filt+"_"+starid+".lc",'w')
+            fdict[(starid,filt)].write('  '.join(rest)+"\n")
+    finally:
+        for f in fdict.values():
+            #close all the open files
+            f.close()
+
+
 
