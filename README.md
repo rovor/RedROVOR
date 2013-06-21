@@ -98,6 +98,16 @@ Also, in order for photometry to work with setting the HJD, you need to set up y
 name as the name attribute of the Observatory object. If you do not want to use HJD, or already have the HJD in your header, then comment out the line that 
 calls setjd in `daophot.py`.
 
+The entry for ROVOR is:
+```
+observatory = "rovor"
+    name = "Remote Observatory for Variable Object Research"
+    longitude = 112:43:01.00
+    latitude = 39:27:17.10
+    altitude = 4579
+    timezone = 7
+```
+
 Special Issues
 -------------
 
