@@ -16,7 +16,7 @@ from redrovor.thirdpass import ThirdPassProcessor, doThirdPass
 from dirmanage.models import Filesystem
 from dirmanage.toolset import PathProcessView, process_path
 
-from root import okJSONResponse, errorJSONResponse
+from root.jsonresponse import okJSONResponse, errorJSONResponse
 
 import logging
 logger = logging.getLogger('Rovor')
