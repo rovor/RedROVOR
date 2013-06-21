@@ -185,7 +185,7 @@ def thirdPass(request):
         # we need to do this no matter what
         for tempFile, _ in mapping.values():
             os.remove(tempFile)
-    return HttpResponse('{"ok":True}',mimetype='application/json')
+    return HttpResponse('{"ok":true}',mimetype='application/json')
 
 
 
