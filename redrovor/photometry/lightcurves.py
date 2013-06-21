@@ -5,6 +5,8 @@ lightcurves'''
 import irafmod
 import os
 
+from cStringIO import StringIO
+
 def sortphotfiles(folder, suffix=".nst.1"):
     '''sort all of the phot files in \p folder
     by id. They must end in \p suffix, which defaults to
@@ -73,6 +75,24 @@ def splitdump(dumpfile,prefix):
         for f in fdict.values():
             #close all the open files
             f.close()
+def makeLightCurves(photFiles, prefix):
+    '''Create light curves for an object.
+
+    photFiles is a list of photometry files, such as nst files
+    which will be dumped to create the light curves.
+
+    prefix is the prefix to save the light curves to. This should be the
+    full path to the folder to save it in, and probably the name of the target or field.
+    The prefix will be appended with the filter and the object id and the suffix .lc.'''
+    #how hard would it be to parallelize this and pipe the result of photdump to the input of
+    # splitdump
+    buffer = StringIO()
+    photdump(photFiles, buffer)
+    buffer.reset() #reset to beginning of 'file' for reading
+    splitdump(buffer, prefix)
+    buffer.close()
+    return True
+    
 
 
 
