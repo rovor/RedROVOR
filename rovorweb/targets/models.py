@@ -72,6 +72,24 @@ class Target(models.Model):
             if not cls.objects.filter(simbadName=obj['simbadName']).exists():
                 cls.objects.create(name=obj['name'],simbadName=obj['simbadName'])
         #TODO figure out how to push results to remote server
+
+    @classmethod
+    def synchronize2(cls):
+        '''possibly better synchronization function, 
+        not tested'''
+        remote_objs = obsDB.get_objs()['objects']
+        local_objs = dict((o.simbadName,o) for o in cls.objects.all())
+        for obj in remote_objs:
+            if obj['simbadName'] in local_objs:
+                del local_objs[ obj['simbadName'] ]
+            else:
+                cls.objects.create(name=obj['name'],simbadName=obj['simbadName'])
+        #now push the rest to the remote server
+        for obj in local_objs.values():
+            #ideally we would use the coords and simbadName as well
+            #but we need a richer interface for adding objects on
+            #ObsDB for that
+            obsDB.addObject(obj.name)
                 
 
 
