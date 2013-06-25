@@ -25,6 +25,9 @@ install_redrovor:
 
 install_rovorweb:
 	cp -r rovorweb $(web_prefix)
+	#make link for settings
+	rm -f $(setting_path)
+	ln -sf  $(settings_module_path)  $(settings_path)
 	#detele any static and media files we might have
 	rm -rf $(web_prefix)/rovorweb/static/*
 	rm -rf $(web_prefix)/rovorweb/media/*
@@ -34,8 +37,6 @@ install_rovorweb:
 	$(web_prefix)/rovorweb/manage.py collectstatic -l --noinput
 	$(web_prefix)/rovorweb/manage.py syncdb
 ifneq ($(wildcard $(settings_module_path)),)
-	#make link for settings
-	ln -sf  $(settings_module_path)   $(settings_path)
 	#delete compiled settings if they exist
 	rm -f $(web_prefix)/rovorweb/rovorweb/settings.pyc
 endif
