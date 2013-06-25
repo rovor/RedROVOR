@@ -42,7 +42,7 @@
 <section>
     <h2 style="text-align:left;margin-left:20px">Select Folder:</h2>
     <h3 id="pathPlace"></h3>
-    {% twoFrameBrowse 'mybrowser' 'Raw/' %}
+    {% twoFrameBrowse 'pathbrowser' 'Processed/' 'mybrowser'%}
     <script type="text/javascript">
         $(function(){
             $("#pathPlace").text(mybrowser.topPath);
