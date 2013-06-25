@@ -117,5 +117,6 @@ Special Issues
 * Since we were using RedHat we needed to enable the httpd_can_network_connect boolean in SELinux to be visible to the outside world
 * We also needed to update iptables to allow traffic on ports 443 and 80 (https and http respectevely)
 * We needed to add the apache user to the iraf group so he has write access to the iraf home folder, where the login.cl, uparm and pyraf folders are
+* We needed to chcon the /var/www directory, because for some reason the security context for httpd was removed from it
 
 
