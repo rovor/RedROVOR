@@ -41,17 +41,28 @@
 
 <section>
     <h2 style="text-align:left;margin-left:20px">Select Folder:</h2>
-    <h3 id="pathPlace"></h3>
-    {% twoFrameBrowse 'pathbrowser' 'Processed/' 'mybrowser'%}
+    
+    <p><input type="text" name="path" id="pathInput" size="30"/></p>
+    {% twoFrameBrowse 'pathbrowser' '' 'mybrowser'%}
     <script type="text/javascript">
         $(function(){
-            $("#pathPlace").text(mybrowser.topPath);
             mybrowser.pathUpdated(function(path){
-                $("#pathPlace").text(path)
+                $("#pathInput").val(path);
             });
+
+            $("#pathInput").change(function(){
+                mybrowser.setPath($(this).val());
+            }).keypress(function(e){
+                if(e.which == 13){
+                    e.preventDefault();
+                    $(this).change();
+                }
+            });
+
         });
     </script>
-    <p><button style="float:right; font-size:large" onclick="uploadAll()">Upload All Observations</button></p>
+    <p>
+    <button style="float:right; font-size:large" onclick="uploadAll()">Upload All Observations</button></p>
 </section>
 
 {% endblock %}
