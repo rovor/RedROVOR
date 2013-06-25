@@ -9,5 +9,5 @@ setup(name="RedROVOR",
     author="Thayne McCombs",
     author_email="astrothayne@gmail.com",
     url="https://github.com/tmccombs/RedROVOR",
-    packages=['redrovor'],
+    packages=['redrovor','redrovor.photometry'],
     )
