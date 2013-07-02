@@ -146,13 +146,15 @@ def applyWCS(path):
         raise e
 
 @login_required
-@PathProcessView.pathOnly
-def secondPass(path):
+@PathProcessView.decorate
+def secondPass(request,path):
     '''perform the second pass over the folder
     i.e. apply flats and apply world coordinate system
     '''
     try:
-        doSecondPass(path)
+        if 'flats' not in request.POST:
+            return HttpResponseBadRequest("No flats specified")
+        doSecondPass(path,request.POST['flats'])
         return okJSONResponse()
     except ValueError as e:
         return errorJSONResponse(str(e))

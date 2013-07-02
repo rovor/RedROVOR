@@ -77,4 +77,19 @@ class Filesystem(models.Model):
             return p
         else:
             raise ValueError(path)
+
+    @classmethod
+    def getVirtualPath(cls, tpath):
+        '''
+        get the virtual path of a file from the true path, this is the inverse 
+        operation of getTruePath.
+
+        If the true path is not in the virtual filesystem, raise a ValueError
+        '''
+        realpath = os.path.realpath(tpath)
+        for folder in cls.objects.all():
+            if realpath.startswith(folder.path):
+                subpath = realpath[len(folder.path):].lstrip('/') #get substring without leading path and strip leading '/'
+                return os.path.join(folder.name,subpath)
+        raise ValueError(tpath)
         

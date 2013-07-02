@@ -67,7 +67,7 @@ class DirSelect(TemplateView):
 @DirSelect.decorate('Processed/')
 def flatSelectForm(request, path):
     '''Form for selecting flats'''
-    context = {'improc':SecondPassProcessor(path), 'path':path}
+    context = {'improc':SecondPassProcessor(path), 'path':Filesystem.getVirtualPath(path)}
     return render(request, 'reduction/flatFrameSelect.html',context)
 
 

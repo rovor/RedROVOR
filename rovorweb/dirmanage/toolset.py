@@ -33,11 +33,12 @@ class PathProcessView(View):
             try: 
                 path = Filesystem.getTruePath(request.POST['path'])
             except (ValueError, Filesystem.DoesNotExist, IOError):
+                logger.debug(traceback.format_exc())
                 logger.info("Attempted access to invalid path: "+request.POST['path'])
-                return HttpResponseBadRequest(self.invalidPathResult, mimetype=error_mimetype)
+                return HttpResponseBadRequest(self.invalidPathResult, mimetype=self.error_mimetype)
             return self.innerView(request,path)
         else:
-            return HttpResponseBadRequest(noPathResult, mimetype=error_mimetype)
+            return HttpResponseBadRequest(self.noPathResult, mimetype=self.error_mimetype)
 
     @classmethod
     def decorate(cls, innerView):
