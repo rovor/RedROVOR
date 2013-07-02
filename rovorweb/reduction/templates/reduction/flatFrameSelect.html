@@ -19,12 +19,8 @@ Select Flat Frames
         });
 
         $("#flatApplyButton").click(function(){
-            var request = {'path': $(this).find("#path_input").val()};
-            var flats = {}
-            $(this).find('input[type="text"]').each(function(index){
-                flats[$(this).attr("name")] = $(this).val();
-            });
-            request['flats'] = JSON.stringify(flats);
+            var request = {'path': $("#path_input").val(), 'flats':getFlats()};
+            alert(JSON.stringify(request));
             $.ajax('/reduce/applyFlats',{
                 crossDomain: false,
                 data:request,
@@ -65,6 +61,14 @@ Select Flat Frames
 
     function selectFlat(path){
         $(this.attr("data-textselector")).val(path);
+    }
+
+    function getFlats(){
+        var flats = {}
+        $("#flatForm").find('input[type="text"]').each(function(index){
+            flats[$(this).attr("name")] = $(this).val();
+        });
+        return JSON.stringify(flats);
     }
 </script>
 {% endblock %}
