@@ -51,7 +51,7 @@ Select Flat Frames
         $("#secondPassButton").click(function(){
             $.ajax('/reduce/secondpass',{
                 crossDomain:false,
-                data: {'path':'{{path}}'},
+                data: {'path':'{{path}}','flats':getFlats()},
                 headers: {'X-CSRFToken':getCookie("csrftoken")},
                 type: 'POST',
             });
