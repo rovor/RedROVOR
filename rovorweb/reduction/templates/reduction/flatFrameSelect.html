@@ -8,8 +8,11 @@ Select Flat Frames
 
 {% block header %}
 <script type="text/javascript" src="{% static 'util.js' %}"></script>
+<script type="text/javascript" src="{% static 'jquery.blockUI.js' %}"></script>
 <script type="text/javascript">
     $(function(){
+
+        $(document).ajaxStop($.unblockUI);
         $("#flatForm input.browseButton").click(function(){
             flatDialog.open(selectFlat.bind($(this)));
         });
@@ -39,23 +42,32 @@ Select Flat Frames
         });
 
         $("#astrometryButton").click(function(){
+            $.blockUI({'message':"<h1>Processing...</h1>"});
             $.ajax('/reduce/applyWCS',{
                 crossDomain: false,
                 data: {'path':'{{path}}'},
                 headers: {"X-CSRFToken":getCookie("csrftoken")},
                 type: 'POST',
-            });
-            alert("WCS request sent\nThe processing will be done asynchronously, since it could take a very long time, look in the WCS subdirectory to confirm success");
+                }).done(function(){
+                    alert("Success!");
+                }).fail(function(xhr,stat,error){
+                    alert(stat+": "+error);
+                });
+
         });
 
         $("#secondPassButton").click(function(){
+            $.blockUI({'message':"<h1>Processing...</h1>"});
             $.ajax('/reduce/secondpass',{
                 crossDomain:false,
                 data: {'path':'{{path}}','flats':getFlats()},
                 headers: {'X-CSRFToken':getCookie("csrftoken")},
                 type: 'POST',
-            });
-            alert("started second pass\ndon't wait up for it");
+                }).done(function(){
+                    alert("Success!");
+                }).fail(function(xhr,stat,error){
+                    alert(stat+": "+error);
+                });
         });
     });
 
