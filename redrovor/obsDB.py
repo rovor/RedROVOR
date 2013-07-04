@@ -23,7 +23,7 @@ jar = cookielib.CookieJar()
 opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(jar))
 
 username='rovor' #username for the database
-passwordHash =hashlib.sha1('0uth0us3').hexdigest() #password hash for the database
+passwordHash = '28b85e583f93618ce1b1964ce0d79cb3c2bb29be' #password hash for the database
 
 loginRequest = {'command':'login','uname':username,'pword':passwordHash}
 
