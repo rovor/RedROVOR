@@ -79,14 +79,12 @@ def calcDAOparams(image,coord_file):
     with the given coordinate file.'''
     #first get the command file
     icommands = makeICommandFile(image,coord_file)
-    print icommands, "\n\n\n\n"
     output = iraf.daoedit(image,icommands=icommands,Stdout=1,Stderr='/dev/null')
     #initialize variables
     result = {'fwhm':0,'sky':0,'sigma':0}
     count = 0
     for line in output:
         if line.strip() and  not line.startswith('#'):
-            print line
             vals = line.split()
             result['fwhm'] += Decimal(vals[4])
             result['sigma'] += Decimal(vals[3])
