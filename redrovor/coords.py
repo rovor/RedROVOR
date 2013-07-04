@@ -152,9 +152,6 @@ def __cwithinradius(self, other,radius):
 
 Coords.withinRadius = __cwithinradius
 
-import logging
-logger = logging.getLogger("Rovor")
-
 def parseCoords(f):
     '''parse a list of Coords from a file like object
     @param f a file-like object which has at least two columns, the first of
