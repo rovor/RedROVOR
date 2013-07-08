@@ -67,9 +67,9 @@ doSelect: function(item){
         //nothing is selected
         return;
     }
-    var newPath = this.path + item.text() + "/";
+    var newPath = this.path + item.text();
     if( item.data("isdir") ){
-        this.path = newPath;
+        this.path = newPath + "/";
         this.populate();
     } else {
         this.elem.dialog("close");
