@@ -154,7 +154,10 @@ def secondPass(request,path):
     try:
         if 'flats' not in request.POST:
             return HttpResponseBadRequest("No flats specified")
-        doSecondPass(path,request.POST['flats'])
+        flats = json.loads(request.POST['flats'])
+        for filt,flat in flats.items():
+            flats[filt] = Filesystem.getTruePath(flat)
+        doSecondPass(path,flats)
         return okJSONResponse()
     except ValueError as e:
         return errorJSONResponse(str(e))
