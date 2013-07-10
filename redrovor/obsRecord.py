@@ -5,7 +5,7 @@ import pyfits
 import frameTypes
 import re
 
-from fitsHeader import isFits
+from fitsHeader import isFits, getObjectName
 
 import os
 
@@ -19,7 +19,7 @@ dateRegex = re.compile(r'(\d{4}-\d{2}-\d{2})T.*')
 def recordObservation(fitsHeader,fname=''):
     '''record the information contained in the header to the online database
     and optionally the filename passed as fname'''
-    objName = frameTypes.getObjectName(fitsHeader)
+    objName = getObjectName(fitsHeader)
     obj = obsDB.obj_get_or_add(objName)
     logger.info(obj)
     objid = obj['obj_id']

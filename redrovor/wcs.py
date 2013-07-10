@@ -25,7 +25,7 @@ def buildArgList(fnames,args):
         result.extend(args['options'])
     if 'guess' in args:
         ra,dec = args['guess']
-        radius = args.get('radius',1)
+        radius = args.get('radius',1) # in degrees
         result.extend(['--ra',str(ra),'--dec',str(dec),'--radius',str(radius)])
     if 'lowscale' in args:
         result.extend(['--scale-low',str(args['lowscale'])])
