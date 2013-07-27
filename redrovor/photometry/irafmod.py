@@ -1,6 +1,7 @@
 import os
 import tempfile
 from decimal import Decimal
+from redrovor.util import workingDirectory
 
 DEFAULT_IRAF_DIR = '/home/iraf'  #default directory to start iraf in
 
@@ -24,23 +25,21 @@ def init(iraf_dir=DEFAULT_IRAF_DIR):
     if _initialized:
         #already initialized no need to run again
         return
-    old_path = os.getcwd()
-    os.chdir(iraf_dir)
     global iraf
     global yes
     global no
-    from pyraf import iraf
-    yes = iraf.yes
-    no = iraf.no
-    #now load the packages we need
-    iraf.noao()
-    iraf.digiphot()
-    iraf.daophot()
-    iraf.obsutil()
+    with workingDirectory(iraf_dir):
+        from pyraf import iraf
+        yes = iraf.yes
+        no = iraf.no
+        #now load the packages we need
+        iraf.noao()
+        iraf.digiphot()
+        iraf.daophot()
+        iraf.obsutil()
 
-    _initialized = True
-    os.chdir(old_path) #restore original path
-    return
+        _initialized = True
+        return
 
 def check_init(error_msg="Not initialized"):
     '''check that the irafmod module has been initialized'''
