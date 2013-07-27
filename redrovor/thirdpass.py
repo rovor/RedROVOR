@@ -76,8 +76,13 @@ class ThirdPassProcessor:
             os.makedirs(output_dir)
         for objName, (coordfile,targetCoords) in obj_mapping.items():
             for im in self.objects[objName]:
-                logger.info("Photting image: "+im)
-                phot(im,output_dir,coordfile,targetCoords,**kwargs)
+                try:
+                    logger.info("Photting image: "+im)
+                    phot(im,output_dir,coordfile,targetCoords,**kwargs)
+                except Exception as ex:
+                    logger.warning(ex)
+                    #continue photting the rest
+
         return self
 
     def makeLightCurves(self):
@@ -86,7 +91,11 @@ class ThirdPassProcessor:
         #this will just wrap a function in redrovor.photometry
         for targ,flist in self.objects.items():
             prefix = path.join(self.folder,'photometry',targ)
-            makeLightCurves(map(self._getNstName,flist),prefix)
+            try:
+                makeLightCurves(map(self._getNstName,flist),prefix)
+            except Exception as ex:
+                logger.warning(ex)
+                #continue making the rest of the light curves
 
     def _getNstName(self, fitsPath):
         base = path.basename(fitsPath)
