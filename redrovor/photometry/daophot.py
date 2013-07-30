@@ -5,6 +5,11 @@ from params import getDAOParams
 from redrovor.utils import workingDirectory
 from redrovor.observatories import ROVOR
 
+import os
+import logging
+
+logger = logging.getLogger("Rovor.photometry")
+
 
 def phot(imageName, output_dir,coordFile, target_coords=None,
     sample_size=100,params=None,observat=ROVOR,**kwargs):
@@ -29,8 +34,12 @@ def phot(imageName, output_dir,coordFile, target_coords=None,
     with workingDirectory(output_dir):
         #temporarily change working directory
 
+        logger.debug("in working directory: "+os.getcwd())
+        logger.debug("Setting HJD")
         irafmod.iraf.setjd(imageName)
+        logger.debug("starting phot")
         daophot.phot(imageName,coordFile,"default")
+        logger.debug("starting pstselect")
         #params:  image, photfile, pstfile, maxnpsf
         daophot.pstselect(imageName,"default","default",25)
         #params: imagename photfile pstfile psfimage opstfile groupfile

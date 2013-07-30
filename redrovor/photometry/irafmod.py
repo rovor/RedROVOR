@@ -1,7 +1,7 @@
 import os
 import tempfile
 from decimal import Decimal
-from redrovor.util import workingDirectory
+from redrovor.utils import workingDirectory
 
 DEFAULT_IRAF_DIR = '/home/iraf'  #default directory to start iraf in
 
