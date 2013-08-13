@@ -36,6 +36,9 @@ you can run make install_rovorweb, this copies the folder to the webprefix folde
 
 To install both packages simply run ``make install''.
 
+Before installing, however, you need to update the ``credentials.py'' file. The distribution contains a sample file called ``credentials.sample.py,'' which contains the format
+of the credentials file, but does not contain actual usernames or passwords. The Usernames and passwords should be entered, and then the file should be renamed as credentials.py. Once this is done the system be able to properly log in to the database and remote Observation Database
+
 Deployment
 ----------
 
