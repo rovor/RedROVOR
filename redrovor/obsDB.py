@@ -4,6 +4,8 @@ import cookielib, urllib2
 import hashlib
 import json
 
+import credentials
+
 from urllib import urlencode
 
 import logging
@@ -22,10 +24,10 @@ class ObsDBError(Exception):
 jar = cookielib.CookieJar()
 opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(jar))
 
-username='rovor' #username for the database
-passwordHash = '28b85e583f93618ce1b1964ce0d79cb3c2bb29be' #password hash for the database
+username=credentials.users['obsDB'] #username for the database
+password = credentials.passwords['obsDB'] #password hash for the database
 
-loginRequest = {'command':'login','uname':username,'pword':passwordHash}
+loginRequest = {'command':'login','uname':username,'pword':password,'plaintext':True}
 
 baseurl='http://rovor.byu.edu/obs_database/'
 
