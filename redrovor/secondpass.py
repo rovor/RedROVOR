@@ -78,7 +78,7 @@ class SecondPassProcessor:
                 applyFlat(flat,*self.objects[filt],save_inplace=True)
         return self
 
-    def applyWCS(self,observatory = observatories.ROVOR):
+    def applyWCS(self,observatory = observatories.default):
         '''apply world coordinate systems to the images using data from
         the observatory information to set paramaters to astrometry.net'''
         self.ensure_objectList()

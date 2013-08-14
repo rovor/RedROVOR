@@ -3,7 +3,7 @@
 import irafmod
 from params import getDAOParams
 from redrovor.utils import workingDirectory
-from redrovor.observatories import ROVOR
+from redrovor import observatories
 
 import os
 import logging
@@ -12,7 +12,7 @@ logger = logging.getLogger("Rovor.photometry")
 
 
 def phot(imageName, output_dir,coordFile, target_coords=None,
-    sample_size=100,params=None,observat=ROVOR,**kwargs):
+    sample_size=100,params=None,observat=observatories.default,**kwargs):
     '''perform daophot on imageName with the supplied
     coordinate file, and optionally the target coordinates, which
     defaults to the first coordinates in coordFile

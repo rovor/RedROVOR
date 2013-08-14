@@ -69,3 +69,7 @@ class Observatory:
 #constants for the ROVOR observatory
 ROVOR = Observatory('rovor',width=Decimal(23)/60,height=Decimal(23)/60,lowscale='0.3',highscale='0.4')
 
+observatoryList = [ROVOR]
+
+default = ROVOR
+
