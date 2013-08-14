@@ -108,6 +108,8 @@ This assumes that your web directory is /var/www.
 You can either put this code directly in httpd.conf (usually at /etc/httpd/conf/httpd.conf) or in a file that is included in the configuration
 (such as a custom file in /etc/httpd/conf.d/ or /etc/httpd/conf/extra depending on the distro).
 
+For more information see https://github.com/rovor/RedROVOR/wiki/Apache-Setup
+
 Observatory Setup
 -----------------
 
@@ -128,6 +130,8 @@ observatory = "rovor"
     altitude = 4579
     timezone = 7
 ```
+
+For more information see https://github.com/rovor/RedROVOR/wiki/Adding-Observatory.
 
 Special Issues
 -------------
