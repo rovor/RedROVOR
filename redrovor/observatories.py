@@ -63,13 +63,28 @@ class Observatory:
 
         
 
+observatoryList = {}
 
+def register(obs):
+    '''register an observatory in the database.
+
+    This adds the database to a list of databases, and associates
+    it by the name of the observatory. It can later be retrieved by its name.
+    '''
+    observatoryList[obs.name] = obs
+
+def get(name):
+    '''get the observatory that has been registered with the given name.
+
+    If no such observatory has been registered, returns None
+    '''
+    return observatoryList.get(name)
 
 
 #constants for the ROVOR observatory
 ROVOR = Observatory('rovor',width=Decimal(23)/60,height=Decimal(23)/60,lowscale='0.3',highscale='0.4')
 
-observatoryList = [ROVOR]
+register(ROVOR)
 
 default = ROVOR
 
