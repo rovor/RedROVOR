@@ -42,7 +42,7 @@ of the credentials file, but does not contain actual usernames or passwords. The
 Deployment
 ----------
 
-=== Django Settings ===
+#### Django Settings ####
 
 Although the django website comes with some default settings for development purposes, and can be run with ``./manage.py runserver'' (after syncing the database and setting up the Raw and Processed paths in the database at minimum), deployment into a production environment requires more work for the user.
 
@@ -59,7 +59,7 @@ You may also want to set up your email system in the settings
 
 This repository included a settings.production.py that we used for our system. It may require tweaking on other systems, and requires the credentials module to be set up properly.
 
-=== Apache Settings ===
+#### Apache Settings ####
 
 You should configure your server to use SSL, and to run a django site, probably using WSGI. Please see documentatin for your server
 and Django deployment for more information.
