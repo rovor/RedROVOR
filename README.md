@@ -42,6 +42,8 @@ of the credentials file, but does not contain actual usernames or passwords. The
 Deployment
 ----------
 
+=== Django Settings ===
+
 Although the django website comes with some default settings for development purposes, and can be run with ``./manage.py runserver'' (after syncing the database and setting up the Raw and Processed paths in the database at minimum), deployment into a production environment requires more work for the user.
 
 To simplify setting up the settings for production we have made settings.py a symbolic link which points to settings.development.py by default. When running make install, make will look at the settings_module variable, which defaults to settings.production.py, if the file exists (this would be in the rovorweb/rovorweb directory) it will move the symbolic link of settings.py to that file on installation. This allows you to put all of your production settings into settings.production.py and have them automatically take effect.
@@ -54,6 +56,10 @@ At the very least your production settings should include the following:
 * Set ALLOWED_HOSTS to the hosts that you will accept requests to
 
 You may also want to set up your email system in the settings
+
+This repository included a settings.production.py that we used for our system. It may require tweaking on other systems, and requires the credentials module to be set up properly.
+
+=== Apache Settings ===
 
 You should configure your server to use SSL, and to run a django site, probably using WSGI. Please see documentatin for your server
 and Django deployment for more information.
