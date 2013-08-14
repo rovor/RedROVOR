@@ -66,17 +66,26 @@ and Django deployment for more information.
 
 For Apache a sample configuration (assuming SSL and WSGI are loaded and configured) is:
 ```apache
+#configuration for the rovorweb site
+
+ServerName localhost
 
 WSGISocketPrefix run/wsgi
 
-WSGIDaemonProcess localhost python-path=/var/www/rovorweb user=rovor
+WSGIDaemonProcess localhost python-path=/var/www/rovorweb 
 WSGIProcessGroup localhost
 
 WSGIScriptAlias / /var/www/rovorweb/rovorweb/wsgi.py
 
 Alias /static/ /var/www/rovorweb/static/
+Alias /media/ /var/www/rovorweb/media/
 
 <Directory /var/www/rovorweb/static>
+Order deny,allow
+Allow from all
+</Directory>
+
+<Directory /var/www/rovorweb/media>
 Order deny,allow
 Allow from all
 </Directory>
@@ -94,7 +103,10 @@ Allow from all
 Note that WSGISocketPrefix must be in the global context, and that we have set
 up an alias for /static to /var/www/rovorweb/static, which is necessary in order to access static files such as css, javascript, and images. 
 
-This assumes that your web directory is /var/www
+This assumes that your web directory is /var/www.
+
+You can either put this code directly in httpd.conf (usually at /etc/httpd/conf/httpd.conf) or in a file that is included in the configuration
+(such as a custom file in /etc/httpd/conf.d/ or /etc/httpd/conf/extra depending on the distro).
 
 Observatory Setup
 -----------------
@@ -123,7 +135,7 @@ Special Issues
 ##### Some issues we ran into on our system #####
 
 * We had a lot of issues with working with SELinux. You either need to make a lot of changes in your SELinux configuration
-and security contexts, or disable SELinux
+and security contexts, or disable SELinux. See https://github.com/rovor/RedROVOR/wiki/Disabling-SELinux
 * We also needed to update iptables to allow traffic on ports 443 and 80 (https and http respectevely)
 * We needed to add the apache user to the iraf group so he has write access to the iraf home folder, where the login.cl, uparm and pyraf folders are
 
